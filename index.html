@@ -439,6 +439,10 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   const UNITS = ["each", "pack", "lb", "oz", "gal", "box", "bag", "bottle", "can", "dozen"];
   const SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
   const PROFILE_SCOPES = "openid email profile";
+  const DEFAULT_CONFIG = Object.freeze({
+    clientId: "407047281361-2u9m5q4c39ocgd6r2d7fgiia8anal3rc.apps.googleusercontent.com",
+    sheetId: "1exL1itsRpbgXTplAoMelIw6kKHMo3-Xy19g4Zi86zdE",
+  });
 
   const state = {
     config: readConfig(),
@@ -465,8 +469,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   const views = { setup: qs("#setupView"), signin: qs("#signinView"), inventory: qs("#inventoryView") };
 
   function readConfig() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_CONFIG) || "null") || {}; }
-    catch { return {}; }
+    try { return { ...DEFAULT_CONFIG, ...(JSON.parse(localStorage.getItem(STORAGE_CONFIG) || "null") || {}) }; }
+    catch { return { ...DEFAULT_CONFIG }; }
   }
 
   function parseSetupFragment() {
@@ -932,9 +936,10 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function resetSetup() {
     localStorage.removeItem(STORAGE_CONFIG);
-    state.config = {};
+    state.config = { ...DEFAULT_CONFIG };
     signOut();
-    showView("setup");
+    initTokenClient();
+    showView("signin");
   }
 
   function enterDemo() {

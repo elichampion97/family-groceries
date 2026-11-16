@@ -300,7 +300,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         <div class="auth-card setup-card">
           <span class="eyebrow">One-time setup</span>
           <h2 id="setupTitle">Connect your private grocery sheet</h2>
-          <p>The webpage stays public and generic. Your Google Client ID and Sheet ID are saved only in this browser.</p>
+          <p>The family deployment is already connected. Use this screen only to switch to a different Google Sheet.</p>
           <form id="setupForm" class="stack-form">
             <label>Google OAuth client ID
               <input id="clientIdInput" autocomplete="off" placeholder="1234567890-...apps.googleusercontent.com" required>
@@ -313,7 +313,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
           <button class="btn ghost wide" id="demoBtn" type="button">Preview with sample groceries</button>
           <details>
             <summary>Why this is private</summary>
-            <p>Google grants access only to accounts that can already open the Sheet. The page never stores your Google password, and access tokens remain in memory.</p>
+            <p>The page contains only non-secret identifiers. Google grants access only to approved test users who can already open the Sheet. Passwords are never stored, and access tokens remain in memory.</p>
           </details>
         </div>
       </section>

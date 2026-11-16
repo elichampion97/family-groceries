@@ -460,9 +460,9 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     deferredInstall: null,
   };
 
-  const $ = (selector) => document.querySelector(selector);
-  const $ = (selector) => [...document.querySelectorAll(selector)];
-  const views = { setup: $("#setupView"), signin: $("#signinView"), inventory: $("#inventoryView") };
+  const qs = (selector) => document.querySelector(selector);
+  const qsa = (selector) => [...document.querySelectorAll(selector)];
+  const views = { setup: qs("#setupView"), signin: qs("#signinView"), inventory: qs("#inventoryView") };
 
   function readConfig() {
     try { return JSON.parse(localStorage.getItem(STORAGE_CONFIG) || "null") || {}; }
@@ -487,7 +487,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function showView(name) {
     Object.entries(views).forEach(([key, node]) => node.classList.toggle("hidden", key !== name));
-    $("#mobileNav").classList.toggle("hidden", name !== "inventory");
+    qs("#mobileNav").classList.toggle("hidden", name !== "inventory");
   }
 
   function hasConfig() { return Boolean(state.config.clientId && state.config.sheetId); }
@@ -507,44 +507,44 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   }
 
   function bindEvents() {
-    $("#setupForm").addEventListener("submit", saveSetup);
-    $("#demoBtn").addEventListener("click", enterDemo);
-    $("#signinBtn").addEventListener("click", signIn);
-    $("#changeSetupBtn").addEventListener("click", () => showView("setup"));
-    $("#quickAddForm").addEventListener("submit", quickAdd);
-    $("#searchInput").addEventListener("input", (event) => { state.query = event.target.value.trim().toLowerCase(); render(); });
-    $("#refreshBtn").addEventListener("click", () => loadData(true));
-    $("#profileBtn").addEventListener("click", openAccountModal);
-    $("#scanTopBtn").addEventListener("click", openScanner);
-    $("#scanNavBtn").addEventListener("click", openScanner);
-    $("#addNavBtn").addEventListener("click", () => openItemModal());
-    $("#itemForm").addEventListener("submit", saveItem);
-    $("#manualBarcodeForm").addEventListener("submit", manualBarcode);
-    $("#modalBackdrop").addEventListener("click", (event) => { if (event.target === event.currentTarget) closeModals(); });
-    $(".close-modal").forEach((button) => button.addEventListener("click", closeModals));
-    $(".filter-chip").forEach((button) => button.addEventListener("click", () => setFilter(button.dataset.filter)));
-    $('[data-mobile-filter]').forEach((button) => button.addEventListener("click", () => setFilter(button.dataset.mobileFilter)));
-    $("#undoToast").addEventListener("click", undoLast);
-    $("#signoutBtn").addEventListener("click", signOut);
-    $("#resetSetupBtn").addEventListener("click", resetSetup);
-    $("#openSheetBtn").addEventListener("click", () => window.open(`https://docs.google.com/spreadsheets/d/${state.config.sheetId}/edit`, "_blank", "noopener"));
-    $("#shareSetupBtn").addEventListener("click", copySetupLink);
-    $("#installBtn").addEventListener("click", installApp);
+    qs("#setupForm").addEventListener("submit", saveSetup);
+    qs("#demoBtn").addEventListener("click", enterDemo);
+    qs("#signinBtn").addEventListener("click", signIn);
+    qs("#changeSetupBtn").addEventListener("click", () => showView("setup"));
+    qs("#quickAddForm").addEventListener("submit", quickAdd);
+    qs("#searchInput").addEventListener("input", (event) => { state.query = event.target.value.trim().toLowerCase(); render(); });
+    qs("#refreshBtn").addEventListener("click", () => loadData(true));
+    qs("#profileBtn").addEventListener("click", openAccountModal);
+    qs("#scanTopBtn").addEventListener("click", openScanner);
+    qs("#scanNavBtn").addEventListener("click", openScanner);
+    qs("#addNavBtn").addEventListener("click", () => openItemModal());
+    qs("#itemForm").addEventListener("submit", saveItem);
+    qs("#manualBarcodeForm").addEventListener("submit", manualBarcode);
+    qs("#modalBackdrop").addEventListener("click", (event) => { if (event.target === event.currentTarget) closeModals(); });
+    qsa(".close-modal").forEach((button) => button.addEventListener("click", closeModals));
+    qsa(".filter-chip").forEach((button) => button.addEventListener("click", () => setFilter(button.dataset.filter)));
+    qsa('[data-mobile-filter]').forEach((button) => button.addEventListener("click", () => setFilter(button.dataset.mobileFilter)));
+    qs("#undoToast").addEventListener("click", undoLast);
+    qs("#signoutBtn").addEventListener("click", signOut);
+    qs("#resetSetupBtn").addEventListener("click", resetSetup);
+    qs("#openSheetBtn").addEventListener("click", () => window.open(`https://docs.google.com/spreadsheets/d/${state.config.sheetId}/edit`, "_blank", "noopener"));
+    qs("#shareSetupBtn").addEventListener("click", copySetupLink);
+    qs("#installBtn").addEventListener("click", installApp);
     window.addEventListener("online", updateOnlineState);
     window.addEventListener("offline", updateOnlineState);
-    window.addEventListener("beforeinstallprompt", (event) => { event.preventDefault(); state.deferredInstall = event; $("#installBtn").classList.remove("hidden"); });
+    window.addEventListener("beforeinstallprompt", (event) => { event.preventDefault(); state.deferredInstall = event; qs("#installBtn").classList.remove("hidden"); });
     document.addEventListener("visibilitychange", () => { if (!document.hidden && state.accessToken && !state.demo) loadData(false); });
   }
 
   function populateSelects() {
-    $("#itemCategory").innerHTML = CATEGORIES.map((x) => `<option>${escapeHtml(x)}</option>`).join("");
-    $("#itemUnit").innerHTML = UNITS.map((x) => `<option>${escapeHtml(x)}</option>`).join("");
+    qs("#itemCategory").innerHTML = CATEGORIES.map((x) => `<option>${escapeHtml(x)}</option>`).join("");
+    qs("#itemUnit").innerHTML = UNITS.map((x) => `<option>${escapeHtml(x)}</option>`).join("");
   }
 
   function saveSetup(event) {
     event.preventDefault();
-    const clientId = $("#clientIdInput").value.trim();
-    const sheetId = extractSheetId($("#sheetIdInput").value.trim());
+    const clientId = qs("#clientIdInput").value.trim();
+    const sheetId = extractSheetId(qs("#sheetIdInput").value.trim());
     if (!clientId.endsWith(".apps.googleusercontent.com") || !sheetId) {
       toast("Enter a valid Google client ID and Sheet URL.", "bad");
       return;
@@ -601,10 +601,10 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     if (!response.ok) throw new Error("Could not load Google profile");
     state.profile = await response.json();
     const initial = (state.profile.name || state.profile.email || "?").trim().charAt(0).toUpperCase();
-    $("#profileInitial").textContent = initial;
-    $("#profileLarge").textContent = initial;
-    $("#profileName").textContent = state.profile.name || "Google account";
-    $("#profileEmail").textContent = state.profile.email || "";
+    qs("#profileInitial").textContent = initial;
+    qs("#profileLarge").textContent = initial;
+    qs("#profileName").textContent = state.profile.name || "Google account";
+    qs("#profileEmail").textContent = state.profile.email || "";
   }
 
   function authHeaders(extra = {}) { return { Authorization: `Bearer ${state.accessToken}`, ...extra }; }
@@ -684,13 +684,13 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       return true;
     }).sort((a, b) => (a.quantity <= a.minimum ? -1 : 1) - (b.quantity <= b.minimum ? -1 : 1) || a.name.localeCompare(b.name));
 
-    $("#householdTitle").textContent = state.settings.household_name ? `${state.settings.household_name} Groceries` : "Home Groceries";
-    $("#itemCount").textContent = enriched.length;
-    $("#needCount").textContent = enriched.filter((x) => x.quantity <= x.minimum).length;
-    $("#unitCount").textContent = enriched.reduce((sum, x) => sum + x.quantity, 0);
-    $("#itemsList").innerHTML = visible.map(itemCardHtml).join("");
-    $("#emptyState").classList.toggle("hidden", visible.length > 0);
-    $("#emptyMessage").textContent = state.query ? "Try another search." : state.filter === "need" ? "You’re stocked up." : "Add your first grocery above.";
+    qs("#householdTitle").textContent = state.settings.household_name ? `${state.settings.household_name} Groceries` : "Home Groceries";
+    qs("#itemCount").textContent = enriched.length;
+    qs("#needCount").textContent = enriched.filter((x) => x.quantity <= x.minimum).length;
+    qs("#unitCount").textContent = enriched.reduce((sum, x) => sum + x.quantity, 0);
+    qs("#itemsList").innerHTML = visible.map(itemCardHtml).join("");
+    qs("#emptyState").classList.toggle("hidden", visible.length > 0);
+    qs("#emptyMessage").textContent = state.query ? "Try another search." : state.filter === "need" ? "You’re stocked up." : "Add your first grocery above.";
     bindItemActions();
   }
 
@@ -710,7 +710,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   }
 
   function bindItemActions() {
-    $(".item-card").forEach((card) => {
+    qsa(".item-card").forEach((card) => {
       const id = card.dataset.id;
       card.querySelector(".minus").addEventListener("click", () => adjustItem(id, -1));
       card.querySelector(".plus").addEventListener("click", () => adjustItem(id, 1));
@@ -726,14 +726,14 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function setFilter(filter) {
     state.filter = filter;
-    $(".filter-chip").forEach((x) => x.classList.toggle("active", x.dataset.filter === filter));
-    $('[data-mobile-filter]').forEach((x) => x.classList.toggle("active", x.dataset.mobileFilter === filter));
+    qsa(".filter-chip").forEach((x) => x.classList.toggle("active", x.dataset.filter === filter));
+    qsa('[data-mobile-filter]').forEach((x) => x.classList.toggle("active", x.dataset.mobileFilter === filter));
     render();
   }
 
   async function quickAdd(event) {
     event.preventDefault();
-    const input = $("#quickAddInput");
+    const input = qs("#quickAddInput");
     const name = input.value.trim();
     if (!name) return;
     const existing = state.items.find((item) => item.name.toLowerCase() === name.toLowerCase());
@@ -773,29 +773,29 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function openItemModal(item = null) {
     const editing = item?.item_id;
-    $("#itemModalTitle").textContent = editing ? "Edit item" : "Add item";
-    $("#editItemId").value = item?.item_id || "";
-    $("#itemName").value = item?.name || "";
-    $("#itemCategory").value = item?.category || "Other";
-    $("#itemUnit").value = item?.unit || "each";
-    $("#itemStart").value = editing ? 0 : 1;
-    $("#itemStart").closest("label").classList.toggle("hidden", Boolean(editing));
-    $("#itemMinimum").value = Number(item?.min_quantity || 0);
-    $("#itemBarcode").value = item?.barcode || "";
+    qs("#itemModalTitle").textContent = editing ? "Edit item" : "Add item";
+    qs("#editItemId").value = item?.item_id || "";
+    qs("#itemName").value = item?.name || "";
+    qs("#itemCategory").value = item?.category || "Other";
+    qs("#itemUnit").value = item?.unit || "each";
+    qs("#itemStart").value = editing ? 0 : 1;
+    qs("#itemStart").closest("label").classList.toggle("hidden", Boolean(editing));
+    qs("#itemMinimum").value = Number(item?.min_quantity || 0);
+    qs("#itemBarcode").value = item?.barcode || "";
     openModal("itemModal");
-    setTimeout(() => $("#itemName").focus(), 50);
+    setTimeout(() => qs("#itemName").focus(), 50);
   }
 
   async function saveItem(event) {
     event.preventDefault();
     if (!canWrite()) return;
-    const editingId = $("#editItemId").value;
+    const editingId = qs("#editItemId").value;
     const values = {
-      name: $("#itemName").value.trim(),
-      barcode: $("#itemBarcode").value.trim(),
-      category: $("#itemCategory").value,
-      unit: $("#itemUnit").value,
-      min_quantity: Number($("#itemMinimum").value || 0),
+      name: qs("#itemName").value.trim(),
+      barcode: qs("#itemBarcode").value.trim(),
+      category: qs("#itemCategory").value,
+      unit: qs("#itemUnit").value,
+      min_quantity: Number(qs("#itemMinimum").value || 0),
     };
     if (!values.name) return;
     try {
@@ -815,7 +815,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
           if (appendedRow) item._row = Number(appendedRow[1]);
         }
         state.items.push(item);
-        const starting = Number($("#itemStart").value || 0);
+        const starting = Number(qs("#itemStart").value || 0);
         if (starting > 0) await adjustItem(item.item_id, starting, "add", "Starting quantity");
       }
       cacheData();
@@ -837,27 +837,27 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function showUndo(message) {
     clearTimeout(state.undoTimer);
-    $("#undoMessage").textContent = message;
-    $("#undoToast").classList.remove("hidden");
-    state.undoTimer = setTimeout(() => { $("#undoToast").classList.add("hidden"); state.lastLocalEvent = null; }, 6000);
+    qs("#undoMessage").textContent = message;
+    qs("#undoToast").classList.remove("hidden");
+    state.undoTimer = setTimeout(() => { qs("#undoToast").classList.add("hidden"); state.lastLocalEvent = null; }, 6000);
   }
 
   async function undoLast() {
     const original = state.lastLocalEvent;
     if (!original) return;
     clearTimeout(state.undoTimer);
-    $("#undoToast").classList.add("hidden");
+    qs("#undoToast").classList.add("hidden");
     state.lastLocalEvent = null;
     await adjustItem(original.item_id, -Number(original.delta), "undo", `Undo ${original.event_id}`);
     state.lastLocalEvent = null;
-    $("#undoToast").classList.add("hidden");
+    qs("#undoToast").classList.add("hidden");
   }
 
   async function openScanner() {
     openModal("scanModal");
-    $("#cameraMessage").textContent = "Point the camera at a UPC or EAN barcode.";
+    qs("#cameraMessage").textContent = "Point the camera at a UPC or EAN barcode.";
     if (!("BarcodeDetector" in window) || !navigator.mediaDevices?.getUserMedia) {
-      $("#cameraMessage").textContent = "Camera barcode detection is not available here. Enter the barcode below.";
+      qs("#cameraMessage").textContent = "Camera barcode detection is not available here. Enter the barcode below.";
       return;
     }
     try {
@@ -865,15 +865,15 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const wanted = ["ean_13", "ean_8", "upc_a", "upc_e", "code_128"].filter((x) => supported.includes(x));
       state.detector = new BarcodeDetector({ formats: wanted.length ? wanted : supported });
       state.cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 } }, audio: false });
-      const video = $("#cameraVideo");
+      const video = qs("#cameraVideo");
       video.srcObject = state.cameraStream;
       await video.play();
       scanFrame();
-    } catch (error) { $("#cameraMessage").textContent = "Camera unavailable. Enter the barcode below."; }
+    } catch (error) { qs("#cameraMessage").textContent = "Camera unavailable. Enter the barcode below."; }
   }
 
   async function scanFrame() {
-    const video = $("#cameraVideo");
+    const video = qs("#cameraVideo");
     if (!state.detector || !state.cameraStream || video.readyState < 2) { state.scanLoop = requestAnimationFrame(scanFrame); return; }
     try {
       const results = await state.detector.detect(video);
@@ -882,7 +882,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     state.scanLoop = requestAnimationFrame(scanFrame);
   }
 
-  function manualBarcode(event) { event.preventDefault(); handleBarcode($("#manualBarcodeInput").value.trim()); }
+  function manualBarcode(event) { event.preventDefault(); handleBarcode(qs("#manualBarcodeInput").value.trim()); }
 
   async function handleBarcode(barcode) {
     if (!barcode) return;
@@ -894,7 +894,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       toast(`${existing.name} +1`);
       setFilter("all");
       state.query = existing.name.toLowerCase();
-      $("#searchInput").value = existing.name;
+      qs("#searchInput").value = existing.name;
       render();
     } else openItemModal({ barcode });
   }
@@ -904,21 +904,21 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     state.scanLoop = 0;
     state.cameraStream?.getTracks().forEach((track) => track.stop());
     state.cameraStream = null;
-    $("#cameraVideo").srcObject = null;
+    qs("#cameraVideo").srcObject = null;
   }
 
   function openModal(id) {
-    $("#modalBackdrop").classList.remove("hidden");
-    $(".modal").forEach((modal) => modal.classList.toggle("hidden", modal.id !== id));
+    qs("#modalBackdrop").classList.remove("hidden");
+    qsa(".modal").forEach((modal) => modal.classList.toggle("hidden", modal.id !== id));
   }
-  function closeModals() { stopCamera(); $("#modalBackdrop").classList.add("hidden"); $(".modal").forEach((modal) => modal.classList.add("hidden")); }
+  function closeModals() { stopCamera(); qs("#modalBackdrop").classList.add("hidden"); qsa(".modal").forEach((modal) => modal.classList.add("hidden")); }
 
   function openAccountModal() {
     const initial = (state.profile?.name || state.profile?.email || "D").charAt(0).toUpperCase();
-    $("#profileLarge").textContent = initial;
-    $("#profileName").textContent = state.demo ? "Demo mode" : state.profile?.name || "Google account";
-    $("#profileEmail").textContent = state.demo ? "Sample data only" : state.profile?.email || "";
-    $("#signoutBtn").textContent = state.demo ? "Exit demo" : "Sign out";
+    qs("#profileLarge").textContent = initial;
+    qs("#profileName").textContent = state.demo ? "Demo mode" : state.profile?.name || "Google account";
+    qs("#profileEmail").textContent = state.demo ? "Sample data only" : state.profile?.email || "";
+    qs("#signoutBtn").textContent = state.demo ? "Exit demo" : "Sign out";
     openModal("accountModal");
   }
 
@@ -953,7 +953,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       { event_id: "3", item_id: "demo-bananas", delta: 2, created_at: new Date().toISOString() },
       { event_id: "4", item_id: "demo-coffee", delta: 3, created_at: new Date().toISOString() },
     ];
-    $("#profileInitial").textContent = "D";
+    qs("#profileInitial").textContent = "D";
     setSyncStatus("Sample data");
     showView("inventory");
     render();
@@ -966,7 +966,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   }
 
   async function installApp() {
-    if (state.deferredInstall) { state.deferredInstall.prompt(); await state.deferredInstall.userChoice; state.deferredInstall = null; $("#installBtn").classList.add("hidden"); }
+    if (state.deferredInstall) { state.deferredInstall.prompt(); await state.deferredInstall.userChoice; state.deferredInstall = null; qs("#installBtn").classList.add("hidden"); }
     else toast("Use your browser’s Add to Home Screen option.");
   }
 
@@ -975,11 +975,11 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   }
 
   function updateOnlineState() {
-    $("#offlineBanner")?.classList.toggle("hidden", navigator.onLine);
+    qs("#offlineBanner")?.classList.toggle("hidden", navigator.onLine);
     if (!navigator.onLine && state.items.length) setSyncStatus("Offline · cached list");
   }
 
-  function setSyncStatus(text) { $("#syncStatus").textContent = text; }
+  function setSyncStatus(text) { qs("#syncStatus").textContent = text; }
   function currentUser() { return state.demo ? "demo" : state.profile?.email || "unknown"; }
   function toBoolean(value) { return value === true || String(value).toLowerCase() === "true"; }
   function formatQuantity(value) { return Number.isInteger(value) ? String(value) : Number(value).toFixed(1); }
@@ -989,7 +989,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     const node = document.createElement("div");
     node.className = `toast ${type}`;
     node.textContent = message;
-    $("#toastRegion").appendChild(node);
+    qs("#toastRegion").appendChild(node);
     setTimeout(() => node.remove(), 4200);
   }
 

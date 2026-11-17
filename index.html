@@ -344,7 +344,11 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .saved-need-list > button:hover { border-color: var(--brand); background: var(--brand-soft); }
 .saved-need-list strong, .saved-need-list small { display: block; }
 .saved-need-list small { margin-top: 2px; color: var(--muted); }
+.saved-need-list .usual-detail { color: var(--brand-2); }
 .saved-need-list em { color: var(--brand-2); font-style: normal; font-weight: 800; }
+.price-insight { padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; color: var(--muted); background: var(--panel-2); font-size: 11px; }
+.price-insight.ok { color: var(--ok); border-color: rgba(0,231,139,.35); background: var(--ok-soft); }
+.price-insight.warn { color: var(--warn); border-color: rgba(255,170,0,.35); background: var(--warn-soft); }
 .camera-frame { position: relative; aspect-ratio: 4/3; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: #050608; }
 .camera-frame video { width: 100%; height: 100%; object-fit: cover; }
 .scan-line { position: absolute; left: 9%; right: 9%; top: 50%; height: 2px; background: var(--brand-2); box-shadow: 0 0 16px var(--brand); animation: scan 2s ease-in-out infinite; }
@@ -471,7 +475,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
     <section id="needModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="needModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="needModalTitle">Confirm the plan</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="needForm" class="modal-body stack-form"><input id="needItemId" type="hidden"><div class="selected-item"><strong id="needItemName">Item</strong><span id="needItemMeta"></span></div><label>Nickname <span class="optional">optional</span><input id="needNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="needNicknameSuggestions" class="nickname-suggestions"></div><label>Quantity needed<input id="needQuantity" type="number" min="0.1" step="0.1" value="1" required></label><div class="quantity-chips" aria-label="Quick quantity"><button type="button" data-qty="1">1</button><button type="button" data-qty="2">2</button><button type="button" data-qty="3">3</button><button type="button" data-qty="4">4</button></div><div class="form-grid"><label>Planned store<select id="needPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Estimated unit price<input id="needEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><span class="field-hint">The nickname is shown first; the official product name and barcode still handle receipt matching.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
-    <section id="purchaseModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="purchaseModalTitle"><header><div><span class="eyebrow">Purchase</span><h2 id="purchaseModalTitle">Confirm what you bought</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="purchaseForm" class="modal-body stack-form"><input id="purchaseItemId" type="hidden"><div class="selected-item"><strong id="purchaseItemName">Item</strong><span id="purchaseItemMeta"></span></div><div class="form-grid"><label>Quantity bought<input id="purchaseQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Purchase date<input id="purchaseDate" type="date" required></label></div><div class="form-grid"><label>Actual store<select id="purchaseStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="purchaseUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><div class="form-grid"><label>Purchase type<select id="purchasePlanningStatus"><option>Planned</option><option>Unplanned</option></select></label><div class="total-preview"><span>Item total</span><strong id="purchaseTotal">$0.00</strong></div></div><span class="field-hint" id="purchaseStoreHint">Suggested from your history—confirm or change.</span><label>Note <span class="optional">optional</span><input id="purchaseNote" autocomplete="off" placeholder="Flavor, size, substitution…"></label><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success" type="submit">Check off purchase</button></div></form></section>
+    <section id="purchaseModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="purchaseModalTitle"><header><div><span class="eyebrow">Purchase</span><h2 id="purchaseModalTitle">Confirm what you bought</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="purchaseForm" class="modal-body stack-form"><input id="purchaseItemId" type="hidden"><div class="selected-item"><strong id="purchaseItemName">Item</strong><span id="purchaseItemMeta"></span></div><div class="form-grid"><label>Quantity bought<input id="purchaseQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Purchase date<input id="purchaseDate" type="date" required></label></div><div class="form-grid"><label>Actual store<select id="purchaseStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="purchaseUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><div class="form-grid"><label>Purchase type<select id="purchasePlanningStatus"><option>Planned</option><option>Unplanned</option></select></label><div class="total-preview"><span>Item total</span><strong id="purchaseTotal">$0.00</strong></div></div><div id="purchasePriceInsight" class="price-insight"></div><span class="field-hint" id="purchaseStoreHint">Suggested from your history—confirm or change.</span><label>Note <span class="optional">optional</span><input id="purchaseNote" autocomplete="off" placeholder="Flavor, size, substitution…"></label><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success" type="submit">Check off purchase</button></div></form></section>
 
     <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Official product name<input id="itemName" autocomplete="off" required></label><label>Nickname <span class="optional">optional</span><input id="itemNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="itemNicknameSuggestions" class="nickname-suggestions"></div><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
@@ -822,8 +826,16 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     const items = state.items.filter((item) => !item.needed)
       .filter((item) => !query || normalizeText(`${item.nickname} ${item.name} ${item.category} ${item.barcode}`).includes(query))
       .filter((item) => !store || preferredStore(item.item_id, item.planned_store) === store)
-      .sort((a, b) => displayName(a).localeCompare(displayName(b)));
-    qs("#savedNeedList").innerHTML = items.length ? items.map((item) => `<button type="button" data-saved-need="${escapeHtml(item.item_id)}"><span><strong>${escapeHtml(displayName(item))}</strong><small>${item.nickname ? `${escapeHtml(item.name)} · ` : ""}${escapeHtml(item.category)} · ${escapeHtml(preferredStore(item.item_id, item.planned_store))}</small></span><em>Add</em></button>`).join("") : `<div class="status-banner">No matching saved items. Create a new one below.</div>`;
+      .sort((a, b) => {
+        const frequency = purchasesFor(b.item_id).length - purchasesFor(a.item_id).length;
+        return frequency || displayName(a).localeCompare(displayName(b));
+      });
+    qs("#savedNeedList").innerHTML = items.length ? items.map((item) => {
+      const purchases = purchasesFor(item.item_id);
+      const last = latestPurchase(item.item_id);
+      const usual = purchases.length ? `${purchases.length} purchase${purchases.length === 1 ? "" : "s"} · last ${formatMoney(last.unit_price)} / ${item.unit}` : "New saved item";
+      return `<button type="button" data-saved-need="${escapeHtml(item.item_id)}"><span><strong>${escapeHtml(displayName(item))}</strong><small>${item.nickname ? `${escapeHtml(item.name)} · ` : ""}${escapeHtml(item.category)} · ${escapeHtml(preferredStore(item.item_id, item.planned_store))}</small><small class="usual-detail">${escapeHtml(usual)}</small></span><em>Add</em></button>`;
+    }).join("") : `<div class="status-banner">No matching saved items. Create a new one below.</div>`;
   }
 
   function handleSavedNeedAction(event) {
@@ -852,7 +864,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#historyList").innerHTML = events.map((event) => {
       const item = state.items.find((x) => x.item_id === event.item_id);
       const d = new Date(event.purchased_at);
-      return `<article class="history-card"><div class="history-date"><small>${d.toLocaleString(undefined, { month: "short" })}</small>${d.getDate()}</div><div class="history-info"><strong>${escapeHtml(item ? displayName(item) : "Unknown item")}</strong>${item?.nickname ? `<span class="official-name">${escapeHtml(item.name)}</span>` : ""}<span>${escapeHtml(event.actual_store || "Other")} · ${escapeHtml(event.created_by || "Family")}</span><div class="tag-row"><span class="tag ${event.planning_status === "Unplanned" ? "warn" : ""}">${escapeHtml(event.planning_status || "Unplanned")}</span><span class="tag ${event.verification_status === "Receipt verified" ? "ok" : ""}">${escapeHtml(event.verification_status || "Checked")}</span>${item?.category ? `<span class="tag">${escapeHtml(item.category)}</span>` : ""}</div></div><div class="history-qty">${formatMoney(event.total_price)}<small>${formatQty(event.quantity)} ${escapeHtml(item?.unit || "")}</small></div></article>`;
+      const priceChange = priorPriceChange(event);
+      return `<article class="history-card"><div class="history-date"><small>${d.toLocaleString(undefined, { month: "short" })}</small>${d.getDate()}</div><div class="history-info"><strong>${escapeHtml(item ? displayName(item) : "Unknown item")}</strong>${item?.nickname ? `<span class="official-name">${escapeHtml(item.name)}</span>` : ""}<span>${escapeHtml(event.actual_store || "Other")} · ${escapeHtml(event.created_by || "Family")}</span><div class="tag-row"><span class="tag ${event.planning_status === "Unplanned" ? "warn" : ""}">${escapeHtml(event.planning_status || "Unplanned")}</span><span class="tag ${event.verification_status === "Receipt verified" ? "ok" : ""}">${escapeHtml(event.verification_status || "Checked")}</span>${item?.category ? `<span class="tag">${escapeHtml(item.category)}</span>` : ""}${priceChange ? `<span class="tag ${priceChange.direction === "up" ? "warn" : "ok"}">${priceChange.direction === "up" ? "↑" : "↓"} ${priceChange.percent}% vs prior</span>` : ""}</div></div><div class="history-qty">${formatMoney(event.total_price)}<small>${formatQty(event.quantity)} ${escapeHtml(item?.unit || "")}</small></div></article>`;
     }).join("");
     qs("#historyEmpty").classList.toggle("hidden", events.length > 0);
   }
@@ -1000,6 +1013,15 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   function updatePurchaseTotal() {
     const total = Number(qs("#purchaseQuantity").value || 0) * Number(qs("#purchaseUnitPrice").value || 0);
     qs("#purchaseTotal").textContent = formatMoney(total);
+    const item = state.items.find((entry) => entry.item_id === qs("#purchaseItemId").value);
+    const expected = Number(item?.estimated_unit_price || predictedPrice(item?.item_id) || 0);
+    const actual = Number(qs("#purchaseUnitPrice").value || 0);
+    const difference = actual - expected;
+    const insight = qs("#purchasePriceInsight");
+    if (!expected || !actual) { insight.textContent = "Add the actual unit price to improve future trip estimates."; insight.className = "price-insight"; return; }
+    if (Math.abs(difference) < .005) { insight.textContent = `Matches the ${formatMoney(expected)} estimate.`; insight.className = "price-insight ok"; return; }
+    insight.textContent = `${formatMoney(Math.abs(difference))} ${difference > 0 ? "over" : "under"} the ${formatMoney(expected)} estimate per ${item?.unit || "item"}.`;
+    insight.className = `price-insight ${difference > 0 ? "warn" : "ok"}`;
   }
 
   async function recordPurchase(event) {
@@ -1457,6 +1479,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const importCandidates = selected.filter((candidate) => candidate.mode === "import");
       const newItems = [];
       const updatedItems = new Set();
+      const receiptPlanItems = new Set();
       const itemByKey = new Map();
       importCandidates.forEach((candidate) => {
         const index = state.receiptCandidates.indexOf(candidate);
@@ -1476,6 +1499,10 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
           Object.assign(item, { name: candidate.line.name, nickname: candidate.line.nickname, category: candidate.line.category, unit: candidate.line.unit || item.unit });
           updatedItems.add(item);
         }
+        if (state.items.includes(item)) {
+          Object.assign(item, { needed: false, needed_quantity: 0, planned_store: store, estimated_unit_price: candidate.line.unitPrice });
+          receiptPlanItems.add(item);
+        }
         candidate.item = item;
       });
       if (!state.demo && newItems.length) {
@@ -1488,6 +1515,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         { range: `Items!B${item._row}:E${item._row}`, majorDimension: "ROWS", values: [[item.name, item.barcode, item.category, item.unit]] },
         { range: `Items!N${item._row}`, majorDimension: "ROWS", values: [[item.nickname || ""]] },
       ]));
+      if (!state.demo && receiptPlanItems.size) await batchUpdateValues([...receiptPlanItems].map((item) => ({ range: `Items!J${item._row}:N${item._row}`, majorDimension: "ROWS", values: [[false, 0, store, item.estimated_unit_price, item.nickname || ""]] })));
       const purchases = importCandidates.map((candidate) => {
         const purchase = makePurchase(candidate.item, { quantity: candidate.line.quantity || 1, date, actualStore: store, unitPrice: candidate.line.unitPrice ?? candidate.line.price, planningStatus: "Unplanned", note: "Imported from receipt", plannedStore: store });
         purchase.verification_status = "Receipt verified"; purchase.receipt_id = receiptId; purchase.total_price = candidate.line.totalPrice ?? candidate.line.price;
@@ -1521,6 +1549,13 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   function purchaseEvents() { return state.events.filter((event) => event.action === "purchase"); }
   function purchasesFor(itemId) { return purchaseEvents().filter((event) => event.item_id === itemId); }
   function latestPurchase(itemId) { return purchasesFor(itemId).sort((a, b) => new Date(b.purchased_at) - new Date(a.purchased_at))[0] || null; }
+  function priorPriceChange(event) {
+    if (!event.unit_price) return null;
+    const prior = purchasesFor(event.item_id).filter((entry) => entry.event_id !== event.event_id && entry.unit_price && new Date(entry.purchased_at) < new Date(event.purchased_at)).sort((a, b) => new Date(b.purchased_at) - new Date(a.purchased_at))[0];
+    if (!prior?.unit_price) return null;
+    const percent = Math.round(Math.abs((event.unit_price - prior.unit_price) / prior.unit_price) * 100);
+    return percent >= 3 ? { percent, direction: event.unit_price > prior.unit_price ? "up" : "down" } : null;
+  }
   function preferredStore(itemId = "", fallback = "") {
     const purchases = (itemId ? purchasesFor(itemId) : purchaseEvents()).filter((event) => event.actual_store);
     if (!purchases.length) return STORES.includes(fallback) ? fallback : "Walmart";

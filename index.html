@@ -290,6 +290,14 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .suggestion-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid rgba(45,53,72,.7); }
 .suggestion-row:first-of-type { border-top: 0; }
 .suggestion-row span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 750; }
+.store-filter { display: flex; align-items: center; justify-content: flex-end; gap: 9px; margin-bottom: 12px; color: var(--muted); font-size: 11px; }
+.store-filter select { width: auto; min-width: 145px; }
+.saved-need-list { display: grid; gap: 7px; max-height: 42vh; overflow: auto; }
+.saved-need-list > button { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); color: var(--ink); text-align: left; cursor: pointer; }
+.saved-need-list > button:hover { border-color: var(--brand); background: var(--brand-soft); }
+.saved-need-list strong, .saved-need-list small { display: block; }
+.saved-need-list small { margin-top: 2px; color: var(--muted); }
+.saved-need-list em { color: var(--brand-2); font-style: normal; font-weight: 800; }
 .camera-frame { position: relative; aspect-ratio: 4/3; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: #050608; }
 .camera-frame video { width: 100%; height: 100%; object-fit: cover; }
 .scan-line { position: absolute; left: 9%; right: 9%; top: 50%; height: 2px; background: var(--brand-2); box-shadow: 0 0 16px var(--brand); animation: scan 2s ease-in-out infinite; }
@@ -379,8 +387,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
           <div class="view-actions"><button class="btn ghost compact hidden" id="receiptBtn" type="button">Receipt</button><button class="icon-btn" id="scanTopBtn" aria-label="Scan barcode"><svg viewBox="0 0 24 24"><path d="M4 7V4h3M17 4h3v3M20 17v3h-3M7 20H4v-3M7 9v6M10 8v8M14 8v8M17 9v6"/></svg></button><button class="btn primary compact" id="addItemBtn" type="button">+ Add</button></div>
         </div>
         <div id="offlineBanner" class="status-banner warning hidden">Offline. Viewing the last sync; changes are paused.</div>
-        <section id="neededPanel" class="panel-view"><div id="neededList" class="items-list" aria-live="polite"></div><div id="neededEmpty" class="empty-state hidden"><div class="empty-icon">✓</div><h3>List is clear</h3><p>Use Check to mark anything the family needs.</p></div></section>
-        <section id="checkPanel" class="panel-view hidden"><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="searchInput" type="search" placeholder="Search saved items" autocomplete="off"></label><div id="checkList" class="items-list" aria-live="polite"></div><div id="checkEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No saved items yet</h3><p>Scan a barcode or add your first purchase.</p></div></section>
+        <section id="neededPanel" class="panel-view"><label class="store-filter">Show planned store<select id="neededStoreFilter"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><div id="neededList" class="items-list" aria-live="polite"></div><div id="neededEmpty" class="empty-state hidden"><div class="empty-icon">✓</div><h3>List is clear</h3><p>Add from saved items, scan a barcode, or create something new.</p></div></section>
+        <section id="checkPanel" class="panel-view hidden"><div id="checkSuggestions" aria-live="polite"></div><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="searchInput" type="search" placeholder="Search all saved items" autocomplete="off"></label><div id="checkList" class="items-list" aria-live="polite"></div><div id="checkEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No saved items yet</h3><p>Scan a barcode or add your first needed item.</p></div></section>
         <section id="historyPanel" class="panel-view hidden"><div id="historyList" class="history-list" aria-live="polite"></div><div id="historyEmpty" class="empty-state hidden"><div class="empty-icon">↺</div><h3>No purchases yet</h3><p>Your confirmed purchases will appear here.</p></div></section>
       </section>
     </main>
@@ -394,15 +402,17 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   </div>
 
   <div id="modalBackdrop" class="modal-backdrop hidden" role="presentation">
+    <section id="addNeededModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="addNeededTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="addNeededTitle">Add to Needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Choose any saved item that is not already planned.</p><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="savedNeedSearch" type="search" placeholder="Search saved items" autocomplete="off"></label><label>Usual store<select id="savedNeedStore"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><div id="savedNeedList" class="saved-need-list"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" id="createNewNeededBtn" type="button">Create new item</button></div></div></section>
+
     <section id="needModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="needModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="needModalTitle">Confirm the plan</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="needForm" class="modal-body stack-form"><input id="needItemId" type="hidden"><div class="selected-item"><strong id="needItemName">Item</strong><span id="needItemMeta"></span></div><label>Quantity needed<input id="needQuantity" type="number" min="0.1" step="0.1" value="1" required></label><div class="quantity-chips" aria-label="Quick quantity"><button type="button" data-qty="1">1</button><button type="button" data-qty="2">2</button><button type="button" data-qty="3">3</button><button type="button" data-qty="4">4</button></div><div class="form-grid"><label>Planned store<select id="needPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Estimated unit price<input id="needEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><span class="field-hint">Suggestions come from prior purchases—confirm or change them.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
     <section id="purchaseModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="purchaseModalTitle"><header><div><span class="eyebrow">Purchase</span><h2 id="purchaseModalTitle">Confirm what you bought</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="purchaseForm" class="modal-body stack-form"><input id="purchaseItemId" type="hidden"><div class="selected-item"><strong id="purchaseItemName">Item</strong><span id="purchaseItemMeta"></span></div><div class="form-grid"><label>Quantity bought<input id="purchaseQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Purchase date<input id="purchaseDate" type="date" required></label></div><div class="form-grid"><label>Actual store<select id="purchaseStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="purchaseUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><div class="form-grid"><label>Purchase type<select id="purchasePlanningStatus"><option>Planned</option><option>Unplanned</option></select></label><div class="total-preview"><span>Item total</span><strong id="purchaseTotal">$0.00</strong></div></div><span class="field-hint" id="purchaseStoreHint">Suggested from your history—confirm or change.</span><label>Note <span class="optional">optional</span><input id="purchaseNote" autocomplete="off" placeholder="Flavor, size, substitution…"></label><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success" type="submit">Check off purchase</button></div></form></section>
 
-    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">New purchase</span><h2 id="itemModalTitle">Add an item</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Name<input id="itemName" autocomplete="off" required></label><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><div class="form-divider"><span>Purchase details</span></div><div class="form-grid"><label>Quantity bought<input id="itemPurchaseQuantity" type="number" min="0" step="0.1" value="1"></label><label>Purchase date<input id="itemPurchaseDate" type="date"></label></div><div class="form-grid"><label>Actual store<select id="itemPurchaseStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="itemUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><label>Purchase type<select id="itemPlanningStatus"><option>Unplanned</option><option>Planned</option></select></label><span class="field-hint">Suggestions come from family history—confirm or change them.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Save item & purchase</button></div></form></section>
+    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Name<input id="itemName" autocomplete="off" required></label><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
-    <section id="scanModal" class="modal scan-modal hidden" role="dialog" aria-modal="true" aria-labelledby="scanTitle"><header><div><span class="eyebrow">Camera</span><h2 id="scanTitle">Scan what you bought</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div class="camera-frame"><video id="cameraVideo" playsinline muted></video><div class="scan-line"></div><div class="camera-message" id="cameraMessage">Point the camera at a UPC or EAN barcode.</div></div><form id="manualBarcodeForm" class="manual-barcode"><input id="manualBarcodeInput" inputmode="numeric" placeholder="Or enter barcode number"><button class="btn primary" type="submit">Find</button></form></div></section>
+    <section id="scanModal" class="modal scan-modal hidden" role="dialog" aria-modal="true" aria-labelledby="scanTitle"><header><div><span class="eyebrow">Camera</span><h2 id="scanTitle">Scan something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div class="camera-frame"><video id="cameraVideo" playsinline muted></video><div class="scan-line"></div><div class="camera-message" id="cameraMessage">Point the camera at a UPC or EAN barcode to add it to Needed.</div></div><form id="manualBarcodeForm" class="manual-barcode"><input id="manualBarcodeInput" inputmode="numeric" placeholder="Or enter barcode number"><button class="btn primary" type="submit">Find</button></form></div></section>
 
-    <section id="receiptModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="receiptTitle"><header><div><span class="eyebrow">Private local scan</span><h2 id="receiptTitle">Import a receipt</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">The receipt is read in this browser. It can verify existing purchases and add new, unplanned purchases to History after you review them.</p><label>Receipt photo<input id="receiptFile" type="file" accept="image/*" capture="environment"></label><div id="receiptProgress" class="status-banner hidden">Preparing receipt reader…</div><div id="receiptDetails" class="form-grid hidden"><label>Store<select id="receiptStore"><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Purchase date<input id="receiptDate" type="date"></label></div><div id="receiptMatches" class="receipt-matches"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success hidden" id="verifyReceiptBtn" type="button">Save selected to History</button></div></div></section>
+    <section id="receiptModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="receiptTitle"><header><div><span class="eyebrow">Private local scan</span><h2 id="receiptTitle">Import a receipt</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Upload a receipt image or PDF. The file is read in this browser, then you review the names before anything is saved.</p><label>Receipt image or PDF<input id="receiptFile" type="file" accept="image/*,application/pdf,.pdf"></label><div id="receiptProgress" class="status-banner hidden">Preparing receipt reader…</div><div id="receiptDetails" class="form-grid hidden"><label>Store<select id="receiptStore"><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Purchase date<input id="receiptDate" type="date"></label></div><div id="receiptMatches" class="receipt-matches"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success hidden" id="verifyReceiptBtn" type="button">Save selected to History</button></div></div></section>
 
     <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
   </div>
@@ -425,7 +435,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   const state = {
     config: readConfig(), accessToken: "", profile: null, tokenClient: null,
-    items: [], events: [], settings: {}, view: "needed", query: "", demo: false,
+    items: [], events: [], settings: {}, view: "needed", query: "", neededStore: "", demo: false,
     loading: false, cameraStream: null, scanLoop: 0, detector: null,
     deferredInstall: null, receiptCandidates: [],
   };
@@ -462,7 +472,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#profileBtn").addEventListener("click", openAccountModal);
     qs("#scanTopBtn").addEventListener("click", openScanner);
     qs("#scanNavBtn").addEventListener("click", openScanner);
-    qs("#addItemBtn").addEventListener("click", () => openItemModal());
+    qs("#addItemBtn").addEventListener("click", openAddNeededModal);
     qs("#receiptBtn").addEventListener("click", openReceiptModal);
     qs("#needForm").addEventListener("submit", saveNeeded);
     qs("#purchaseForm").addEventListener("submit", recordPurchase);
@@ -471,6 +481,11 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#receiptFile").addEventListener("change", scanReceipt);
     qs("#verifyReceiptBtn").addEventListener("click", verifyReceipt);
     qs("#searchInput").addEventListener("input", (event) => { state.query = event.target.value.trim().toLowerCase(); renderCheck(); });
+    qs("#neededStoreFilter").addEventListener("change", (event) => { state.neededStore = event.target.value; renderNeeded(); });
+    qs("#savedNeedSearch").addEventListener("input", renderSavedNeedList);
+    qs("#savedNeedStore").addEventListener("change", renderSavedNeedList);
+    qs("#savedNeedList").addEventListener("click", handleSavedNeedAction);
+    qs("#createNewNeededBtn").addEventListener("click", () => openItemModal());
     qs("#purchaseQuantity").addEventListener("input", updatePurchaseTotal);
     qs("#purchaseUnitPrice").addEventListener("input", updatePurchaseTotal);
     qs("#modalBackdrop").addEventListener("click", (event) => { if (event.target === event.currentTarget) closeModals(); });
@@ -479,6 +494,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qsa("[data-qty]").forEach((button) => button.addEventListener("click", () => { qs("#needQuantity").value = button.dataset.qty; }));
     qs("#neededList").addEventListener("click", handleListAction);
     qs("#checkList").addEventListener("click", handleListAction);
+    qs("#checkSuggestions").addEventListener("click", handleListAction);
     qs("#signoutBtn").addEventListener("click", signOut);
     qs("#openSheetBtn").addEventListener("click", () => window.open(`https://docs.google.com/spreadsheets/d/${state.config.sheetId}/edit`, "_blank", "noopener"));
     qs("#installBtn").addEventListener("click", installApp);
@@ -609,7 +625,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     state.view = view;
     const copy = {
       needed: ["Shopping list", "Needed", "What the family plans to buy."],
-      check: ["Household catalog", "Check what you need", "One tap, then confirm quantity, store, and estimate."],
+      check: ["Smart reminders", "Suggested to check", "Suggestions based on purchase timing, with the full catalog below."],
       history: ["Purchase ledger", "History", "Checked purchases and receipt verification."],
     }[view];
     qs("#viewEyebrow").textContent = copy[0]; qs("#viewTitle").textContent = copy[1]; qs("#viewDescription").textContent = copy[2];
@@ -622,13 +638,17 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   }
 
   function renderNeeded() {
-    const items = state.items.filter((item) => item.needed).sort((a, b) => a.name.localeCompare(b.name));
-    const suggestions = getSuggestions();
-    qs("#neededList").innerHTML = `${renderSuggestions(suggestions)}${items.map((item) => {
+    const allNeeded = state.items.filter((item) => item.needed);
+    const items = allNeeded.filter((item) => !state.neededStore || (item.planned_store || preferredStore(item.item_id)) === state.neededStore).sort((a, b) => a.name.localeCompare(b.name));
+    qs("#neededStoreFilter").value = state.neededStore;
+    qs("#neededList").innerHTML = items.map((item) => {
       const total = item.needed_quantity * item.estimated_unit_price;
       return `<article class="item-card needed" data-item-id="${escapeHtml(item.item_id)}"><div class="item-main"><div class="item-name-row"><span class="item-name">${escapeHtml(item.name)}</span><span class="need-pill">Planned</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(item.planned_store || preferredStore(item.item_id))}</span></div><div class="tag-row"><span class="tag">Est. ${formatMoney(total)}</span><span class="tag">${formatMoney(item.estimated_unit_price)} / ${escapeHtml(item.unit)}</span></div></div><div class="card-actions"><div class="needed-qty"><strong>${formatQty(item.needed_quantity)}</strong><span>${escapeHtml(item.unit)}</span></div><button class="purchase-check" data-action="bought" data-id="${escapeHtml(item.item_id)}" aria-label="Check off ${escapeHtml(item.name)}"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button><button class="btn ghost" data-action="edit-need" data-id="${escapeHtml(item.item_id)}">Edit</button><button class="btn ghost" data-action="remove-need" data-id="${escapeHtml(item.item_id)}">Remove</button></div></article>`;
-    }).join("")}`;
-    qs("#neededEmpty").classList.toggle("hidden", items.length > 0 || suggestions.length > 0);
+    }).join("");
+    const empty = qs("#neededEmpty");
+    empty.classList.toggle("hidden", items.length > 0);
+    empty.querySelector("h3").textContent = allNeeded.length && state.neededStore ? `Nothing planned at ${state.neededStore}` : "List is clear";
+    empty.querySelector("p").textContent = allNeeded.length && state.neededStore ? "Choose All stores to see the full list." : "Add from saved items, scan a barcode, or create something new.";
   }
 
   function renderSuggestions(items) {
@@ -638,12 +658,38 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function renderCheck() {
     const items = state.items.filter((item) => !state.query || `${item.name} ${item.category} ${item.barcode}`.toLowerCase().includes(state.query)).sort((a, b) => a.name.localeCompare(b.name));
+    const suggestions = getSuggestions();
+    qs("#checkSuggestions").innerHTML = suggestions.length ? renderSuggestions(suggestions) : `<section class="suggestions-block"><h3>Nothing is due yet</h3><p>Suggestions will appear here as purchase timing builds up.</p></section>`;
     qs("#checkList").innerHTML = items.map((item) => {
       const last = latestPurchase(item.item_id);
       const planned = item.needed ? `<span class="tag warn">Needed × ${formatQty(item.needed_quantity)}</span>` : "";
       return `<article class="item-card ${item.needed ? "needed" : ""}"><div class="item-main"><div class="item-name-row"><span class="item-name">${escapeHtml(item.name)}</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(item.unit)}</span></div><div class="last-bought">${last ? `Last bought ${formatDate(last.purchased_at)} at ${escapeHtml(last.actual_store || "Other")}` : "No purchase history yet"}</div><div class="tag-row">${planned}${last?.unit_price ? `<span class="tag">Last ${formatMoney(last.unit_price)}</span>` : ""}</div></div><div class="card-actions"><button class="btn primary" data-action="need" data-id="${escapeHtml(item.item_id)}">${item.needed ? "Change need" : "Need this"}</button><button class="btn ghost" data-action="bought" data-id="${escapeHtml(item.item_id)}">Bought</button></div></article>`;
     }).join("");
     qs("#checkEmpty").classList.toggle("hidden", items.length > 0);
+  }
+
+  function openAddNeededModal() {
+    qs("#savedNeedSearch").value = "";
+    qs("#savedNeedStore").value = "";
+    renderSavedNeedList();
+    openModal("addNeededModal");
+  }
+
+  function renderSavedNeedList() {
+    const query = normalizeText(qs("#savedNeedSearch").value);
+    const store = qs("#savedNeedStore").value;
+    const items = state.items.filter((item) => !item.needed)
+      .filter((item) => !query || normalizeText(`${item.name} ${item.category} ${item.barcode}`).includes(query))
+      .filter((item) => !store || preferredStore(item.item_id, item.planned_store) === store)
+      .sort((a, b) => a.name.localeCompare(b.name));
+    qs("#savedNeedList").innerHTML = items.length ? items.map((item) => `<button type="button" data-saved-need="${escapeHtml(item.item_id)}"><span><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.category)} · ${escapeHtml(preferredStore(item.item_id, item.planned_store))}</small></span><em>Add</em></button>`).join("") : `<div class="status-banner">No matching saved items. Create a new one below.</div>`;
+  }
+
+  function handleSavedNeedAction(event) {
+    const button = event.target.closest("[data-saved-need]");
+    if (!button) return;
+    const item = state.items.find((entry) => entry.item_id === button.dataset.savedNeed);
+    if (item) openNeedModal(item);
   }
 
   function renderHistory() {
@@ -739,32 +785,24 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#itemBarcode").value = preset.barcode || "";
     qs("#itemCategory").value = preset.category || "Other";
     qs("#itemUnit").value = preset.unit || "each";
-    qs("#itemPurchaseQuantity").value = 1;
-    qs("#itemPurchaseDate").value = todayInput();
-    qs("#itemPurchaseStore").value = preferredStore();
-    qs("#itemUnitPrice").value = 0;
-    qs("#itemPlanningStatus").value = "Unplanned";
+    qs("#itemNeededQuantity").value = preset.quantity || 1;
+    qs("#itemPlannedStore").value = preset.store || preferredStore();
+    qs("#itemEstimatedPrice").value = preset.price || 0;
     openModal("itemModal"); setTimeout(() => qs("#itemName").focus(), 50);
   }
 
   async function saveItem(event) {
     event.preventDefault();
     if (!canWrite()) return;
-    const item = { item_id: crypto.randomUUID(), name: qs("#itemName").value.trim(), barcode: qs("#itemBarcode").value.trim(), category: qs("#itemCategory").value, unit: qs("#itemUnit").value, archived: false, created_at: new Date().toISOString(), created_by: currentUser(), needed: false, needed_quantity: 0, planned_store: qs("#itemPurchaseStore").value, estimated_unit_price: Number(qs("#itemUnitPrice").value || 0), _row: state.items.length + 2 };
+    const item = { item_id: crypto.randomUUID(), name: qs("#itemName").value.trim(), barcode: qs("#itemBarcode").value.trim(), category: qs("#itemCategory").value, unit: qs("#itemUnit").value, archived: false, created_at: new Date().toISOString(), created_by: currentUser(), needed: true, needed_quantity: Number(qs("#itemNeededQuantity").value || 1), planned_store: qs("#itemPlannedStore").value, estimated_unit_price: Number(qs("#itemEstimatedPrice").value || 0), _row: state.items.length + 2 };
     if (!item.name) return;
-    const quantity = Number(qs("#itemPurchaseQuantity").value || 0);
     try {
       if (!state.demo) {
-        const result = await appendRow("Items!A:M", [item.item_id, item.name, item.barcode, item.category, item.unit, 0, false, item.created_at, item.created_by, false, 0, item.planned_store, item.estimated_unit_price]);
+        const result = await appendRow("Items!A:M", [item.item_id, item.name, item.barcode, item.category, item.unit, 0, false, item.created_at, item.created_by, true, item.needed_quantity, item.planned_store, item.estimated_unit_price]);
         item._row = rowFromAppend(result) || item._row;
       }
       state.items.push(item);
-      if (quantity > 0) {
-        const purchase = makePurchase(item, { quantity, date: qs("#itemPurchaseDate").value, actualStore: item.planned_store, unitPrice: item.estimated_unit_price, planningStatus: qs("#itemPlanningStatus").value, note: "", plannedStore: item.planned_store });
-        if (!state.demo) { const result = await appendRow("Events!A:N", purchaseRow(purchase)); purchase._row = rowFromAppend(result) || state.events.length + 2; }
-        state.events.push(purchase);
-      }
-      cacheData(); closeModals(); setView(quantity > 0 ? "history" : "check"); render(); toast(`${item.name} saved.`);
+      cacheData(); closeModals(); setView("needed"); render(); toast(`${item.name} added to Needed.`);
     } catch (error) { toast(error.message, "bad"); }
   }
 
@@ -794,7 +832,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   async function openScanner() {
     openModal("scanModal"); qs("#manualBarcodeInput").value = "";
-    qs("#cameraMessage").textContent = "Point the camera at a UPC or EAN barcode.";
+    qs("#cameraMessage").textContent = "Point the camera at a UPC or EAN barcode to add it to Needed.";
     if (!("BarcodeDetector" in window) || !navigator.mediaDevices?.getUserMedia) { qs("#cameraMessage").textContent = "Camera barcode detection is not available here. Enter the barcode below."; return; }
     try {
       const supported = await BarcodeDetector.getSupportedFormats();
@@ -817,11 +855,11 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     if (!barcode) return;
     stopCamera(); closeModals();
     const existing = state.items.find((item) => String(item.barcode) === String(barcode));
-    if (existing) return openPurchaseModal(existing);
+    if (existing) return openNeedModal(existing);
     toast("Looking up that barcode…");
     const product = await lookupBarcode(barcode);
     openItemModal({ barcode, name: product?.name || "" });
-    toast(product?.name ? `Found ${product.name}. Confirm the purchase.` : "Product not found. Enter its name once and the barcode will be remembered.");
+    toast(product?.name ? `Found ${product.name}. Confirm the list details.` : "Product not found. Enter its name once and the barcode will be remembered.");
   }
 
   async function lookupBarcode(barcode) {
@@ -854,15 +892,66 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     });
   }
 
+  async function ensurePdfJs() {
+    if (window.pdfjsLib) return;
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js";
+      script.onload = resolve; script.onerror = reject; document.head.appendChild(script);
+    });
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+  }
+
+  async function readReceiptText(file, progress) {
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    if (!isPdf) {
+      await ensureTesseract();
+      const result = await Tesseract.recognize(file, "eng", { logger: (message) => { if (message.status === "recognizing text") progress.textContent = `Reading receipt… ${Math.round((message.progress || 0) * 100)}%`; } });
+      return result.data.text || "";
+    }
+    progress.textContent = "Opening receipt PDF…";
+    await ensurePdfJs();
+    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    let text = "";
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+      progress.textContent = `Reading PDF page ${pageNumber} of ${pdf.numPages}…`;
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+      text += `${pdfItemsToLines(content.items)}\n`;
+    }
+    if (parseReceipt(text).lines.length) return text;
+    await ensureTesseract();
+    text = "";
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 2 });
+      const canvas = document.createElement("canvas");
+      canvas.width = viewport.width; canvas.height = viewport.height;
+      await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+      const result = await Tesseract.recognize(canvas, "eng", { logger: (message) => { if (message.status === "recognizing text") progress.textContent = `Reading PDF page ${pageNumber} of ${pdf.numPages}… ${Math.round((message.progress || 0) * 100)}%`; } });
+      text += `${result.data.text || ""}\n`;
+    }
+    return text;
+  }
+
+  function pdfItemsToLines(items) {
+    const rows = new Map();
+    items.forEach((item) => {
+      const y = Math.round(Number(item.transform?.[5] || 0) / 3) * 3;
+      if (!rows.has(y)) rows.set(y, []);
+      rows.get(y).push({ x: Number(item.transform?.[4] || 0), text: String(item.str || "") });
+    });
+    return [...rows.entries()].sort((a, b) => b[0] - a[0]).map(([, parts]) => parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" ")).join("\n");
+  }
+
   async function scanReceipt(event) {
     const file = event.target.files?.[0]; if (!file) return;
     const progress = qs("#receiptProgress"); progress.classList.remove("hidden"); progress.textContent = "Loading private receipt reader…";
     try {
-      await ensureTesseract();
-      const result = await Tesseract.recognize(file, "eng", { logger: (message) => { if (message.status === "recognizing text") progress.textContent = `Reading receipt… ${Math.round((message.progress || 0) * 100)}%`; } });
-      const rawText = result.data.text || "";
+      const rawText = await readReceiptText(file, progress);
       const text = normalizeText(rawText);
       const parsed = parseReceipt(rawText);
+      await enrichReceiptNames(parsed.lines, progress);
       qs("#receiptStore").value = parsed.store;
       qs("#receiptDate").value = parsed.date;
       qs("#receiptDetails").classList.remove("hidden");
@@ -887,7 +976,21 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         ? `${parsed.lines.length} receipt line${parsed.lines.length === 1 ? "" : "s"} found. Review names, categories, prices, and selections.`
         : "No item lines were recognized. Try a straighter, clearer image.";
       qs("#verifyReceiptBtn").classList.toggle("hidden", !state.receiptCandidates.length);
-    } catch { progress.textContent = "Receipt reading failed. Try a clearer, well-lit photo."; }
+    } catch { progress.textContent = "Receipt reading failed. Try a clearer, well-lit image or PDF."; }
+  }
+
+  async function enrichReceiptNames(lines, progress) {
+    const queue = lines.filter((line) => !matchReceiptItem(line) && [8, 12, 13, 14].includes(String(line.barcode || "").length));
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < queue.length) {
+        const line = queue[cursor]; cursor += 1;
+        progress.textContent = `Looking up product names… ${Math.min(cursor, queue.length)} of ${queue.length}`;
+        const product = await lookupBarcode(line.barcode);
+        if (product?.name) line.resolvedName = product.name;
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(4, queue.length) }, worker));
   }
 
   function renderReceiptCandidates() {
@@ -896,7 +999,9 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const item = candidate.item;
       const line = candidate.line;
       const category = item?.category || inferReceiptCategory(line.name);
-      return `<article class="receipt-import"><div class="receipt-import-head"><input type="checkbox" data-receipt-index="${index}" checked aria-label="Import ${escapeHtml(line.name)}"><span>${item ? "Reusable item found" : `New item · UPC ${escapeHtml(line.barcode || "not read")}`}</span><em>${formatMoney(line.price)}</em></div><label>Item name<input data-receipt-name="${index}" value="${escapeHtml(item?.name || cleanReceiptName(line.name))}" autocomplete="off"></label><div class="form-grid"><label>Category<select data-receipt-category="${index}">${CATEGORIES.map((value) => `<option${value === category ? " selected" : ""}>${escapeHtml(value)}</option>`).join("")}</select></label><label>Item total<input data-receipt-price="${index}" type="number" min="0" step="0.01" value="${Number(line.price).toFixed(2)}"></label></div></article>`;
+      const resolvedName = item?.name || line.resolvedName || cleanReceiptName(line.name);
+      const source = item ? "Reusable item found" : line.resolvedName ? "Name found from barcode" : `New item · store code ${escapeHtml(line.barcode || "not read")}`;
+      return `<article class="receipt-import"><div class="receipt-import-head"><input type="checkbox" data-receipt-index="${index}" checked aria-label="Import ${escapeHtml(line.name)}"><span>${source}</span><em>${formatMoney(line.price)}</em></div><label>Item name<input data-receipt-name="${index}" value="${escapeHtml(resolvedName)}" autocomplete="off"></label><div class="form-grid"><label>Category<select data-receipt-category="${index}">${CATEGORIES.map((value) => `<option${value === category ? " selected" : ""}>${escapeHtml(value)}</option>`).join("")}</select></label><label>Item total<input data-receipt-price="${index}" type="number" min="0" step="0.01" value="${Number(line.price).toFixed(2)}"></label></div></article>`;
     }).join("") : `<div class="status-banner">No receipt items were recognized.</div>`;
   }
 
@@ -936,7 +1041,20 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   }
 
   function cleanReceiptName(value) {
-    return String(value || "").toLowerCase().replace(/\b(mm|hnz|chx|bn|brth|cc|rgf|chn|krft|alm|var)\b/g, " ").replace(/\s+/g, " ").trim().replace(/\b\w/g, (char) => char.toUpperCase());
+    let text = String(value || "").toLowerCase()
+      .replace(/fruit&oat/g, "fruit and oat")
+      .replace(/whitechzdip/g, "white cheese dip")
+      .replace(/cokezero(\d+)p/g, "coke zero $1 pack")
+      .replace(/\bbertolli al\b/g, "bertolli alfredo")
+      .replace(/\bkrft single\b/g, "kraft singles")
+      .replace(/\bmm cc dough\b/g, "member's mark chocolate chip cookie dough")
+      .replace(/\bmm 2% gal m\b/g, "member's mark 2% gallon milk")
+      .replace(/\bmm van alml\b/g, "member's mark vanilla almond milk")
+      .replace(/\bmm thk baco\b/g, "member's mark thick cut bacon")
+      .replace(/\bmm beef hd\b/g, "member's mark beef hot dogs");
+    const expansions = { mm: "member's mark", hnz: "heinz", chx: "chicken", ckn: "chicken", bn: "buns", brth: "brioche", cc: "chocolate chip", krft: "kraft", alm: "almond", alml: "almond milk", var: "variety", pa: "pack", pac: "pack", mx: "mix", thk: "thick", baco: "bacon", chz: "cheese", brs: "breasts", gal: "gallon", tot: "tots" };
+    text = text.split(/\s+/).map((token) => expansions[token] || token).join(" ").replace(/\s+/g, " ").trim();
+    return text.replace(/\b\w/g, (char) => char.toUpperCase());
   }
 
   function inferReceiptCategory(value) {
@@ -961,6 +1079,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const verifyCandidates = selected.filter((candidate) => candidate.mode === "verify");
       const importCandidates = selected.filter((candidate) => candidate.mode === "import");
       const newItems = [];
+      const updatedItems = new Set();
       const itemByKey = new Map();
       importCandidates.forEach((candidate) => {
         const index = state.receiptCandidates.indexOf(candidate);
@@ -972,6 +1091,9 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         if (!item) {
           item = { item_id: crypto.randomUUID(), name: candidate.line.name, barcode: candidate.line.barcode, category: candidate.line.category, unit: "each", archived: false, created_at: new Date().toISOString(), created_by: currentUser(), needed: false, needed_quantity: 0, planned_store: store, estimated_unit_price: candidate.line.price, _row: state.items.length + newItems.length + 2 };
           newItems.push(item); itemByKey.set(key, item);
+        } else if (state.items.includes(item) && (item.name !== candidate.line.name || item.category !== candidate.line.category)) {
+          Object.assign(item, { name: candidate.line.name, category: candidate.line.category });
+          updatedItems.add(item);
         }
         candidate.item = item;
       });
@@ -981,6 +1103,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         newItems.forEach((item, index) => { item._row = start + index; });
       }
       state.items.push(...newItems);
+      if (!state.demo && updatedItems.size) await batchUpdateValues([...updatedItems].map((item) => ({ range: `Items!B${item._row}:D${item._row}`, majorDimension: "ROWS", values: [[item.name, item.barcode, item.category]] })));
       const purchases = importCandidates.map((candidate) => {
         const purchase = makePurchase(candidate.item, { quantity: 1, date, actualStore: store, unitPrice: candidate.line.price, planningStatus: "Unplanned", note: "Imported from receipt", plannedStore: store });
         purchase.verification_status = "Receipt verified"; purchase.receipt_id = receiptId; purchase.total_price = candidate.line.price;

@@ -310,6 +310,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .quick-ideas strong { font-size: 12px; }
 .quick-ideas span { color: var(--muted); font-size: 9.5px; }
 .quick-ideas button { flex: 0 0 auto; min-height: 32px; padding: 5px 10px; border: 1px solid rgba(139,92,246,.45); border-radius: 999px; background: var(--brand-soft); color: var(--brand-2); font-size: 10px; font-weight: 800; cursor: pointer; }
+.store-link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .purchase-check { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--ok); border-radius: 11px; background: var(--ok-soft); color: var(--ok); cursor: pointer; }
 .purchase-check svg { width: 21px; height: 21px; }
 .suggestions-block { margin-bottom: 14px; padding: 12px; border: 1px dashed rgba(139,92,246,.55); border-radius: 13px; background: rgba(139,92,246,.06); }
@@ -373,6 +374,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   .average-card { grid-template-columns: 1fr; }
   .average-card > small { grid-column: auto; }
   .quick-ideas > div { min-width: 125px; }
+  .store-link-grid { grid-template-columns: 1fr; }
   .modal-backdrop { padding: 0; }
   .modal { max-height: 92vh; border-radius: 17px 17px 0 0; border-bottom: 0; }
 }
@@ -448,7 +450,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
     <section id="receiptModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="receiptTitle"><header><div><span class="eyebrow">Private local scan</span><h2 id="receiptTitle">Import a receipt</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Upload a receipt image or PDF. The file is read in this browser, then you review the names before anything is saved.</p><label>Receipt image or PDF<input id="receiptFile" type="file" accept="image/*,application/pdf,.pdf"></label><div id="receiptProgress" class="status-banner hidden">Preparing receipt reader…</div><div id="receiptDetails" class="form-grid hidden"><label>Store<select id="receiptStore"><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Purchase date<input id="receiptDate" type="date"></label></div><div id="receiptMatches" class="receipt-matches"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success hidden" id="verifyReceiptBtn" type="button">Save selected to History</button></div></div></section>
 
-    <section id="locationModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="locationTitle"><header><div><span class="eyebrow">Verified store location</span><h2 id="locationTitle">Confirm aisle or section</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="locationForm" class="modal-body stack-form"><input id="locationItemId" type="hidden"><div class="selected-item"><strong id="locationItemName">Item</strong><span id="locationItemMeta">Only confirmed details are shown on the list.</span></div><label>Store<select id="locationStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Exact branch or location<input id="locationBranch" autocomplete="off" placeholder="e.g. Kroger — Sparta St" required></label><div class="form-grid"><label>Aisle <span class="optional">optional</span><input id="locationAisle" autocomplete="off" placeholder="e.g. 12"></label><label>Section / department <span class="optional">optional</span><input id="locationSection" autocomplete="off" placeholder="e.g. Meat counter"></label></div><label>Verification source<select id="locationSource"><option>Family confirmed</option><option>Store listing</option><option>Kroger API</option></select></label><a id="storeSearchLink" class="btn ghost wide" href="#" target="_blank" rel="noopener">Search this store's website</a><span class="field-hint">A store search can help, but the app labels a location verified only after you save the branch and source here.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Save verified location</button></div></form></section>
+    <section id="locationModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="locationTitle"><header><div><span class="eyebrow">Verified store location</span><h2 id="locationTitle">Confirm aisle or section</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="locationForm" class="modal-body stack-form"><input id="locationItemId" type="hidden"><div class="selected-item"><strong id="locationItemName">Item</strong><span id="locationItemMeta">Only confirmed details are shown on the list.</span></div><label>Store<select id="locationStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Exact branch or location<input id="locationBranch" autocomplete="off" placeholder="e.g. Kroger — Sparta St" required></label><div class="form-grid"><label>Aisle <span class="optional">optional</span><input id="locationAisle" autocomplete="off" placeholder="e.g. 12"></label><label>Section / department <span class="optional">optional</span><input id="locationSection" autocomplete="off" placeholder="e.g. Meat counter"></label></div><label>Verification source<select id="locationSource"><option>Family confirmed</option><option>Store listing</option><option>Kroger API</option></select></label><div class="store-link-grid"><a id="storeBranchLink" class="btn ghost wide" href="#" target="_blank" rel="noopener">Open saved branch</a><a id="storeSearchLink" class="btn ghost wide" href="#" target="_blank" rel="noopener">Search store products</a></div><span class="field-hint">The saved branch is confirmed from the retailer's official store page. An aisle is labeled verified only after you save it here.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Save verified location</button></div></form></section>
 
     <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
   </div>
@@ -522,7 +524,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#receiptFile").addEventListener("change", scanReceipt);
     qs("#verifyReceiptBtn").addEventListener("click", verifyReceipt);
     qs("#locationForm").addEventListener("submit", saveLocation);
-    qs("#locationStore").addEventListener("change", updateStoreSearchLink);
+    qs("#locationStore").addEventListener("change", applyStoreProfile);
     qs("#searchInput").addEventListener("input", (event) => { state.query = event.target.value.trim().toLowerCase(); renderCheck(); });
     qs("#neededStoreFilter").addEventListener("change", (event) => { state.neededStore = event.target.value; renderNeeded(); });
     qs("#savedNeedSearch").addEventListener("input", renderSavedNeedList);
@@ -713,7 +715,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const total = item.needed_quantity * item.estimated_unit_price;
       const store = item.planned_store || preferredStore(item.item_id);
       const location = latestLocation(item.item_id, store);
-      const locationText = location ? [location.aisle && `Aisle ${location.aisle}`, location.section, location.store_location].filter(Boolean).join(" · ") : "Aisle/location not verified";
+      const profile = storeProfile(store);
+      const locationText = location ? [location.aisle && `Aisle ${location.aisle}`, location.section, location.store_location].filter(Boolean).join(" · ") : ["Aisle not verified", profile?.label, profile?.address].filter(Boolean).join(" · ");
       return `<article class="item-card needed" data-item-id="${escapeHtml(item.item_id)}"><div class="item-main"><div class="item-name-row"><span><span class="item-name">${escapeHtml(displayName(item))}</span>${officialNameHtml(item)}</span><span class="need-pill">Planned</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(store)}</span></div><div class="location-line ${location ? "verified" : ""}"><span>${location ? "✓ Verified" : "Unknown"}</span><span>${escapeHtml(locationText)}</span>${location ? `<span>· ${escapeHtml(location.source)}</span>` : ""}</div><div class="tag-row"><span class="tag">Est. ${formatMoney(total)}</span><span class="tag">${formatMoney(item.estimated_unit_price)} / ${escapeHtml(item.unit)}</span></div></div><div class="card-actions"><div class="needed-qty"><strong>${formatQty(item.needed_quantity)}</strong><span>${escapeHtml(item.unit)}</span></div><button class="purchase-check" data-action="bought" data-id="${escapeHtml(item.item_id)}" aria-label="Check off ${escapeHtml(displayName(item))}"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button><button class="btn ghost" data-action="verify-location" data-id="${escapeHtml(item.item_id)}">${location ? "Update aisle" : "Verify aisle"}</button><button class="btn ghost" data-action="edit-need" data-id="${escapeHtml(item.item_id)}">Edit</button><button class="btn ghost" data-action="remove-need" data-id="${escapeHtml(item.item_id)}">Remove</button></div></article>`;
     }).join("");
     const empty = qs("#neededEmpty");
@@ -808,14 +811,21 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     return state.locations.filter((location) => location.item_id === itemId && (!store || location.store === store)).sort((a, b) => new Date(b.verified_at || 0) - new Date(a.verified_at || 0))[0] || null;
   }
 
+  function storeProfile(store) {
+    const key = { "Food City": "store_profile_food_city", Walmart: "store_profile_walmart", Kroger: "store_profile_kroger", "Sam's Club": "store_profile_sams_club", Aldi: "store_profile_aldi" }[store];
+    if (!key || !state.settings[key]) return null;
+    try { return JSON.parse(state.settings[key]); } catch { return null; }
+  }
+
   function openLocationModal(item) {
     const store = item.planned_store || preferredStore(item.item_id);
     const location = latestLocation(item.item_id, store);
+    const profile = storeProfile(store);
     qs("#locationItemId").value = item.item_id;
     qs("#locationItemName").textContent = displayName(item);
-    qs("#locationItemMeta").textContent = `${store} · Only confirmed details are shown on the list.`;
+    qs("#locationItemMeta").textContent = `${profile?.label || store}${profile?.address ? ` · ${profile.address}` : ""} · Only confirmed details are shown on the list.`;
     qs("#locationStore").value = store;
-    qs("#locationBranch").value = location?.store_location || "";
+    qs("#locationBranch").value = location?.store_location || profile?.address || "";
     qs("#locationAisle").value = location?.aisle || "";
     qs("#locationSection").value = location?.section || "";
     qs("#locationSource").value = location?.source || "Family confirmed";
@@ -823,8 +833,16 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     openModal("locationModal");
   }
 
+  function applyStoreProfile() {
+    const profile = storeProfile(qs("#locationStore").value);
+    qs("#locationBranch").value = profile?.address || "";
+    qs("#locationItemMeta").textContent = `${profile?.label || qs("#locationStore").value}${profile?.address ? ` · ${profile.address}` : ""} · Only confirmed details are shown on the list.`;
+    updateStoreSearchLink();
+  }
+
   function updateStoreSearchLink() {
     const item = state.items.find((entry) => entry.item_id === qs("#locationItemId").value);
+    const profile = storeProfile(qs("#locationStore").value);
     const query = encodeURIComponent(item?.name || "groceries");
     const urls = {
       "Food City": `https://www.foodcity.com/search/?query=${query}`,
@@ -835,6 +853,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       Other: `https://www.google.com/search?q=${query}+store+aisle`,
     };
     qs("#storeSearchLink").href = urls[qs("#locationStore").value] || urls.Other;
+    qs("#storeBranchLink").href = profile?.source_url || urls.Other;
+    qs("#storeBranchLink").textContent = profile ? `Open ${profile.label}` : "Find store branch";
   }
 
   async function saveLocation(event) {

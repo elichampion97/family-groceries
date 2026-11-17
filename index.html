@@ -233,7 +233,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   padding: 7px max(10px, env(safe-area-inset-right, 0px)) calc(7px + var(--safe-bottom)) max(10px, env(safe-area-inset-left, 0px));
   border-top: 1px solid var(--line);
   background: rgba(18,22,31,.94);
@@ -242,6 +242,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .mobile-nav button { display: grid; place-items: center; gap: 2px; padding: 5px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font-size: 10px; font-weight: 750; cursor: pointer; }
 .mobile-nav button.active { color: var(--brand-2); background: var(--brand-soft); }
 .mobile-nav .nav-primary { color: white; background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
+.mobile-nav .nav-disabled { position: relative; opacity: .46; cursor: not-allowed; }
+.mobile-nav .nav-disabled small { position: absolute; top: 2px; right: 1px; padding: 1px 4px; border-radius: 999px; background: var(--panel-2); color: var(--faint); font-size: 7px; font-weight: 850; text-transform: uppercase; }
 
 .modal-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: end center; padding: 18px; background: rgba(0,0,0,.66); backdrop-filter: blur(3px); }
 .modal { width: min(560px, 100%); max-height: min(88vh, 760px); overflow: auto; border: 1px solid var(--line); border-radius: 17px; background: var(--panel); box-shadow: var(--shadow); }
@@ -280,6 +282,22 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .receipt-import label input, .receipt-import label select { margin-top: 4px; }
 .receipt-values { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(74px,.7fr) minmax(88px,.8fr); gap: 9px; }
 .official-name { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; font-weight: 500; }
+.nickname-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: -4px; }
+.nickname-suggestions:empty { display: none; }
+.nickname-suggestions button { min-height: 28px; padding: 4px 9px; border: 1px solid rgba(139,92,246,.45); border-radius: 999px; background: var(--brand-soft); color: var(--brand-2); font-size: 10px; font-weight: 750; cursor: pointer; }
+.budget-summary, .history-averages { margin-bottom: 12px; }
+.budget-card, .average-card { padding: 13px; border: 1px solid var(--line); border-radius: 13px; background: linear-gradient(135deg, rgba(139,92,246,.09), rgba(0,231,139,.04)); }
+.budget-total { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.budget-total span, .average-card span, .store-trip-totals span { color: var(--muted); font-size: 10px; font-weight: 750; text-transform: uppercase; }
+.budget-total strong { color: var(--ok); font-size: 22px; }
+.store-trip-totals { display: grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap: 7px; margin-top: 10px; }
+.store-trip-totals > div { display: grid; gap: 2px; padding: 8px 9px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel-2); }
+.store-trip-totals strong { font-size: 14px; }
+.budget-card > small, .average-card > small { display: block; margin-top: 9px; color: var(--faint); font-size: 9px; }
+.average-card { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; }
+.average-card > div { display: grid; gap: 3px; }
+.average-card strong { font-size: 17px; }
+.average-card > small { grid-column: 1 / -1; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
 .tag { padding: 2px 7px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--panel-2); font-size: 9.5px; font-weight: 750; }
 .tag.ok { color: var(--ok); border-color: rgba(0,231,139,.35); background: var(--ok-soft); }
@@ -322,7 +340,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   main { padding-top: 28px; }
   .main-view { padding-bottom: 20px; }
   .items-list { grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .mobile-nav { left: 50%; right: auto; bottom: 18px; width: 420px; transform: translateX(-50%); border: 1px solid var(--line); border-radius: 15px; padding-bottom: 7px; box-shadow: var(--shadow); }
+  .mobile-nav { left: 50%; right: auto; bottom: 18px; width: 490px; transform: translateX(-50%); border: 1px solid var(--line); border-radius: 15px; padding-bottom: 7px; box-shadow: var(--shadow); }
   .modal-backdrop { place-items: center; }
   .undo-toast { bottom: 90px; }
 }
@@ -344,6 +362,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   .form-grid { grid-template-columns: 1fr; }
   .receipt-values { grid-template-columns: 1fr 1fr; }
   .receipt-values label:first-child { grid-column: 1 / -1; }
+  .average-card { grid-template-columns: 1fr; }
+  .average-card > small { grid-column: auto; }
   .modal-backdrop { padding: 0; }
   .modal { max-height: 92vh; border-radius: 17px 17px 0 0; border-bottom: 0; }
 }
@@ -391,9 +411,9 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
           <div class="view-actions"><button class="btn ghost compact hidden" id="receiptBtn" type="button">Receipt</button><button class="icon-btn" id="scanTopBtn" aria-label="Scan barcode"><svg viewBox="0 0 24 24"><path d="M4 7V4h3M17 4h3v3M20 17v3h-3M7 20H4v-3M7 9v6M10 8v8M14 8v8M17 9v6"/></svg></button><button class="btn primary compact" id="addItemBtn" type="button">+ Add</button></div>
         </div>
         <div id="offlineBanner" class="status-banner warning hidden">Offline. Viewing the last sync; changes are paused.</div>
-        <section id="neededPanel" class="panel-view"><label class="store-filter">Show planned store<select id="neededStoreFilter"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><div id="neededList" class="items-list" aria-live="polite"></div><div id="neededEmpty" class="empty-state hidden"><div class="empty-icon">✓</div><h3>List is clear</h3><p>Add from saved items, scan a barcode, or create something new.</p></div></section>
+        <section id="neededPanel" class="panel-view"><label class="store-filter">Show planned store<select id="neededStoreFilter"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><div id="neededBudgetSummary" class="budget-summary"></div><div id="neededList" class="items-list" aria-live="polite"></div><div id="neededEmpty" class="empty-state hidden"><div class="empty-icon">✓</div><h3>List is clear</h3><p>Add from saved items, scan a barcode, or create something new.</p></div></section>
         <section id="checkPanel" class="panel-view hidden"><div id="checkSuggestions" aria-live="polite"></div><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="searchInput" type="search" placeholder="Search all saved items" autocomplete="off"></label><div id="checkList" class="items-list" aria-live="polite"></div><div id="checkEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No saved items yet</h3><p>Scan a barcode or add your first needed item.</p></div></section>
-        <section id="historyPanel" class="panel-view hidden"><div id="historyList" class="history-list" aria-live="polite"></div><div id="historyEmpty" class="empty-state hidden"><div class="empty-icon">↺</div><h3>No purchases yet</h3><p>Your confirmed purchases will appear here.</p></div></section>
+        <section id="historyPanel" class="panel-view hidden"><div id="historyAverages" class="history-averages"></div><div id="historyList" class="history-list" aria-live="polite"></div><div id="historyEmpty" class="empty-state hidden"><div class="empty-icon">↺</div><h3>No purchases yet</h3><p>Your confirmed purchases will appear here.</p></div></section>
       </section>
     </main>
 
@@ -402,17 +422,18 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       <button data-view="check"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Check</span></button>
       <button id="scanNavBtn" class="nav-primary"><svg viewBox="0 0 24 24"><path d="M4 7V4h3M17 4h3v3M20 17v3h-3M7 20H4v-3M7 9v6M10 8v8M14 8v8M17 9v6"/></svg><span>Scan</span></button>
       <button data-view="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></svg><span>History</span></button>
+      <button id="recipesNavBtn" class="nav-disabled" type="button" disabled aria-label="Recipes coming soon" title="Coming soon: choose recipe ingredients and send them to Needed"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zm3 0v16M11 8h5M11 12h5"/></svg><span>Recipes</span><small>Soon</small></button>
     </nav>
   </div>
 
   <div id="modalBackdrop" class="modal-backdrop hidden" role="presentation">
     <section id="addNeededModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="addNeededTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="addNeededTitle">Add to Needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Choose any saved item that is not already planned.</p><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="savedNeedSearch" type="search" placeholder="Search saved items" autocomplete="off"></label><label>Usual store<select id="savedNeedStore"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><div id="savedNeedList" class="saved-need-list"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" id="createNewNeededBtn" type="button">Create new item</button></div></div></section>
 
-    <section id="needModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="needModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="needModalTitle">Confirm the plan</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="needForm" class="modal-body stack-form"><input id="needItemId" type="hidden"><div class="selected-item"><strong id="needItemName">Item</strong><span id="needItemMeta"></span></div><label>Nickname <span class="optional">optional</span><input id="needNickname" autocomplete="off" placeholder="What your family calls it"></label><label>Quantity needed<input id="needQuantity" type="number" min="0.1" step="0.1" value="1" required></label><div class="quantity-chips" aria-label="Quick quantity"><button type="button" data-qty="1">1</button><button type="button" data-qty="2">2</button><button type="button" data-qty="3">3</button><button type="button" data-qty="4">4</button></div><div class="form-grid"><label>Planned store<select id="needPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Estimated unit price<input id="needEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><span class="field-hint">The nickname is shown first; the official product name and barcode still handle receipt matching.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
+    <section id="needModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="needModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="needModalTitle">Confirm the plan</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="needForm" class="modal-body stack-form"><input id="needItemId" type="hidden"><div class="selected-item"><strong id="needItemName">Item</strong><span id="needItemMeta"></span></div><label>Nickname <span class="optional">optional</span><input id="needNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="needNicknameSuggestions" class="nickname-suggestions"></div><label>Quantity needed<input id="needQuantity" type="number" min="0.1" step="0.1" value="1" required></label><div class="quantity-chips" aria-label="Quick quantity"><button type="button" data-qty="1">1</button><button type="button" data-qty="2">2</button><button type="button" data-qty="3">3</button><button type="button" data-qty="4">4</button></div><div class="form-grid"><label>Planned store<select id="needPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Estimated unit price<input id="needEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><span class="field-hint">The nickname is shown first; the official product name and barcode still handle receipt matching.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
     <section id="purchaseModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="purchaseModalTitle"><header><div><span class="eyebrow">Purchase</span><h2 id="purchaseModalTitle">Confirm what you bought</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="purchaseForm" class="modal-body stack-form"><input id="purchaseItemId" type="hidden"><div class="selected-item"><strong id="purchaseItemName">Item</strong><span id="purchaseItemMeta"></span></div><div class="form-grid"><label>Quantity bought<input id="purchaseQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Purchase date<input id="purchaseDate" type="date" required></label></div><div class="form-grid"><label>Actual store<select id="purchaseStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="purchaseUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><div class="form-grid"><label>Purchase type<select id="purchasePlanningStatus"><option>Planned</option><option>Unplanned</option></select></label><div class="total-preview"><span>Item total</span><strong id="purchaseTotal">$0.00</strong></div></div><span class="field-hint" id="purchaseStoreHint">Suggested from your history—confirm or change.</span><label>Note <span class="optional">optional</span><input id="purchaseNote" autocomplete="off" placeholder="Flavor, size, substitution…"></label><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success" type="submit">Check off purchase</button></div></form></section>
 
-    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Official product name<input id="itemName" autocomplete="off" required></label><label>Nickname <span class="optional">optional</span><input id="itemNickname" autocomplete="off" placeholder="What your family calls it"></label><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
+    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Official product name<input id="itemName" autocomplete="off" required></label><label>Nickname <span class="optional">optional</span><input id="itemNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="itemNicknameSuggestions" class="nickname-suggestions"></div><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
     <section id="scanModal" class="modal scan-modal hidden" role="dialog" aria-modal="true" aria-labelledby="scanTitle"><header><div><span class="eyebrow">Camera</span><h2 id="scanTitle">Scan something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div class="camera-frame"><video id="cameraVideo" playsinline muted></video><div class="scan-line"></div><div class="camera-message" id="cameraMessage">Point the camera at a UPC or EAN barcode to add it to Needed.</div></div><form id="manualBarcodeForm" class="manual-barcode"><input id="manualBarcodeInput" inputmode="numeric" placeholder="Or enter barcode number"><button class="btn primary" type="submit">Find</button></form></div></section>
 
@@ -490,6 +511,10 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#savedNeedStore").addEventListener("change", renderSavedNeedList);
     qs("#savedNeedList").addEventListener("click", handleSavedNeedAction);
     qs("#createNewNeededBtn").addEventListener("click", () => openItemModal());
+    qs("#itemName").addEventListener("input", (event) => renderNicknameSuggestions("itemNicknameSuggestions", event.target.value, "#itemNickname"));
+    qs("#needNicknameSuggestions").addEventListener("click", handleNicknameSuggestion);
+    qs("#itemNicknameSuggestions").addEventListener("click", handleNicknameSuggestion);
+    qs("#receiptMatches").addEventListener("click", handleNicknameSuggestion);
     qs("#purchaseQuantity").addEventListener("input", updatePurchaseTotal);
     qs("#purchaseUnitPrice").addEventListener("input", updatePurchaseTotal);
     qs("#modalBackdrop").addEventListener("click", (event) => { if (event.target === event.currentTarget) closeModals(); });
@@ -643,6 +668,14 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function renderNeeded() {
     const allNeeded = state.items.filter((item) => item.needed);
+    const storeTotals = new Map();
+    allNeeded.forEach((item) => {
+      const store = item.planned_store || preferredStore(item.item_id);
+      const total = Number(item.needed_quantity || 0) * Number(item.estimated_unit_price || 0);
+      storeTotals.set(store, (storeTotals.get(store) || 0) + total);
+    });
+    const expectedTotal = [...storeTotals.values()].reduce((sum, value) => sum + value, 0);
+    qs("#neededBudgetSummary").innerHTML = allNeeded.length ? `<section class="budget-card"><div class="budget-total"><span>Expected list total</span><strong>${formatMoney(expectedTotal)}</strong></div><div class="store-trip-totals">${[...storeTotals].sort((a, b) => b[1] - a[1]).map(([store, total]) => `<div><span>${escapeHtml(store)} trip</span><strong>${formatMoney(total)}</strong></div>`).join("")}</div><small>Estimates use each item’s confirmed quantity and unit price.</small></section>` : "";
     const items = allNeeded.filter((item) => !state.neededStore || (item.planned_store || preferredStore(item.item_id)) === state.neededStore).sort((a, b) => displayName(a).localeCompare(displayName(b)));
     qs("#neededStoreFilter").value = state.neededStore;
     qs("#neededList").innerHTML = items.map((item) => {
@@ -698,6 +731,13 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function renderHistory() {
     const events = purchaseEvents().sort((a, b) => new Date(b.purchased_at) - new Date(a.purchased_at));
+    if (events.length) {
+      const total = events.reduce((sum, event) => sum + Number(event.total_price || 0), 0);
+      const earliest = Math.min(...events.map((event) => new Date(event.purchased_at).getTime()).filter(Number.isFinite));
+      const spanDays = Math.max(1, Math.ceil((Date.now() - earliest) / 86400000) + 1);
+      const daily = total / spanDays;
+      qs("#historyAverages").innerHTML = `<section class="average-card"><div><span>Daily average</span><strong>${formatMoney(daily)}</strong></div><div><span>Weekly average</span><strong>${formatMoney(daily * 7)}</strong></div><div><span>Monthly average</span><strong>${formatMoney(daily * 30.44)}</strong></div><small>Normalized across ${spanDays} day${spanDays === 1 ? "" : "s"} of recorded history.</small></section>`;
+    } else qs("#historyAverages").innerHTML = "";
     qs("#historyList").innerHTML = events.map((event) => {
       const item = state.items.find((x) => x.item_id === event.item_id);
       const d = new Date(event.purchased_at);
@@ -721,6 +761,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#needItemName").textContent = displayName(item);
     qs("#needItemMeta").textContent = `${item.nickname ? `${item.name} · ` : ""}${item.category} · ${item.unit}`;
     qs("#needNickname").value = item.nickname || "";
+    renderNicknameSuggestions("needNicknameSuggestions", item.name, "#needNickname");
     qs("#needQuantity").value = item.needed_quantity || predictedQuantity(item.item_id);
     qs("#needPlannedStore").value = item.planned_store || preferredStore(item.item_id);
     qs("#needEstimatedPrice").value = item.estimated_unit_price || predictedPrice(item.item_id);
@@ -788,6 +829,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   function openItemModal(preset = {}) {
     qs("#itemName").value = preset.name || "";
     qs("#itemNickname").value = preset.nickname || "";
+    renderNicknameSuggestions("itemNicknameSuggestions", preset.name || "", "#itemNickname");
     qs("#itemBarcode").value = preset.barcode || "";
     qs("#itemCategory").value = preset.category || "Other";
     qs("#itemUnit").value = preset.unit || "each";
@@ -1007,8 +1049,53 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const category = item?.category || inferReceiptCategory(line.name);
       const resolvedName = item?.name || line.resolvedName || cleanReceiptName(line.name);
       const source = item ? "Reusable item found" : line.resolvedName ? "Name found from barcode" : `New item · store code ${escapeHtml(line.barcode || "not read")}`;
-      return `<article class="receipt-import"><div class="receipt-import-head"><input type="checkbox" data-receipt-index="${index}" checked aria-label="Import ${escapeHtml(line.name)}"><span>${source} · ${escapeHtml(line.barcode || "no code")}</span><em>${formatMoney(line.totalPrice ?? line.price)}</em></div><label>Official product name<input data-receipt-name="${index}" value="${escapeHtml(resolvedName)}" autocomplete="off"></label><label>Nickname <span class="optional">optional</span><input data-receipt-nickname="${index}" value="${escapeHtml(item?.nickname || "")}" autocomplete="off" placeholder="What your family calls it"></label><div class="receipt-values"><label>Category<select data-receipt-category="${index}">${CATEGORIES.map((value) => `<option${value === category ? " selected" : ""}>${escapeHtml(value)}</option>`).join("")}</select></label><label>Quantity<input data-receipt-quantity="${index}" type="number" min="0.01" step="0.01" value="${Number(line.quantity || 1)}"></label><label>Item total<input data-receipt-price="${index}" type="number" min="0" step="0.01" value="${Number(line.totalPrice ?? line.price).toFixed(2)}"></label></div></article>`;
+      return `<article class="receipt-import"><div class="receipt-import-head"><input type="checkbox" data-receipt-index="${index}" checked aria-label="Import ${escapeHtml(line.name)}"><span>${source} · ${escapeHtml(line.barcode || "no code")}</span><em>${formatMoney(line.totalPrice ?? line.price)}</em></div><label>Official product name<input data-receipt-name="${index}" value="${escapeHtml(resolvedName)}" autocomplete="off"></label><label>Nickname <span class="optional">optional</span><input data-receipt-nickname="${index}" value="${escapeHtml(item?.nickname || "")}" autocomplete="off" placeholder="What your family calls it"></label><div class="nickname-suggestions">${nicknameButtonsHtml(resolvedName, index)}</div><div class="receipt-values"><label>Category<select data-receipt-category="${index}">${CATEGORIES.map((value) => `<option${value === category ? " selected" : ""}>${escapeHtml(value)}</option>`).join("")}</select></label><label>Quantity<input data-receipt-quantity="${index}" type="number" min="0.01" step="0.01" value="${Number(line.quantity || 1)}"></label><label>Item total<input data-receipt-price="${index}" type="number" min="0" step="0.01" value="${Number(line.totalPrice ?? line.price).toFixed(2)}"></label></div></article>`;
     }).join("") : `<div class="status-banner">No receipt items were recognized.</div>`;
+  }
+
+  function commonNicknames(name) {
+    const text = normalizeText(name);
+    const rules = [
+      [/ground beef|beef mince/, ["Taco meat", "Hamburger", "Ground beef"]],
+      [/chicken breast/, ["Chicken", "Chicken breasts"]],
+      [/pork shoulder|pork butt/, ["Pulled pork", "Pork roast"]],
+      [/hot dog|frank/, ["Hot dogs"]],
+      [/bacon/, ["Bacon"]],
+      [/large white eggs|\beggs?\b/, ["Eggs"]],
+      [/whole milk|2 percent|\bmilk\b/, ["Milk"]],
+      [/half and half|half & half/, ["Coffee creamer", "Half and half"]],
+      [/cheddar.*cheese/, ["Cheddar", "Shredded cheese"]],
+      [/mozzarella|string cheese/, ["String cheese", "Mozzarella"]],
+      [/banana/, ["Bananas"]],
+      [/red onion/, ["Red onions"]],
+      [/white onion/, ["White onions"]],
+      [/potato/, ["Potatoes"]],
+      [/ground coffee|\bcoffee\b/, ["Coffee"]],
+      [/white bread|\bbread\b/, ["Bread"]],
+      [/tortilla/, ["Tortillas"]],
+      [/bath tissue|toilet tissue/, ["Toilet paper"]],
+      [/paper towel/, ["Paper towels"]],
+      [/dish soap/, ["Dish soap"]],
+      [/bottled water|\bwater\b/, ["Water"]],
+    ];
+    return [...new Set(rules.filter(([pattern]) => pattern.test(text)).flatMap(([, values]) => values))].slice(0, 4);
+  }
+
+  function nicknameButtonsHtml(name, receiptIndex = null, target = "") {
+    return commonNicknames(name).map((value) => `<button type="button" data-nickname-value="${escapeHtml(value)}" ${receiptIndex === null ? `data-nickname-target="${escapeHtml(target)}"` : `data-nickname-index="${receiptIndex}"`}>${escapeHtml(value)}</button>`).join("");
+  }
+
+  function renderNicknameSuggestions(containerId, name, target) {
+    qs(`#${containerId}`).innerHTML = nicknameButtonsHtml(name, null, target);
+  }
+
+  function handleNicknameSuggestion(event) {
+    const button = event.target.closest("[data-nickname-value]");
+    if (!button) return;
+    const input = button.dataset.nicknameIndex !== undefined
+      ? qs(`[data-receipt-nickname="${button.dataset.nicknameIndex}"]`)
+      : qs(button.dataset.nicknameTarget);
+    if (input) { input.value = button.dataset.nicknameValue; input.focus(); }
   }
 
   function parseReceipt(rawText) {

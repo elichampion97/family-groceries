@@ -278,6 +278,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .receipt-import-head em { color: var(--ok); font-size: 12px; font-style: normal; font-weight: 850; }
 .receipt-import label { font-size: 10px; }
 .receipt-import label input, .receipt-import label select { margin-top: 4px; }
+.receipt-values { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(74px,.7fr) minmax(88px,.8fr); gap: 9px; }
+.official-name { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; font-weight: 500; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
 .tag { padding: 2px 7px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--panel-2); font-size: 9.5px; font-weight: 750; }
 .tag.ok { color: var(--ok); border-color: rgba(0,231,139,.35); background: var(--ok-soft); }
@@ -340,6 +342,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   .needed-qty { text-align: left; }
   .history-card { grid-template-columns: 42px minmax(0,1fr) auto; }
   .form-grid { grid-template-columns: 1fr; }
+  .receipt-values { grid-template-columns: 1fr 1fr; }
+  .receipt-values label:first-child { grid-column: 1 / -1; }
   .modal-backdrop { padding: 0; }
   .modal { max-height: 92vh; border-radius: 17px 17px 0 0; border-bottom: 0; }
 }
@@ -404,11 +408,11 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   <div id="modalBackdrop" class="modal-backdrop hidden" role="presentation">
     <section id="addNeededModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="addNeededTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="addNeededTitle">Add to Needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Choose any saved item that is not already planned.</p><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="savedNeedSearch" type="search" placeholder="Search saved items" autocomplete="off"></label><label>Usual store<select id="savedNeedStore"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><div id="savedNeedList" class="saved-need-list"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" id="createNewNeededBtn" type="button">Create new item</button></div></div></section>
 
-    <section id="needModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="needModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="needModalTitle">Confirm the plan</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="needForm" class="modal-body stack-form"><input id="needItemId" type="hidden"><div class="selected-item"><strong id="needItemName">Item</strong><span id="needItemMeta"></span></div><label>Quantity needed<input id="needQuantity" type="number" min="0.1" step="0.1" value="1" required></label><div class="quantity-chips" aria-label="Quick quantity"><button type="button" data-qty="1">1</button><button type="button" data-qty="2">2</button><button type="button" data-qty="3">3</button><button type="button" data-qty="4">4</button></div><div class="form-grid"><label>Planned store<select id="needPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Estimated unit price<input id="needEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><span class="field-hint">Suggestions come from prior purchases—confirm or change them.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
+    <section id="needModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="needModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="needModalTitle">Confirm the plan</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="needForm" class="modal-body stack-form"><input id="needItemId" type="hidden"><div class="selected-item"><strong id="needItemName">Item</strong><span id="needItemMeta"></span></div><label>Nickname <span class="optional">optional</span><input id="needNickname" autocomplete="off" placeholder="What your family calls it"></label><label>Quantity needed<input id="needQuantity" type="number" min="0.1" step="0.1" value="1" required></label><div class="quantity-chips" aria-label="Quick quantity"><button type="button" data-qty="1">1</button><button type="button" data-qty="2">2</button><button type="button" data-qty="3">3</button><button type="button" data-qty="4">4</button></div><div class="form-grid"><label>Planned store<select id="needPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Estimated unit price<input id="needEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><span class="field-hint">The nickname is shown first; the official product name and barcode still handle receipt matching.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
     <section id="purchaseModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="purchaseModalTitle"><header><div><span class="eyebrow">Purchase</span><h2 id="purchaseModalTitle">Confirm what you bought</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="purchaseForm" class="modal-body stack-form"><input id="purchaseItemId" type="hidden"><div class="selected-item"><strong id="purchaseItemName">Item</strong><span id="purchaseItemMeta"></span></div><div class="form-grid"><label>Quantity bought<input id="purchaseQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Purchase date<input id="purchaseDate" type="date" required></label></div><div class="form-grid"><label>Actual store<select id="purchaseStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="purchaseUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><div class="form-grid"><label>Purchase type<select id="purchasePlanningStatus"><option>Planned</option><option>Unplanned</option></select></label><div class="total-preview"><span>Item total</span><strong id="purchaseTotal">$0.00</strong></div></div><span class="field-hint" id="purchaseStoreHint">Suggested from your history—confirm or change.</span><label>Note <span class="optional">optional</span><input id="purchaseNote" autocomplete="off" placeholder="Flavor, size, substitution…"></label><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success" type="submit">Check off purchase</button></div></form></section>
 
-    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Name<input id="itemName" autocomplete="off" required></label><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
+    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Official product name<input id="itemName" autocomplete="off" required></label><label>Nickname <span class="optional">optional</span><input id="itemNickname" autocomplete="off" placeholder="What your family calls it"></label><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
     <section id="scanModal" class="modal scan-modal hidden" role="dialog" aria-modal="true" aria-labelledby="scanTitle"><header><div><span class="eyebrow">Camera</span><h2 id="scanTitle">Scan something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div class="camera-frame"><video id="cameraVideo" playsinline muted></video><div class="scan-line"></div><div class="camera-message" id="cameraMessage">Point the camera at a UPC or EAN barcode to add it to Needed.</div></div><form id="manualBarcodeForm" class="manual-barcode"><input id="manualBarcodeInput" inputmode="numeric" placeholder="Or enter barcode number"><button class="btn primary" type="submit">Find</button></form></div></section>
 
@@ -582,7 +586,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     state.loading = true;
     setSyncStatus("Syncing…");
     try {
-      const path = "values:batchGet?ranges=Items!A2:M&ranges=Events!A2:N&ranges=Settings!A2:B&majorDimension=ROWS";
+      const path = "values:batchGet?ranges=Items!A2:N&ranges=Events!A2:N&ranges=Settings!A2:B&majorDimension=ROWS";
       const data = await sheetsFetch(path);
       const [itemRows = [], eventRows = [], settingRows = []] = data.valueRanges.map((range) => range.values || []);
       state.items = itemRows.map(parseItem).filter((item) => item.item_id && !item.archived);
@@ -599,7 +603,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   }
 
   function parseItem(row, index) {
-    return { item_id: row[0] || "", name: row[1] || "", barcode: row[2] || "", category: row[3] || "Other", unit: row[4] || "each", archived: toBoolean(row[6]), created_at: row[7] || "", created_by: row[8] || "", needed: toBoolean(row[9]), needed_quantity: Number(row[10] || 0), planned_store: row[11] || "", estimated_unit_price: Number(row[12] || 0), _row: index + 2 };
+    return { item_id: row[0] || "", name: row[1] || "", barcode: row[2] || "", category: row[3] || "Other", unit: row[4] || "each", archived: toBoolean(row[6]), created_at: row[7] || "", created_by: row[8] || "", needed: toBoolean(row[9]), needed_quantity: Number(row[10] || 0), planned_store: row[11] || "", estimated_unit_price: Number(row[12] || 0), nickname: row[13] || "", _row: index + 2 };
   }
 
   function parseEvent(row, index) {
@@ -639,11 +643,11 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function renderNeeded() {
     const allNeeded = state.items.filter((item) => item.needed);
-    const items = allNeeded.filter((item) => !state.neededStore || (item.planned_store || preferredStore(item.item_id)) === state.neededStore).sort((a, b) => a.name.localeCompare(b.name));
+    const items = allNeeded.filter((item) => !state.neededStore || (item.planned_store || preferredStore(item.item_id)) === state.neededStore).sort((a, b) => displayName(a).localeCompare(displayName(b)));
     qs("#neededStoreFilter").value = state.neededStore;
     qs("#neededList").innerHTML = items.map((item) => {
       const total = item.needed_quantity * item.estimated_unit_price;
-      return `<article class="item-card needed" data-item-id="${escapeHtml(item.item_id)}"><div class="item-main"><div class="item-name-row"><span class="item-name">${escapeHtml(item.name)}</span><span class="need-pill">Planned</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(item.planned_store || preferredStore(item.item_id))}</span></div><div class="tag-row"><span class="tag">Est. ${formatMoney(total)}</span><span class="tag">${formatMoney(item.estimated_unit_price)} / ${escapeHtml(item.unit)}</span></div></div><div class="card-actions"><div class="needed-qty"><strong>${formatQty(item.needed_quantity)}</strong><span>${escapeHtml(item.unit)}</span></div><button class="purchase-check" data-action="bought" data-id="${escapeHtml(item.item_id)}" aria-label="Check off ${escapeHtml(item.name)}"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button><button class="btn ghost" data-action="edit-need" data-id="${escapeHtml(item.item_id)}">Edit</button><button class="btn ghost" data-action="remove-need" data-id="${escapeHtml(item.item_id)}">Remove</button></div></article>`;
+      return `<article class="item-card needed" data-item-id="${escapeHtml(item.item_id)}"><div class="item-main"><div class="item-name-row"><span><span class="item-name">${escapeHtml(displayName(item))}</span>${officialNameHtml(item)}</span><span class="need-pill">Planned</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(item.planned_store || preferredStore(item.item_id))}</span></div><div class="tag-row"><span class="tag">Est. ${formatMoney(total)}</span><span class="tag">${formatMoney(item.estimated_unit_price)} / ${escapeHtml(item.unit)}</span></div></div><div class="card-actions"><div class="needed-qty"><strong>${formatQty(item.needed_quantity)}</strong><span>${escapeHtml(item.unit)}</span></div><button class="purchase-check" data-action="bought" data-id="${escapeHtml(item.item_id)}" aria-label="Check off ${escapeHtml(displayName(item))}"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button><button class="btn ghost" data-action="edit-need" data-id="${escapeHtml(item.item_id)}">Edit</button><button class="btn ghost" data-action="remove-need" data-id="${escapeHtml(item.item_id)}">Remove</button></div></article>`;
     }).join("");
     const empty = qs("#neededEmpty");
     empty.classList.toggle("hidden", items.length > 0);
@@ -653,17 +657,17 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function renderSuggestions(items) {
     if (!items.length) return "";
-    return `<section class="suggestions-block"><h3>Worth checking</h3><p>Based on purchase timing. Confirm before adding.</p>${items.map((item) => `<div class="suggestion-row"><span>${escapeHtml(item.name)}</span><button class="btn ghost compact" data-action="need" data-id="${escapeHtml(item.item_id)}">Confirm</button></div>`).join("")}</section>`;
+    return `<section class="suggestions-block"><h3>Worth checking</h3><p>Based on purchase timing. Confirm before adding.</p>${items.map((item) => `<div class="suggestion-row"><span>${escapeHtml(displayName(item))}</span><button class="btn ghost compact" data-action="need" data-id="${escapeHtml(item.item_id)}">Confirm</button></div>`).join("")}</section>`;
   }
 
   function renderCheck() {
-    const items = state.items.filter((item) => !state.query || `${item.name} ${item.category} ${item.barcode}`.toLowerCase().includes(state.query)).sort((a, b) => a.name.localeCompare(b.name));
+    const items = state.items.filter((item) => !state.query || `${item.nickname} ${item.name} ${item.category} ${item.barcode}`.toLowerCase().includes(state.query)).sort((a, b) => displayName(a).localeCompare(displayName(b)));
     const suggestions = getSuggestions();
     qs("#checkSuggestions").innerHTML = suggestions.length ? renderSuggestions(suggestions) : `<section class="suggestions-block"><h3>Nothing is due yet</h3><p>Suggestions will appear here as purchase timing builds up.</p></section>`;
     qs("#checkList").innerHTML = items.map((item) => {
       const last = latestPurchase(item.item_id);
       const planned = item.needed ? `<span class="tag warn">Needed × ${formatQty(item.needed_quantity)}</span>` : "";
-      return `<article class="item-card ${item.needed ? "needed" : ""}"><div class="item-main"><div class="item-name-row"><span class="item-name">${escapeHtml(item.name)}</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(item.unit)}</span></div><div class="last-bought">${last ? `Last bought ${formatDate(last.purchased_at)} at ${escapeHtml(last.actual_store || "Other")}` : "No purchase history yet"}</div><div class="tag-row">${planned}${last?.unit_price ? `<span class="tag">Last ${formatMoney(last.unit_price)}</span>` : ""}</div></div><div class="card-actions"><button class="btn primary" data-action="need" data-id="${escapeHtml(item.item_id)}">${item.needed ? "Change need" : "Need this"}</button><button class="btn ghost" data-action="bought" data-id="${escapeHtml(item.item_id)}">Bought</button></div></article>`;
+      return `<article class="item-card ${item.needed ? "needed" : ""}"><div class="item-main"><div class="item-name-row"><span><span class="item-name">${escapeHtml(displayName(item))}</span>${officialNameHtml(item)}</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(item.unit)}</span></div><div class="last-bought">${last ? `Last bought ${formatDate(last.purchased_at)} at ${escapeHtml(last.actual_store || "Other")}` : "No purchase history yet"}</div><div class="tag-row">${planned}${last?.unit_price ? `<span class="tag">Last ${formatMoney(last.unit_price)}</span>` : ""}</div></div><div class="card-actions"><button class="btn primary" data-action="need" data-id="${escapeHtml(item.item_id)}">${item.needed ? "Change need" : "Need this"}</button><button class="btn ghost" data-action="bought" data-id="${escapeHtml(item.item_id)}">Bought</button></div></article>`;
     }).join("");
     qs("#checkEmpty").classList.toggle("hidden", items.length > 0);
   }
@@ -679,10 +683,10 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     const query = normalizeText(qs("#savedNeedSearch").value);
     const store = qs("#savedNeedStore").value;
     const items = state.items.filter((item) => !item.needed)
-      .filter((item) => !query || normalizeText(`${item.name} ${item.category} ${item.barcode}`).includes(query))
+      .filter((item) => !query || normalizeText(`${item.nickname} ${item.name} ${item.category} ${item.barcode}`).includes(query))
       .filter((item) => !store || preferredStore(item.item_id, item.planned_store) === store)
-      .sort((a, b) => a.name.localeCompare(b.name));
-    qs("#savedNeedList").innerHTML = items.length ? items.map((item) => `<button type="button" data-saved-need="${escapeHtml(item.item_id)}"><span><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.category)} · ${escapeHtml(preferredStore(item.item_id, item.planned_store))}</small></span><em>Add</em></button>`).join("") : `<div class="status-banner">No matching saved items. Create a new one below.</div>`;
+      .sort((a, b) => displayName(a).localeCompare(displayName(b)));
+    qs("#savedNeedList").innerHTML = items.length ? items.map((item) => `<button type="button" data-saved-need="${escapeHtml(item.item_id)}"><span><strong>${escapeHtml(displayName(item))}</strong><small>${item.nickname ? `${escapeHtml(item.name)} · ` : ""}${escapeHtml(item.category)} · ${escapeHtml(preferredStore(item.item_id, item.planned_store))}</small></span><em>Add</em></button>`).join("") : `<div class="status-banner">No matching saved items. Create a new one below.</div>`;
   }
 
   function handleSavedNeedAction(event) {
@@ -697,7 +701,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#historyList").innerHTML = events.map((event) => {
       const item = state.items.find((x) => x.item_id === event.item_id);
       const d = new Date(event.purchased_at);
-      return `<article class="history-card"><div class="history-date"><small>${d.toLocaleString(undefined, { month: "short" })}</small>${d.getDate()}</div><div class="history-info"><strong>${escapeHtml(item?.name || "Unknown item")}</strong><span>${escapeHtml(event.actual_store || "Other")} · ${escapeHtml(event.created_by || "Family")}</span><div class="tag-row"><span class="tag ${event.planning_status === "Unplanned" ? "warn" : ""}">${escapeHtml(event.planning_status || "Unplanned")}</span><span class="tag ${event.verification_status === "Receipt verified" ? "ok" : ""}">${escapeHtml(event.verification_status || "Checked")}</span>${item?.category ? `<span class="tag">${escapeHtml(item.category)}</span>` : ""}</div></div><div class="history-qty">${formatMoney(event.total_price)}<small>${formatQty(event.quantity)} ${escapeHtml(item?.unit || "")}</small></div></article>`;
+      return `<article class="history-card"><div class="history-date"><small>${d.toLocaleString(undefined, { month: "short" })}</small>${d.getDate()}</div><div class="history-info"><strong>${escapeHtml(item ? displayName(item) : "Unknown item")}</strong>${item?.nickname ? `<span class="official-name">${escapeHtml(item.name)}</span>` : ""}<span>${escapeHtml(event.actual_store || "Other")} · ${escapeHtml(event.created_by || "Family")}</span><div class="tag-row"><span class="tag ${event.planning_status === "Unplanned" ? "warn" : ""}">${escapeHtml(event.planning_status || "Unplanned")}</span><span class="tag ${event.verification_status === "Receipt verified" ? "ok" : ""}">${escapeHtml(event.verification_status || "Checked")}</span>${item?.category ? `<span class="tag">${escapeHtml(item.category)}</span>` : ""}</div></div><div class="history-qty">${formatMoney(event.total_price)}<small>${formatQty(event.quantity)} ${escapeHtml(item?.unit || "")}</small></div></article>`;
     }).join("");
     qs("#historyEmpty").classList.toggle("hidden", events.length > 0);
   }
@@ -714,8 +718,9 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function openNeedModal(item) {
     qs("#needItemId").value = item.item_id;
-    qs("#needItemName").textContent = item.name;
-    qs("#needItemMeta").textContent = `${item.category} · ${item.unit}`;
+    qs("#needItemName").textContent = displayName(item);
+    qs("#needItemMeta").textContent = `${item.nickname ? `${item.name} · ` : ""}${item.category} · ${item.unit}`;
+    qs("#needNickname").value = item.nickname || "";
     qs("#needQuantity").value = item.needed_quantity || predictedQuantity(item.item_id);
     qs("#needPlannedStore").value = item.planned_store || preferredStore(item.item_id);
     qs("#needEstimatedPrice").value = item.estimated_unit_price || predictedPrice(item.item_id);
@@ -726,17 +731,17 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     event.preventDefault();
     const item = state.items.find((x) => x.item_id === qs("#needItemId").value);
     if (!item) return;
-    await setNeeded(item, true, Number(qs("#needQuantity").value), qs("#needPlannedStore").value, Number(qs("#needEstimatedPrice").value || 0));
-    closeModals(); setView("needed"); toast(`${item.name} added to Needed.`);
+    await setNeeded(item, true, Number(qs("#needQuantity").value), qs("#needPlannedStore").value, Number(qs("#needEstimatedPrice").value || 0), qs("#needNickname").value.trim());
+    closeModals(); setView("needed"); toast(`${displayName(item)} added to Needed.`);
   }
 
-  async function setNeeded(item, needed, quantity, store, estimate) {
+  async function setNeeded(item, needed, quantity, store, estimate, nickname = item.nickname || "") {
     if (!canWrite()) return;
-    const old = { needed: item.needed, needed_quantity: item.needed_quantity, planned_store: item.planned_store, estimated_unit_price: item.estimated_unit_price };
-    Object.assign(item, { needed, needed_quantity: quantity, planned_store: store, estimated_unit_price: estimate });
+    const old = { needed: item.needed, needed_quantity: item.needed_quantity, planned_store: item.planned_store, estimated_unit_price: item.estimated_unit_price, nickname: item.nickname };
+    Object.assign(item, { needed, needed_quantity: quantity, planned_store: store, estimated_unit_price: estimate, nickname });
     render();
     try {
-      if (!state.demo) await updateRange(`Items!J${item._row}:M${item._row}`, [[needed, quantity, store, estimate]]);
+      if (!state.demo) await updateRange(`Items!J${item._row}:N${item._row}`, [[needed, quantity, store, estimate, nickname]]);
       cacheData();
     } catch (error) { Object.assign(item, old); render(); toast(error.message, "bad"); }
   }
@@ -744,8 +749,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   function openPurchaseModal(item) {
     const wasPlanned = item.needed;
     qs("#purchaseItemId").value = item.item_id;
-    qs("#purchaseItemName").textContent = item.name;
-    qs("#purchaseItemMeta").textContent = `${item.category} · Suggested values—confirm or change.`;
+    qs("#purchaseItemName").textContent = displayName(item);
+    qs("#purchaseItemMeta").textContent = `${item.nickname ? `${item.name} · ` : ""}${item.category} · Suggested values—confirm or change.`;
     qs("#purchaseQuantity").value = item.needed_quantity || predictedQuantity(item.item_id);
     qs("#purchaseDate").value = todayInput();
     qs("#purchaseStore").value = preferredStore(item.item_id, item.planned_store);
@@ -773,15 +778,16 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       if (!state.demo) {
         const result = await appendRow("Events!A:N", purchaseRow(purchase));
         purchase._row = rowFromAppend(result) || state.events.length + 2;
-        await updateRange(`Items!J${item._row}:M${item._row}`, [[false, 0, actualStore, unitPrice]]);
+        await updateRange(`Items!J${item._row}:N${item._row}`, [[false, 0, actualStore, unitPrice, item.nickname || ""]]);
       }
       Object.assign(item, { needed: false, needed_quantity: 0, planned_store: actualStore, estimated_unit_price: unitPrice });
-      state.events.push(purchase); cacheData(); closeModals(); setView("history"); render(); toast(`${item.name} checked off.`);
+      state.events.push(purchase); cacheData(); closeModals(); setView("history"); render(); toast(`${displayName(item)} checked off.`);
     } catch (error) { toast(error.message, "bad"); }
   }
 
   function openItemModal(preset = {}) {
     qs("#itemName").value = preset.name || "";
+    qs("#itemNickname").value = preset.nickname || "";
     qs("#itemBarcode").value = preset.barcode || "";
     qs("#itemCategory").value = preset.category || "Other";
     qs("#itemUnit").value = preset.unit || "each";
@@ -794,15 +800,15 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   async function saveItem(event) {
     event.preventDefault();
     if (!canWrite()) return;
-    const item = { item_id: crypto.randomUUID(), name: qs("#itemName").value.trim(), barcode: qs("#itemBarcode").value.trim(), category: qs("#itemCategory").value, unit: qs("#itemUnit").value, archived: false, created_at: new Date().toISOString(), created_by: currentUser(), needed: true, needed_quantity: Number(qs("#itemNeededQuantity").value || 1), planned_store: qs("#itemPlannedStore").value, estimated_unit_price: Number(qs("#itemEstimatedPrice").value || 0), _row: state.items.length + 2 };
+    const item = { item_id: crypto.randomUUID(), name: qs("#itemName").value.trim(), nickname: qs("#itemNickname").value.trim(), barcode: qs("#itemBarcode").value.trim(), category: qs("#itemCategory").value, unit: qs("#itemUnit").value, archived: false, created_at: new Date().toISOString(), created_by: currentUser(), needed: true, needed_quantity: Number(qs("#itemNeededQuantity").value || 1), planned_store: qs("#itemPlannedStore").value, estimated_unit_price: Number(qs("#itemEstimatedPrice").value || 0), _row: state.items.length + 2 };
     if (!item.name) return;
     try {
       if (!state.demo) {
-        const result = await appendRow("Items!A:M", [item.item_id, item.name, item.barcode, item.category, item.unit, 0, false, item.created_at, item.created_by, true, item.needed_quantity, item.planned_store, item.estimated_unit_price]);
+        const result = await appendRow("Items!A:N", [item.item_id, item.name, item.barcode, item.category, item.unit, 0, false, item.created_at, item.created_by, true, item.needed_quantity, item.planned_store, item.estimated_unit_price, item.nickname]);
         item._row = rowFromAppend(result) || item._row;
       }
       state.items.push(item);
-      cacheData(); closeModals(); setView("needed"); render(); toast(`${item.name} added to Needed.`);
+      cacheData(); closeModals(); setView("needed"); render(); toast(`${displayName(item)} added to Needed.`);
     } catch (error) { toast(error.message, "bad"); }
   }
 
@@ -959,7 +965,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const recent = purchaseEvents().filter((purchase) => purchase.verification_status !== "Receipt verified" && new Date(purchase.purchased_at).getTime() >= cutoff).sort((a, b) => new Date(b.purchased_at) - new Date(a.purchased_at));
       const existingCandidates = recent.map((purchase) => {
         const item = state.items.find((x) => x.item_id === purchase.item_id);
-        const tokens = normalizeText(item?.name || "").split(" ").filter((token) => token.length >= 4);
+        const tokens = normalizeText(`${item?.nickname || ""} ${item?.name || ""}`).split(" ").filter((token) => token.length >= 4);
         const barcodeMatch = item?.barcode && parsed.lines.some((line) => line.barcode === String(item.barcode));
         const nameMatch = tokens.some((token) => text.includes(token));
         const priceMatch = parsed.lines.some((line) => Math.abs(line.price - purchase.total_price) < .01);
@@ -995,13 +1001,13 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function renderReceiptCandidates() {
     qs("#receiptMatches").innerHTML = state.receiptCandidates.length ? state.receiptCandidates.map((candidate, index) => {
-      if (candidate.mode === "verify") return `<label class="receipt-match existing"><input type="checkbox" data-receipt-index="${index}" checked><span><strong>${escapeHtml(candidate.item?.name || "Unknown item")}</strong><span>${formatDate(candidate.purchase.purchased_at)} · existing History entry</span></span><em>Verify</em></label>`;
+      if (candidate.mode === "verify") return `<label class="receipt-match existing"><input type="checkbox" data-receipt-index="${index}" checked><span><strong>${escapeHtml(candidate.item ? displayName(candidate.item) : "Unknown item")}</strong><span>${candidate.item?.nickname ? `${escapeHtml(candidate.item.name)} · ` : ""}${formatDate(candidate.purchase.purchased_at)} · existing History entry</span></span><em>Verify</em></label>`;
       const item = candidate.item;
       const line = candidate.line;
       const category = item?.category || inferReceiptCategory(line.name);
       const resolvedName = item?.name || line.resolvedName || cleanReceiptName(line.name);
       const source = item ? "Reusable item found" : line.resolvedName ? "Name found from barcode" : `New item · store code ${escapeHtml(line.barcode || "not read")}`;
-      return `<article class="receipt-import"><div class="receipt-import-head"><input type="checkbox" data-receipt-index="${index}" checked aria-label="Import ${escapeHtml(line.name)}"><span>${source}</span><em>${formatMoney(line.price)}</em></div><label>Item name<input data-receipt-name="${index}" value="${escapeHtml(resolvedName)}" autocomplete="off"></label><div class="form-grid"><label>Category<select data-receipt-category="${index}">${CATEGORIES.map((value) => `<option${value === category ? " selected" : ""}>${escapeHtml(value)}</option>`).join("")}</select></label><label>Item total<input data-receipt-price="${index}" type="number" min="0" step="0.01" value="${Number(line.price).toFixed(2)}"></label></div></article>`;
+      return `<article class="receipt-import"><div class="receipt-import-head"><input type="checkbox" data-receipt-index="${index}" checked aria-label="Import ${escapeHtml(line.name)}"><span>${source} · ${escapeHtml(line.barcode || "no code")}</span><em>${formatMoney(line.totalPrice ?? line.price)}</em></div><label>Official product name<input data-receipt-name="${index}" value="${escapeHtml(resolvedName)}" autocomplete="off"></label><label>Nickname <span class="optional">optional</span><input data-receipt-nickname="${index}" value="${escapeHtml(item?.nickname || "")}" autocomplete="off" placeholder="What your family calls it"></label><div class="receipt-values"><label>Category<select data-receipt-category="${index}">${CATEGORIES.map((value) => `<option${value === category ? " selected" : ""}>${escapeHtml(value)}</option>`).join("")}</select></label><label>Quantity<input data-receipt-quantity="${index}" type="number" min="0.01" step="0.01" value="${Number(line.quantity || 1)}"></label><label>Item total<input data-receipt-price="${index}" type="number" min="0" step="0.01" value="${Number(line.totalPrice ?? line.price).toFixed(2)}"></label></div></article>`;
     }).join("") : `<div class="status-banner">No receipt items were recognized.</div>`;
   }
 
@@ -1012,22 +1018,59 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       : folded.includes("walmart") ? "Walmart" : folded.includes("kroger") ? "Kroger"
         : folded.includes("food city") ? "Food City" : folded.includes("aldi") ? "Aldi" : "Other";
     const dateMatch = normalized.match(/\b(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})\b/);
+    const namedDateMatch = normalized.match(/\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\.?\s+(\d{1,2}),\s+(\d{4})\b/i);
     let date = todayInput();
     if (dateMatch) {
       const year = dateMatch[3].length === 2 ? 2000 + Number(dateMatch[3]) : Number(dateMatch[3]);
       date = `${year}-${String(Number(dateMatch[1])).padStart(2, "0")}-${String(Number(dateMatch[2])).padStart(2, "0")}`;
+    } else if (namedDateMatch) {
+      const month = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"].indexOf(namedDateMatch[1].slice(0, 3).toLowerCase()) + 1;
+      date = `${namedDateMatch[3]}-${String(month).padStart(2, "0")}-${String(Number(namedDateMatch[2])).padStart(2, "0")}`;
     }
     const ignored = /\b(?:subtotal|tax|total|visa|credit|change due|inst sv|items sold|appr|ref\s*#|tc\s*#)\b/i;
-    const lines = normalized.split(/\r?\n/).map((value) => value.trim()).map((value) => {
+    const textLines = normalized.split(/\r?\n/).map((value) => value.trim()).filter(Boolean);
+    const standardLines = textLines.map((value) => {
       if (!value || ignored.test(value)) return null;
       const match = value.match(/^([0-9O]{8,14})\s+(.+?)\s+([0-9]{1,4}[.,][0-9]{2})(?:\s*[-]?\s*[A-Z])?\s*$/i);
       if (!match) return null;
       const barcode = match[1].replace(/O/gi, "0");
       const name = match[2].replace(/\s+/g, " ").trim();
       const price = Number(match[3].replace(",", "."));
-      return barcode && name && Number.isFinite(price) ? { barcode, name, price } : null;
+      return barcode && name && Number.isFinite(price) ? { barcode, name, price, totalPrice: price, unitPrice: price, quantity: 1, unit: "each" } : null;
     }).filter(Boolean);
+    const orderLines = parseOrderReceiptLines(textLines);
+    const seen = new Set();
+    const lines = [...standardLines, ...orderLines].filter((line) => { const key = `${line.barcode}|${normalizeText(line.name)}|${line.totalPrice}`; if (seen.has(key)) return false; seen.add(key); return true; });
     return { store, date, lines };
+  }
+
+  function parseOrderReceiptLines(textLines) {
+    const products = [];
+    textLines.forEach((value, index) => {
+      const upcMatch = value.match(/\bUPC\s*:\s*([0-9O]{8,14})\b/i);
+      if (!upcMatch) return;
+      let quantityIndex = -1; let quantityMatch = null;
+      for (let cursor = index - 1; cursor >= Math.max(0, index - 5); cursor -= 1) {
+        const match = textLines[cursor].match(/^([0-9]+(?:\.[0-9]+)?)\s*(lbs?)?\s*[x×]\s*\$([0-9]+(?:\.[0-9]{2})).*?\beach\b/i);
+        if (match) { quantityIndex = cursor; quantityMatch = match; break; }
+      }
+      if (!quantityMatch) return;
+      let headerIndex = -1; let headerMatch = null;
+      for (let cursor = quantityIndex - 1; cursor >= Math.max(0, quantityIndex - 4); cursor -= 1) {
+        const match = textLines[cursor].match(/^(.*?)\s+\$(-?[0-9]+(?:\.[0-9]{2}))\s*$/);
+        if (match && !/coupon|saving|subtotal|tax|total/i.test(match[1])) { headerIndex = cursor; headerMatch = match; break; }
+      }
+      if (!headerMatch) return;
+      const continuation = textLines.slice(headerIndex + 1, quantityIndex).filter((line) => !/coupon|sale/i.test(line)).join(" ");
+      const name = `${headerMatch[1]} ${continuation}`.replace(/\s+/g, " ").trim();
+      const quantity = Number(quantityMatch[1]);
+      const unit = quantityMatch[2] ? "lb" : "each";
+      const unitPrice = Number(quantityMatch[3]);
+      const totalPrice = Number(headerMatch[2]);
+      const barcode = upcMatch[1].replace(/O/gi, "0");
+      if (name && barcode && Number.isFinite(quantity) && Number.isFinite(unitPrice) && Number.isFinite(totalPrice)) products.push({ barcode, name, price: totalPrice, totalPrice, unitPrice, quantity, unit });
+    });
+    return products;
   }
 
   function matchReceiptItem(line) {
@@ -1035,7 +1078,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     if (barcodeMatch) return barcodeMatch;
     const lineTokens = normalizeText(line.name).split(" ").filter((token) => token.length >= 4);
     return state.items.find((item) => {
-      const itemTokens = normalizeText(item.name).split(" ").filter((token) => token.length >= 4);
+      const itemTokens = normalizeText(`${item.nickname || ""} ${item.name}`).split(" ").filter((token) => token.length >= 4);
       return itemTokens.length && itemTokens.filter((token) => lineTokens.includes(token)).length >= Math.min(2, itemTokens.length);
     }) || null;
   }
@@ -1084,29 +1127,36 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       importCandidates.forEach((candidate) => {
         const index = state.receiptCandidates.indexOf(candidate);
         candidate.line.name = qs(`[data-receipt-name="${index}"]`).value.trim() || cleanReceiptName(candidate.line.name);
-        candidate.line.price = Number(qs(`[data-receipt-price="${index}"]`).value || 0);
+        candidate.line.nickname = qs(`[data-receipt-nickname="${index}"]`).value.trim();
+        candidate.line.quantity = Number(qs(`[data-receipt-quantity="${index}"]`).value || 1);
+        candidate.line.totalPrice = Number(qs(`[data-receipt-price="${index}"]`).value || 0);
+        candidate.line.price = candidate.line.totalPrice;
+        candidate.line.unitPrice = candidate.line.quantity ? Number((candidate.line.totalPrice / candidate.line.quantity).toFixed(4)) : candidate.line.totalPrice;
         candidate.line.category = qs(`[data-receipt-category="${index}"]`).value;
         const key = candidate.line.barcode || normalizeText(candidate.line.name);
         let item = candidate.item || itemByKey.get(key) || matchReceiptItem(candidate.line);
         if (!item) {
-          item = { item_id: crypto.randomUUID(), name: candidate.line.name, barcode: candidate.line.barcode, category: candidate.line.category, unit: "each", archived: false, created_at: new Date().toISOString(), created_by: currentUser(), needed: false, needed_quantity: 0, planned_store: store, estimated_unit_price: candidate.line.price, _row: state.items.length + newItems.length + 2 };
+          item = { item_id: crypto.randomUUID(), name: candidate.line.name, nickname: candidate.line.nickname, barcode: candidate.line.barcode, category: candidate.line.category, unit: candidate.line.unit || "each", archived: false, created_at: new Date().toISOString(), created_by: currentUser(), needed: false, needed_quantity: 0, planned_store: store, estimated_unit_price: candidate.line.unitPrice, _row: state.items.length + newItems.length + 2 };
           newItems.push(item); itemByKey.set(key, item);
-        } else if (state.items.includes(item) && (item.name !== candidate.line.name || item.category !== candidate.line.category)) {
-          Object.assign(item, { name: candidate.line.name, category: candidate.line.category });
+        } else if (state.items.includes(item) && (item.name !== candidate.line.name || item.category !== candidate.line.category || (item.nickname || "") !== candidate.line.nickname || item.unit !== (candidate.line.unit || item.unit))) {
+          Object.assign(item, { name: candidate.line.name, nickname: candidate.line.nickname, category: candidate.line.category, unit: candidate.line.unit || item.unit });
           updatedItems.add(item);
         }
         candidate.item = item;
       });
       if (!state.demo && newItems.length) {
-        const result = await appendRows("Items!A:M", newItems.map((item) => [item.item_id, item.name, item.barcode, item.category, item.unit, 0, false, item.created_at, item.created_by, false, 0, item.planned_store, item.estimated_unit_price]));
+        const result = await appendRows("Items!A:N", newItems.map((item) => [item.item_id, item.name, item.barcode, item.category, item.unit, 0, false, item.created_at, item.created_by, false, 0, item.planned_store, item.estimated_unit_price, item.nickname]));
         const start = firstRowFromAppend(result) || state.items.length + 2;
         newItems.forEach((item, index) => { item._row = start + index; });
       }
       state.items.push(...newItems);
-      if (!state.demo && updatedItems.size) await batchUpdateValues([...updatedItems].map((item) => ({ range: `Items!B${item._row}:D${item._row}`, majorDimension: "ROWS", values: [[item.name, item.barcode, item.category]] })));
+      if (!state.demo && updatedItems.size) await batchUpdateValues([...updatedItems].flatMap((item) => [
+        { range: `Items!B${item._row}:E${item._row}`, majorDimension: "ROWS", values: [[item.name, item.barcode, item.category, item.unit]] },
+        { range: `Items!N${item._row}`, majorDimension: "ROWS", values: [[item.nickname || ""]] },
+      ]));
       const purchases = importCandidates.map((candidate) => {
-        const purchase = makePurchase(candidate.item, { quantity: 1, date, actualStore: store, unitPrice: candidate.line.price, planningStatus: "Unplanned", note: "Imported from receipt", plannedStore: store });
-        purchase.verification_status = "Receipt verified"; purchase.receipt_id = receiptId; purchase.total_price = candidate.line.price;
+        const purchase = makePurchase(candidate.item, { quantity: candidate.line.quantity || 1, date, actualStore: store, unitPrice: candidate.line.unitPrice ?? candidate.line.price, planningStatus: "Unplanned", note: "Imported from receipt", plannedStore: store });
+        purchase.verification_status = "Receipt verified"; purchase.receipt_id = receiptId; purchase.total_price = candidate.line.totalPrice ?? candidate.line.price;
         return purchase;
       });
       if (!state.demo && purchases.length) {
@@ -1192,6 +1242,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   function formatQty(value) { return Number.isInteger(Number(value)) ? String(Number(value)) : Number(value).toFixed(1); }
   function formatMoney(value) { return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(Number(value || 0)); }
   function formatDate(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "Unknown date" : new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", year: date.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined }).format(date); }
+  function displayName(item) { return String(item?.nickname || item?.name || "Unknown item"); }
+  function officialNameHtml(item) { return item?.nickname ? `<small class="official-name">${escapeHtml(item.name)}</small>` : ""; }
   function normalizeText(value) { return String(value || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, " ").trim(); }
   function escapeHtml(value) { return String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char])); }
   function toast(message, kind = "") { const node = document.createElement("div"); node.className = `toast ${kind}`; node.textContent = message; qs("#toastRegion").appendChild(node); setTimeout(() => node.remove(), 3400); }

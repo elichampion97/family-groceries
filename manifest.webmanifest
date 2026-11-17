@@ -1,7 +1,7 @@
 {
-  "name": "Home Groceries",
+  "name": "Family Groceries",
   "short_name": "Groceries",
-  "description": "A private shared grocery inventory backed by Google Sheets.",
+  "description": "A private shared family shopping list and purchase history backed by Google Sheets.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0a0e14",

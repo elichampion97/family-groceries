@@ -302,6 +302,14 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .tag { padding: 2px 7px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--panel-2); font-size: 9.5px; font-weight: 750; }
 .tag.ok { color: var(--ok); border-color: rgba(0,231,139,.35); background: var(--ok-soft); }
 .tag.warn { color: var(--warn); border-color: rgba(255,170,0,.35); background: var(--warn-soft); }
+.location-line { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 6px; color: var(--muted); font-size: 10.5px; }
+.location-line.verified { color: var(--ok); }
+.quick-ideas { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; padding: 10px 11px; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.quick-ideas > div { min-width: 150px; margin-right: auto; }
+.quick-ideas strong, .quick-ideas span { display: block; }
+.quick-ideas strong { font-size: 12px; }
+.quick-ideas span { color: var(--muted); font-size: 9.5px; }
+.quick-ideas button { flex: 0 0 auto; min-height: 32px; padding: 5px 10px; border: 1px solid rgba(139,92,246,.45); border-radius: 999px; background: var(--brand-soft); color: var(--brand-2); font-size: 10px; font-weight: 800; cursor: pointer; }
 .purchase-check { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--ok); border-radius: 11px; background: var(--ok-soft); color: var(--ok); cursor: pointer; }
 .purchase-check svg { width: 21px; height: 21px; }
 .suggestions-block { margin-bottom: 14px; padding: 12px; border: 1px dashed rgba(139,92,246,.55); border-radius: 13px; background: rgba(139,92,246,.06); }
@@ -364,6 +372,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   .receipt-values label:first-child { grid-column: 1 / -1; }
   .average-card { grid-template-columns: 1fr; }
   .average-card > small { grid-column: auto; }
+  .quick-ideas > div { min-width: 125px; }
   .modal-backdrop { padding: 0; }
   .modal { max-height: 92vh; border-radius: 17px 17px 0 0; border-bottom: 0; }
 }
@@ -412,7 +421,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         </div>
         <div id="offlineBanner" class="status-banner warning hidden">Offline. Viewing the last sync; changes are paused.</div>
         <section id="neededPanel" class="panel-view"><label class="store-filter">Show planned store<select id="neededStoreFilter"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><div id="neededBudgetSummary" class="budget-summary"></div><div id="neededList" class="items-list" aria-live="polite"></div><div id="neededEmpty" class="empty-state hidden"><div class="empty-icon">✓</div><h3>List is clear</h3><p>Add from saved items, scan a barcode, or create something new.</p></div></section>
-        <section id="checkPanel" class="panel-view hidden"><div id="checkSuggestions" aria-live="polite"></div><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="searchInput" type="search" placeholder="Search all saved items" autocomplete="off"></label><div id="checkList" class="items-list" aria-live="polite"></div><div id="checkEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No saved items yet</h3><p>Scan a barcode or add your first needed item.</p></div></section>
+        <section id="checkPanel" class="panel-view hidden"><div id="checkSuggestions" aria-live="polite"></div><section class="quick-ideas" aria-label="Quick item families"><div><strong>Quick ideas</strong><span>Find related saved items—full recipes come later.</span></div><button type="button" data-family-search="taco">Taco night</button><button type="button" data-family-search="steak">Steak cuts</button><button type="button" data-family-search="breakfast">Breakfast</button></section><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="searchInput" type="search" placeholder="Search all saved items" autocomplete="off"></label><div id="checkList" class="items-list" aria-live="polite"></div><div id="checkEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No matching saved items</h3><p>Scan a barcode or add something new.</p></div></section>
         <section id="historyPanel" class="panel-view hidden"><div id="historyAverages" class="history-averages"></div><div id="historyList" class="history-list" aria-live="polite"></div><div id="historyEmpty" class="empty-state hidden"><div class="empty-icon">↺</div><h3>No purchases yet</h3><p>Your confirmed purchases will appear here.</p></div></section>
       </section>
     </main>
@@ -439,6 +448,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
     <section id="receiptModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="receiptTitle"><header><div><span class="eyebrow">Private local scan</span><h2 id="receiptTitle">Import a receipt</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Upload a receipt image or PDF. The file is read in this browser, then you review the names before anything is saved.</p><label>Receipt image or PDF<input id="receiptFile" type="file" accept="image/*,application/pdf,.pdf"></label><div id="receiptProgress" class="status-banner hidden">Preparing receipt reader…</div><div id="receiptDetails" class="form-grid hidden"><label>Store<select id="receiptStore"><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Purchase date<input id="receiptDate" type="date"></label></div><div id="receiptMatches" class="receipt-matches"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success hidden" id="verifyReceiptBtn" type="button">Save selected to History</button></div></div></section>
 
+    <section id="locationModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="locationTitle"><header><div><span class="eyebrow">Verified store location</span><h2 id="locationTitle">Confirm aisle or section</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="locationForm" class="modal-body stack-form"><input id="locationItemId" type="hidden"><div class="selected-item"><strong id="locationItemName">Item</strong><span id="locationItemMeta">Only confirmed details are shown on the list.</span></div><label>Store<select id="locationStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Exact branch or location<input id="locationBranch" autocomplete="off" placeholder="e.g. Kroger — Sparta St" required></label><div class="form-grid"><label>Aisle <span class="optional">optional</span><input id="locationAisle" autocomplete="off" placeholder="e.g. 12"></label><label>Section / department <span class="optional">optional</span><input id="locationSection" autocomplete="off" placeholder="e.g. Meat counter"></label></div><label>Verification source<select id="locationSource"><option>Family confirmed</option><option>Store listing</option><option>Kroger API</option></select></label><a id="storeSearchLink" class="btn ghost wide" href="#" target="_blank" rel="noopener">Search this store's website</a><span class="field-hint">A store search can help, but the app labels a location verified only after you save the branch and source here.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Save verified location</button></div></form></section>
+
     <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
   </div>
 
@@ -451,6 +462,11 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   const CATEGORIES = ["Produce", "Dairy", "Meat", "Frozen", "Pantry", "Snacks", "Beverages", "Household", "Personal care", "Non-grocery", "Other"];
   const UNITS = ["each", "pack", "lb", "oz", "gal", "box", "bag", "bottle", "can", "dozen"];
   const STORES = ["Food City", "Walmart", "Kroger", "Sam's Club", "Aldi", "Other"];
+  const ITEM_FAMILIES = [
+    { terms: ["steak", "ribeye", "sirloin", "new york strip", "ny strip", "flank steak", "filet", "t bone", "porterhouse"] },
+    { terms: ["taco", "ground beef", "hamburger", "taco shell", "tortilla", "shredded cheese", "lettuce", "taco seasoning", "salsa", "sour cream"] },
+    { terms: ["breakfast", "egg", "bacon", "sausage", "toast", "bread", "pancake", "waffle", "milk"] },
+  ];
   const SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
   const PROFILE_SCOPES = "openid email profile";
   const DEFAULT_CONFIG = Object.freeze({
@@ -460,7 +476,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   const state = {
     config: readConfig(), accessToken: "", profile: null, tokenClient: null,
-    items: [], events: [], settings: {}, view: "needed", query: "", neededStore: "", demo: false,
+    items: [], events: [], locations: [], settings: {}, view: "needed", query: "", neededStore: "", demo: false,
     loading: false, cameraStream: null, scanLoop: 0, detector: null,
     deferredInstall: null, receiptCandidates: [],
   };
@@ -505,6 +521,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#manualBarcodeForm").addEventListener("submit", manualBarcode);
     qs("#receiptFile").addEventListener("change", scanReceipt);
     qs("#verifyReceiptBtn").addEventListener("click", verifyReceipt);
+    qs("#locationForm").addEventListener("submit", saveLocation);
+    qs("#locationStore").addEventListener("change", updateStoreSearchLink);
     qs("#searchInput").addEventListener("input", (event) => { state.query = event.target.value.trim().toLowerCase(); renderCheck(); });
     qs("#neededStoreFilter").addEventListener("change", (event) => { state.neededStore = event.target.value; renderNeeded(); });
     qs("#savedNeedSearch").addEventListener("input", renderSavedNeedList);
@@ -524,6 +542,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#neededList").addEventListener("click", handleListAction);
     qs("#checkList").addEventListener("click", handleListAction);
     qs("#checkSuggestions").addEventListener("click", handleListAction);
+    qsa("[data-family-search]").forEach((button) => button.addEventListener("click", () => searchFamily(button.dataset.familySearch)));
     qs("#signoutBtn").addEventListener("click", signOut);
     qs("#openSheetBtn").addEventListener("click", () => window.open(`https://docs.google.com/spreadsheets/d/${state.config.sheetId}/edit`, "_blank", "noopener"));
     qs("#installBtn").addEventListener("click", installApp);
@@ -611,12 +630,13 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     state.loading = true;
     setSyncStatus("Syncing…");
     try {
-      const path = "values:batchGet?ranges=Items!A2:N&ranges=Events!A2:N&ranges=Settings!A2:B&majorDimension=ROWS";
+      const path = "values:batchGet?ranges=Items!A2:N&ranges=Events!A2:N&ranges=Settings!A2:B&ranges=Locations!A2:I&majorDimension=ROWS";
       const data = await sheetsFetch(path);
-      const [itemRows = [], eventRows = [], settingRows = []] = data.valueRanges.map((range) => range.values || []);
+      const [itemRows = [], eventRows = [], settingRows = [], locationRows = []] = data.valueRanges.map((range) => range.values || []);
       state.items = itemRows.map(parseItem).filter((item) => item.item_id && !item.archived);
       state.events = eventRows.map(parseEvent).filter((event) => event.event_id && event.action !== "setup");
       state.settings = Object.fromEntries(settingRows.filter((row) => row[0]).map((row) => [row[0], row[1] || ""]));
+      state.locations = locationRows.map(parseLocation).filter((location) => location.location_id && location.location_id !== "setup-location");
       cacheData(); render();
       setSyncStatus(`Synced ${new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(new Date())}`);
       if (showFeedback) toast("Groceries refreshed.");
@@ -635,8 +655,12 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     return { event_id: row[0] || "", item_id: row[1] || "", quantity: Number(row[2] || 0), action: row[3] || "", note: row[4] || "", purchased_at: row[5] || "", created_by: row[6] || "", planned_store: row[7] || "", actual_store: row[8] || "", unit_price: Number(row[9] || 0), total_price: Number(row[10] || 0), planning_status: row[11] || "", verification_status: row[12] || "", receipt_id: row[13] || "", _row: index + 2 };
   }
 
+  function parseLocation(row, index) {
+    return { location_id: row[0] || "", item_id: row[1] || "", store: row[2] || "", store_location: row[3] || "", aisle: row[4] || "", section: row[5] || "", verified_at: row[6] || "", verified_by: row[7] || "", source: row[8] || "", _row: index + 2 };
+  }
+
   function cacheData() {
-    localStorage.setItem(STORAGE_CACHE_PREFIX + state.config.sheetId, JSON.stringify({ items: state.items, events: state.events, settings: state.settings }));
+    localStorage.setItem(STORAGE_CACHE_PREFIX + state.config.sheetId, JSON.stringify({ items: state.items, events: state.events, locations: state.locations, settings: state.settings }));
   }
   function readCache() { try { return JSON.parse(localStorage.getItem(STORAGE_CACHE_PREFIX + state.config.sheetId) || "null"); } catch { return null; } }
 
@@ -676,11 +700,21 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     });
     const expectedTotal = [...storeTotals.values()].reduce((sum, value) => sum + value, 0);
     qs("#neededBudgetSummary").innerHTML = allNeeded.length ? `<section class="budget-card"><div class="budget-total"><span>Expected list total</span><strong>${formatMoney(expectedTotal)}</strong></div><div class="store-trip-totals">${[...storeTotals].sort((a, b) => b[1] - a[1]).map(([store, total]) => `<div><span>${escapeHtml(store)} trip</span><strong>${formatMoney(total)}</strong></div>`).join("")}</div><small>Estimates use each item’s confirmed quantity and unit price.</small></section>` : "";
-    const items = allNeeded.filter((item) => !state.neededStore || (item.planned_store || preferredStore(item.item_id)) === state.neededStore).sort((a, b) => displayName(a).localeCompare(displayName(b)));
+    const items = allNeeded.filter((item) => !state.neededStore || (item.planned_store || preferredStore(item.item_id)) === state.neededStore).sort((a, b) => {
+      if (!state.neededStore) return displayName(a).localeCompare(displayName(b));
+      const aLocation = latestLocation(a.item_id, state.neededStore);
+      const bLocation = latestLocation(b.item_id, state.neededStore);
+      if (aLocation && !bLocation) return -1;
+      if (!aLocation && bLocation) return 1;
+      return String(aLocation?.aisle || "zzz").localeCompare(String(bLocation?.aisle || "zzz"), undefined, { numeric: true }) || displayName(a).localeCompare(displayName(b));
+    });
     qs("#neededStoreFilter").value = state.neededStore;
     qs("#neededList").innerHTML = items.map((item) => {
       const total = item.needed_quantity * item.estimated_unit_price;
-      return `<article class="item-card needed" data-item-id="${escapeHtml(item.item_id)}"><div class="item-main"><div class="item-name-row"><span><span class="item-name">${escapeHtml(displayName(item))}</span>${officialNameHtml(item)}</span><span class="need-pill">Planned</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(item.planned_store || preferredStore(item.item_id))}</span></div><div class="tag-row"><span class="tag">Est. ${formatMoney(total)}</span><span class="tag">${formatMoney(item.estimated_unit_price)} / ${escapeHtml(item.unit)}</span></div></div><div class="card-actions"><div class="needed-qty"><strong>${formatQty(item.needed_quantity)}</strong><span>${escapeHtml(item.unit)}</span></div><button class="purchase-check" data-action="bought" data-id="${escapeHtml(item.item_id)}" aria-label="Check off ${escapeHtml(displayName(item))}"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button><button class="btn ghost" data-action="edit-need" data-id="${escapeHtml(item.item_id)}">Edit</button><button class="btn ghost" data-action="remove-need" data-id="${escapeHtml(item.item_id)}">Remove</button></div></article>`;
+      const store = item.planned_store || preferredStore(item.item_id);
+      const location = latestLocation(item.item_id, store);
+      const locationText = location ? [location.aisle && `Aisle ${location.aisle}`, location.section, location.store_location].filter(Boolean).join(" · ") : "Aisle/location not verified";
+      return `<article class="item-card needed" data-item-id="${escapeHtml(item.item_id)}"><div class="item-main"><div class="item-name-row"><span><span class="item-name">${escapeHtml(displayName(item))}</span>${officialNameHtml(item)}</span><span class="need-pill">Planned</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(store)}</span></div><div class="location-line ${location ? "verified" : ""}"><span>${location ? "✓ Verified" : "Unknown"}</span><span>${escapeHtml(locationText)}</span>${location ? `<span>· ${escapeHtml(location.source)}</span>` : ""}</div><div class="tag-row"><span class="tag">Est. ${formatMoney(total)}</span><span class="tag">${formatMoney(item.estimated_unit_price)} / ${escapeHtml(item.unit)}</span></div></div><div class="card-actions"><div class="needed-qty"><strong>${formatQty(item.needed_quantity)}</strong><span>${escapeHtml(item.unit)}</span></div><button class="purchase-check" data-action="bought" data-id="${escapeHtml(item.item_id)}" aria-label="Check off ${escapeHtml(displayName(item))}"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></button><button class="btn ghost" data-action="verify-location" data-id="${escapeHtml(item.item_id)}">${location ? "Update aisle" : "Verify aisle"}</button><button class="btn ghost" data-action="edit-need" data-id="${escapeHtml(item.item_id)}">Edit</button><button class="btn ghost" data-action="remove-need" data-id="${escapeHtml(item.item_id)}">Remove</button></div></article>`;
     }).join("");
     const empty = qs("#neededEmpty");
     empty.classList.toggle("hidden", items.length > 0);
@@ -694,7 +728,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   }
 
   function renderCheck() {
-    const items = state.items.filter((item) => !state.query || `${item.nickname} ${item.name} ${item.category} ${item.barcode}`.toLowerCase().includes(state.query)).sort((a, b) => displayName(a).localeCompare(displayName(b)));
+    const items = state.items.filter((item) => !state.query || itemSearchText(item).includes(normalizeText(state.query))).sort((a, b) => displayName(a).localeCompare(displayName(b)));
     const suggestions = getSuggestions();
     qs("#checkSuggestions").innerHTML = suggestions.length ? renderSuggestions(suggestions) : `<section class="suggestions-block"><h3>Nothing is due yet</h3><p>Suggestions will appear here as purchase timing builds up.</p></section>`;
     qs("#checkList").innerHTML = items.map((item) => {
@@ -754,6 +788,73 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     if (button.dataset.action === "need" || button.dataset.action === "edit-need") openNeedModal(item);
     if (button.dataset.action === "bought") openPurchaseModal(item);
     if (button.dataset.action === "remove-need") setNeeded(item, false, 0, item.planned_store, item.estimated_unit_price);
+    if (button.dataset.action === "verify-location") openLocationModal(item);
+  }
+
+  function searchFamily(term) {
+    state.query = term;
+    qs("#searchInput").value = term;
+    renderCheck();
+    qs("#searchInput").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function itemSearchText(item) {
+    const base = normalizeText(`${item.nickname} ${item.name} ${item.category} ${item.barcode}`);
+    const related = ITEM_FAMILIES.filter((family) => family.terms.some((term) => base.includes(normalizeText(term)))).flatMap((family) => family.terms);
+    return normalizeText(`${base} ${related.join(" ")}`);
+  }
+
+  function latestLocation(itemId, store = "") {
+    return state.locations.filter((location) => location.item_id === itemId && (!store || location.store === store)).sort((a, b) => new Date(b.verified_at || 0) - new Date(a.verified_at || 0))[0] || null;
+  }
+
+  function openLocationModal(item) {
+    const store = item.planned_store || preferredStore(item.item_id);
+    const location = latestLocation(item.item_id, store);
+    qs("#locationItemId").value = item.item_id;
+    qs("#locationItemName").textContent = displayName(item);
+    qs("#locationItemMeta").textContent = `${store} · Only confirmed details are shown on the list.`;
+    qs("#locationStore").value = store;
+    qs("#locationBranch").value = location?.store_location || "";
+    qs("#locationAisle").value = location?.aisle || "";
+    qs("#locationSection").value = location?.section || "";
+    qs("#locationSource").value = location?.source || "Family confirmed";
+    updateStoreSearchLink();
+    openModal("locationModal");
+  }
+
+  function updateStoreSearchLink() {
+    const item = state.items.find((entry) => entry.item_id === qs("#locationItemId").value);
+    const query = encodeURIComponent(item?.name || "groceries");
+    const urls = {
+      "Food City": `https://www.foodcity.com/search/?query=${query}`,
+      Walmart: `https://www.walmart.com/search?q=${query}`,
+      Kroger: `https://www.kroger.com/search?query=${query}`,
+      "Sam's Club": `https://www.samsclub.com/s/${query}`,
+      Aldi: `https://new.aldi.us/results?q=${query}`,
+      Other: `https://www.google.com/search?q=${query}+store+aisle`,
+    };
+    qs("#storeSearchLink").href = urls[qs("#locationStore").value] || urls.Other;
+  }
+
+  async function saveLocation(event) {
+    event.preventDefault();
+    if (!canWrite()) return;
+    const item = state.items.find((entry) => entry.item_id === qs("#locationItemId").value);
+    if (!item) return;
+    const location = {
+      location_id: crypto.randomUUID(), item_id: item.item_id, store: qs("#locationStore").value,
+      store_location: qs("#locationBranch").value.trim(), aisle: qs("#locationAisle").value.trim(), section: qs("#locationSection").value.trim(),
+      verified_at: new Date().toISOString(), verified_by: currentUser(), source: qs("#locationSource").value, _row: state.locations.length + 2,
+    };
+    if (!location.store_location || (!location.aisle && !location.section)) return toast("Add an aisle or section for this branch.", "bad");
+    try {
+      if (!state.demo) {
+        const result = await appendRow("Locations!A:I", [location.location_id, location.item_id, location.store, location.store_location, location.aisle, location.section, location.verified_at, location.verified_by, location.source]);
+        location._row = rowFromAppend(result) || location._row;
+      }
+      state.locations.push(location); cacheData(); closeModals(); renderNeeded(); toast(`${displayName(item)} location verified.`);
+    } catch (error) { toast(error.message, "bad"); }
   }
 
   function openNeedModal(item) {
@@ -1294,9 +1395,9 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function signOut() {
     closeModals();
-    if (state.demo) { state.demo = false; state.items = []; state.events = []; showView("signin"); return; }
+    if (state.demo) { state.demo = false; state.items = []; state.events = []; state.locations = []; showView("signin"); return; }
     if (state.accessToken && window.google?.accounts?.oauth2) google.accounts.oauth2.revoke(state.accessToken);
-    state.accessToken = ""; state.profile = null; state.items = []; state.events = []; showView("signin");
+    state.accessToken = ""; state.profile = null; state.items = []; state.events = []; state.locations = []; showView("signin");
   }
 
   function enterDemo() {
@@ -1313,6 +1414,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       demoPurchase("p3", "demo-bananas", 3, 22, "Kroger", .55, "Planned", "Receipt verified"),
       demoPurchase("p4", "demo-milk", 2, 28, "Food City", 3.19, "Planned", "Receipt verified"),
     ];
+    state.locations = [{ location_id: "demo-location", item_id: "demo-milk", store: "Food City", store_location: "Downtown branch", aisle: "8", section: "Dairy", verified_at: new Date().toISOString(), verified_by: "demo@family", source: "Family confirmed", _row: 0 }];
     qs("#profileInitial").textContent = "D"; setSyncStatus("Sample workflow"); showView("app"); render();
   }
   function demoItem(item_id, name, category, unit, needed, needed_quantity, planned_store, estimated_unit_price) { return { item_id, name, category, unit, barcode: "", archived: false, needed, needed_quantity, planned_store, estimated_unit_price, _row: 0 }; }

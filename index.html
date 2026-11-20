@@ -274,6 +274,9 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .total-preview strong { color: var(--ok); font-size: 20px; }
 .modal-copy { margin: 0; color: var(--muted); }
 .receipt-matches { display: grid; gap: 8px; }
+.receipt-review-tools { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.receipt-review-tools > strong { color: var(--brand-2); font-size: 12px; }
+.receipt-review-tools > div { display: flex; gap: 7px; }
 .receipt-reconcile { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 11px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel-2); }
 .receipt-reconcile > div { display: grid; gap: 2px; }
 .receipt-reconcile span { color: var(--muted); font-size: 9px; font-weight: 750; text-transform: uppercase; }
@@ -290,6 +293,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .receipt-import-head input { width: 18px; min-height: 18px; accent-color: var(--ok); }
 .receipt-import-head span { min-width: 0; overflow: hidden; color: var(--muted); font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 .receipt-import-head em { color: var(--ok); font-size: 12px; font-style: normal; font-weight: 850; }
+.receipt-raw-name { margin: -3px 0 1px; color: var(--faint); font-size: 10px; }
 .receipt-import label { font-size: 10px; }
 .receipt-import label input, .receipt-import label select { margin-top: 4px; }
 .receipt-values { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(74px,.7fr) minmax(88px,.8fr); gap: 9px; }
@@ -427,6 +431,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   .receipt-values { grid-template-columns: 1fr 1fr; }
   .receipt-reconcile { grid-template-columns: 1fr; }
   .receipt-values label:first-child { grid-column: 1 / -1; }
+  .receipt-review-tools { align-items: stretch; flex-direction: column; }
+  .receipt-review-tools > div { display: grid; grid-template-columns: 1fr 1fr; }
   .average-card { grid-template-columns: 1fr; }
   .history-toolbar { grid-template-columns: 1fr; }
   .history-toolbar .store-filter { display: grid; justify-content: stretch; }
@@ -511,7 +517,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
     <section id="scanModal" class="modal scan-modal hidden" role="dialog" aria-modal="true" aria-labelledby="scanTitle"><header><div><span class="eyebrow">Camera</span><h2 id="scanTitle">Scan something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div class="camera-frame"><video id="cameraVideo" playsinline muted></video><div class="scan-line"></div><div class="camera-message" id="cameraMessage">Point the camera at a UPC or EAN barcode to add it to Needed.</div></div><form id="manualBarcodeForm" class="manual-barcode"><input id="manualBarcodeInput" inputmode="numeric" placeholder="Or enter barcode number"><button class="btn primary" type="submit">Find</button></form></div></section>
 
-    <section id="receiptModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="receiptTitle"><header><div><span class="eyebrow">Private local scan</span><h2 id="receiptTitle">Import a receipt</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Upload a receipt image or PDF. The file is read in this browser, then you review the names before anything is saved.</p><label>Receipt image or PDF<input id="receiptFile" type="file" accept="image/*,application/pdf,.pdf"></label><div id="receiptProgress" class="status-banner hidden">Preparing receipt reader…</div><div id="receiptDetails" class="form-grid hidden"><label>Store<select id="receiptStore"><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Purchase date<input id="receiptDate" type="date"></label></div><div id="receiptReconcile" class="receipt-reconcile hidden"></div><div id="receiptMatches" class="receipt-matches"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success hidden" id="verifyReceiptBtn" type="button">Save selected to History</button></div></div></section>
+    <section id="receiptModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="receiptTitle"><header><div><span class="eyebrow">Private local scan</span><h2 id="receiptTitle">Import a receipt</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Upload a receipt image or PDF. The file is read in this browser, then you review the names before anything is saved. Corrections are shared privately with the family and remembered next time.</p><label>Receipt image or PDF<input id="receiptFile" type="file" accept="image/*,application/pdf,.pdf"></label><div id="receiptProgress" class="status-banner hidden">Preparing receipt reader…</div><div id="receiptDetails" class="form-grid hidden"><label>Store<select id="receiptStore"><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Purchase date<input id="receiptDate" type="date"></label></div><div id="receiptReconcile" class="receipt-reconcile hidden"></div><div id="receiptReviewTools" class="receipt-review-tools hidden"><strong id="receiptReviewCount">0 selected</strong><div><button class="btn ghost compact" id="selectAllReceiptBtn" type="button">Select all</button><button class="btn ghost compact" id="selectNoReceiptBtn" type="button">Select none</button></div></div><div id="receiptMatches" class="receipt-matches"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success hidden" id="verifyReceiptBtn" type="button">Save selected to History</button></div></div></section>
 
     <section id="locationModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="locationTitle"><header><div><span class="eyebrow">Verified store location</span><h2 id="locationTitle">Confirm aisle or section</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="locationForm" class="modal-body stack-form"><input id="locationItemId" type="hidden"><div class="selected-item"><strong id="locationItemName">Item</strong><span id="locationItemMeta">Only confirmed details are shown on the list.</span></div><label>Store<select id="locationStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Exact branch or location<input id="locationBranch" autocomplete="off" placeholder="e.g. Kroger — Sparta St" required></label><div class="form-grid"><label>Aisle <span class="optional">optional</span><input id="locationAisle" autocomplete="off" placeholder="e.g. 12"></label><label>Section / department <span class="optional">optional</span><input id="locationSection" autocomplete="off" placeholder="e.g. Meat counter"></label></div><label>Verification source<select id="locationSource"><option>Family confirmed</option><option>Store listing</option><option>Kroger API</option></select></label><div class="store-link-grid"><a id="storeBranchLink" class="btn ghost wide" href="#" target="_blank" rel="noopener">Open saved branch</a><a id="storeSearchLink" class="btn ghost wide" href="#" target="_blank" rel="noopener">Search store products</a></div><span class="field-hint">The saved branch is confirmed from the retailer's official store page. An aisle is labeled verified only after you save it here.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Save verified location</button></div></form></section>
 
@@ -596,6 +602,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#verifyReceiptBtn").addEventListener("click", verifyReceipt);
     qs("#receiptMatches").addEventListener("input", updateReceiptReconciliation);
     qs("#receiptMatches").addEventListener("change", updateReceiptReconciliation);
+    qs("#selectAllReceiptBtn").addEventListener("click", () => setReceiptSelection(true));
+    qs("#selectNoReceiptBtn").addEventListener("click", () => setReceiptSelection(false));
     qs("#locationForm").addEventListener("submit", saveLocation);
     qs("#locationStore").addEventListener("change", applyStoreProfile);
     qs("#leftoverForm").addEventListener("submit", saveLeftover);
@@ -1389,7 +1397,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   function openReceiptModal() {
     state.receiptCandidates = []; state.receiptTotal = 0;
     qs("#receiptFile").value = ""; qs("#receiptMatches").innerHTML = "";
-    qs("#receiptProgress").classList.add("hidden"); qs("#receiptDetails").classList.add("hidden"); qs("#receiptReconcile").classList.add("hidden"); qs("#verifyReceiptBtn").classList.add("hidden");
+    qs("#receiptProgress").classList.add("hidden"); qs("#receiptDetails").classList.add("hidden"); qs("#receiptReconcile").classList.add("hidden"); qs("#receiptReviewTools").classList.add("hidden"); qs("#verifyReceiptBtn").classList.add("hidden");
     qs("#receiptDate").value = todayInput(); qs("#receiptStore").value = preferredStore();
     openModal("receiptModal");
   }
@@ -1462,6 +1470,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const rawText = await readReceiptText(file, progress);
       const text = normalizeText(rawText);
       const parsed = parseReceipt(rawText);
+      parsed.lines.forEach((line) => { line.store = parsed.store; });
       state.receiptTotal = parsed.total;
       await enrichReceiptNames(parsed.lines, progress);
       qs("#receiptStore").value = parsed.store;
@@ -1489,6 +1498,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         ? `${parsed.lines.length} receipt line${parsed.lines.length === 1 ? "" : "s"} found. Review names, categories, prices, and selections.`
         : "No item lines were recognized. Try a straighter, clearer image.";
       qs("#verifyReceiptBtn").classList.toggle("hidden", !state.receiptCandidates.length);
+      qs("#receiptReviewTools").classList.toggle("hidden", !state.receiptCandidates.length);
     } catch { progress.textContent = "Receipt reading failed. Try a clearer, well-lit image or PDF."; }
   }
 
@@ -1513,14 +1523,17 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const line = candidate.line;
       const category = item?.category || inferReceiptCategory(line.name);
       const resolvedName = item?.name || line.resolvedName || cleanReceiptName(line.name);
-      const source = item ? "Reusable item found" : line.resolvedName ? "Name found from barcode" : `New item · store code ${escapeHtml(line.barcode || "not read")}`;
-      return `<article class="receipt-import"><div class="receipt-import-head"><input type="checkbox" data-receipt-index="${index}" checked aria-label="Import ${escapeHtml(line.name)}"><span>${source} · ${escapeHtml(line.barcode || "no code")}</span><em>${formatMoney(line.totalPrice ?? line.price)}</em></div><label>Official product name<input data-receipt-name="${index}" value="${escapeHtml(resolvedName)}" autocomplete="off"></label><label>Nickname <span class="optional">optional</span><input data-receipt-nickname="${index}" value="${escapeHtml(item?.nickname || "")}" autocomplete="off" placeholder="What your family calls it"></label><div class="nickname-suggestions">${nicknameButtonsHtml(resolvedName, index)}</div><div class="receipt-values"><label>Category<select data-receipt-category="${index}">${CATEGORIES.map((value) => `<option${value === category ? " selected" : ""}>${escapeHtml(value)}</option>`).join("")}</select></label><label>Quantity<input data-receipt-quantity="${index}" type="number" min="0.01" step="0.01" value="${Number(line.quantity || 1)}"></label><label>Item total<input data-receipt-price="${index}" type="number" min="0" step="0.01" value="${Number(line.totalPrice ?? line.price).toFixed(2)}"></label></div></article>`;
+      const aliasMatch = Boolean(item && line.barcode && state.settings[receiptAliasKey(line.store, line.barcode)] === item.item_id);
+      const source = aliasMatch ? "Saved family match" : item ? "Reusable item found" : line.resolvedName ? "Name found from barcode" : `New item · store code ${escapeHtml(line.barcode || "not read")}`;
+      const planned = Boolean(item?.needed || state.trip?.initialIds?.includes(item?.item_id));
+      return `<article class="receipt-import"><div class="receipt-import-head"><input type="checkbox" data-receipt-index="${index}" checked aria-label="Import ${escapeHtml(line.name)}"><span>${source} · ${escapeHtml(line.barcode || "no code")}</span><em>${formatMoney(line.totalPrice ?? line.price)}</em></div><p class="receipt-raw-name">Receipt printed: ${escapeHtml(line.name)}</p><label>Official product name<input data-receipt-name="${index}" value="${escapeHtml(resolvedName)}" autocomplete="off"></label><label>Nickname <span class="optional">optional</span><input data-receipt-nickname="${index}" value="${escapeHtml(item?.nickname || "")}" autocomplete="off" placeholder="What your family calls it"></label><div class="nickname-suggestions">${nicknameButtonsHtml(resolvedName, index)}</div><div class="receipt-values"><label>Category<select data-receipt-category="${index}">${CATEGORIES.map((value) => `<option${value === category ? " selected" : ""}>${escapeHtml(value)}</option>`).join("")}</select></label><label>Quantity<input data-receipt-quantity="${index}" type="number" min="0.01" step="0.01" value="${Number(line.quantity || 1)}"></label><label>Item total<input data-receipt-price="${index}" type="number" min="0" step="0.01" value="${Number(line.totalPrice ?? line.price).toFixed(2)}"></label><label>Purchase type<select data-receipt-planning="${index}"><option${planned ? " selected" : ""}>Planned</option><option${planned ? "" : " selected"}>Unplanned</option></select></label></div></article>`;
     }).join("") : `<div class="status-banner">No receipt items were recognized.</div>`;
   }
 
   function updateReceiptReconciliation() {
     if (!state.receiptCandidates.length) return qs("#receiptReconcile").classList.add("hidden");
     const selectedIndexes = new Set(qsa("[data-receipt-index]:checked").map((input) => Number(input.dataset.receiptIndex)));
+    qs("#receiptReviewCount").textContent = `${selectedIndexes.size} of ${state.receiptCandidates.length} selected`;
     let selectedTotal = 0;
     selectedIndexes.forEach((index) => {
       const candidate = state.receiptCandidates[index];
@@ -1532,6 +1545,11 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     const difference = hasReceiptTotal ? Number((state.receiptTotal - selectedTotal).toFixed(2)) : 0;
     qs("#receiptReconcile").innerHTML = `<div><span>Receipt total</span><strong>${hasReceiptTotal ? formatMoney(state.receiptTotal) : "Not detected"}</strong></div><div><span>Selected items</span><strong>${formatMoney(selectedTotal)}</strong></div><div class="difference ${!hasReceiptTotal || Math.abs(difference) <= .05 ? "ok" : "warn"}"><span>Difference</span><strong>${hasReceiptTotal ? formatMoney(difference) : "Review items"}</strong></div>`;
     qs("#receiptReconcile").classList.remove("hidden");
+  }
+
+  function setReceiptSelection(selected) {
+    qsa("[data-receipt-index]").forEach((input) => { input.checked = selected; });
+    updateReceiptReconciliation();
   }
 
   function commonNicknames(name) {
@@ -1642,7 +1660,14 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     return products;
   }
 
+  function receiptAliasKey(store, barcode) {
+    return `receipt_alias:${normalizeText(store || "other").replace(/\s+/g, "_")}:${String(barcode || "").trim()}`;
+  }
+
   function matchReceiptItem(line) {
+    const aliasedItemId = line.barcode && state.settings[receiptAliasKey(line.store, line.barcode)];
+    const aliasMatch = aliasedItemId && state.items.find((item) => item.item_id === aliasedItemId);
+    if (aliasMatch) return aliasMatch;
     const barcodeMatch = line.barcode && state.items.find((item) => String(item.barcode || "") === String(line.barcode));
     if (barcodeMatch) return barcodeMatch;
     const lineTokens = normalizeText(line.name).split(" ").filter((token) => token.length >= 4);
@@ -1693,6 +1718,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       const newItems = [];
       const updatedItems = new Set();
       const receiptPlanItems = new Set();
+      const newAliases = [];
       const itemByKey = new Map();
       importCandidates.forEach((candidate) => {
         const index = state.receiptCandidates.indexOf(candidate);
@@ -1703,6 +1729,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         candidate.line.price = candidate.line.totalPrice;
         candidate.line.unitPrice = candidate.line.quantity ? Number((candidate.line.totalPrice / candidate.line.quantity).toFixed(4)) : candidate.line.totalPrice;
         candidate.line.category = qs(`[data-receipt-category="${index}"]`).value;
+        candidate.line.planningStatus = qs(`[data-receipt-planning="${index}"]`)?.value || "Unplanned";
         const key = candidate.line.barcode || normalizeText(candidate.line.name);
         let item = candidate.item || itemByKey.get(key) || matchReceiptItem(candidate.line);
         if (!item) {
@@ -1717,6 +1744,10 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
           receiptPlanItems.add(item);
         }
         candidate.item = item;
+        if (candidate.line.barcode) {
+          const aliasKey = receiptAliasKey(store, candidate.line.barcode);
+          if (state.settings[aliasKey] !== item.item_id) { state.settings[aliasKey] = item.item_id; newAliases.push([aliasKey, item.item_id]); }
+        }
       });
       if (!state.demo && newItems.length) {
         const result = await appendRows("Items!A:N", newItems.map((item) => [item.item_id, item.name, item.barcode, item.category, item.unit, 0, false, item.created_at, item.created_by, false, 0, item.planned_store, item.estimated_unit_price, item.nickname]));
@@ -1724,13 +1755,14 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         newItems.forEach((item, index) => { item._row = start + index; });
       }
       state.items.push(...newItems);
+      if (!state.demo && newAliases.length) await appendRows("Settings!A:B", newAliases);
       if (!state.demo && updatedItems.size) await batchUpdateValues([...updatedItems].flatMap((item) => [
         { range: `Items!B${item._row}:E${item._row}`, majorDimension: "ROWS", values: [[item.name, item.barcode, item.category, item.unit]] },
         { range: `Items!N${item._row}`, majorDimension: "ROWS", values: [[item.nickname || ""]] },
       ]));
       if (!state.demo && receiptPlanItems.size) await batchUpdateValues([...receiptPlanItems].map((item) => ({ range: `Items!J${item._row}:N${item._row}`, majorDimension: "ROWS", values: [[false, 0, store, item.estimated_unit_price, item.nickname || ""]] })));
       const purchases = importCandidates.map((candidate) => {
-        const purchase = makePurchase(candidate.item, { quantity: candidate.line.quantity || 1, date, actualStore: store, unitPrice: candidate.line.unitPrice ?? candidate.line.price, planningStatus: "Unplanned", note: "Imported from receipt", plannedStore: store });
+        const purchase = makePurchase(candidate.item, { quantity: candidate.line.quantity || 1, date, actualStore: store, unitPrice: candidate.line.unitPrice ?? candidate.line.price, planningStatus: candidate.line.planningStatus || "Unplanned", note: "Imported from receipt", plannedStore: store });
         purchase.verification_status = "Receipt verified"; purchase.receipt_id = receiptId; purchase.total_price = candidate.line.totalPrice ?? candidate.line.price;
         return purchase;
       });

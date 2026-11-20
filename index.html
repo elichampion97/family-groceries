@@ -448,6 +448,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 .profile-large { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg,var(--brand),#6d28d9); font-weight: 800; }
 .account-card strong, .account-card span { display: block; }
 .account-card span { color: var(--muted); font-size: 12px; }
+.gemini-btn { color: #c4b5fd; border-color: rgba(139,92,246,.55); background: var(--brand-soft); font-size: 20px; }
+.helper-prompts { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+.helper-prompts::-webkit-scrollbar { display: none; }
+.helper-prompts button { flex: 0 0 auto; min-height: 34px; padding: 6px 10px; border: 1px solid rgba(139,92,246,.45); border-radius: 999px; background: var(--brand-soft); color: var(--brand-2); font-size: 10px; font-weight: 800; cursor: pointer; }
+.helper-answer { max-height: 34vh; overflow: auto; padding: 14px; border: 1px solid rgba(139,92,246,.4); border-radius: 11px; background: linear-gradient(135deg, rgba(139,92,246,.11), rgba(0,231,139,.04)); color: var(--ink); line-height: 1.55; white-space: pre-wrap; }
 
 .undo-toast { position: fixed; z-index: 80; left: 50%; bottom: calc(78px + var(--safe-bottom)); display: flex; align-items: center; gap: 24px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px; transform: translateX(-50%); background: #242a37; color: var(--ink); box-shadow: var(--shadow); cursor: pointer; }
 .undo-toast strong { color: var(--brand-2); }
@@ -534,6 +539,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
         <div><h1 id="householdTitle">Family Groceries</h1><p id="syncStatus">Private Google Sheet</p></div>
       </div>
       <div class="header-actions">
+        <button class="icon-btn gemini-btn" id="geminiBtn" aria-label="Ask Gemini helper" title="Ask Gemini"><span aria-hidden="true">✦</span></button>
         <button class="icon-btn" id="refreshBtn" aria-label="Refresh groceries"><svg viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5M6.1 9a7 7 0 0 1 11.5-2.6L20 9M4 15l2.4 2.6A7 7 0 0 0 17.9 15"/></svg></button>
         <button class="profile-btn" id="profileBtn" aria-label="Account and settings"><span id="profileInitial">?</span></button>
       </div>
@@ -594,7 +600,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 
     <section id="purchaseModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="purchaseModalTitle"><header><div><span class="eyebrow">Purchase</span><h2 id="purchaseModalTitle">Confirm what you bought</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="purchaseForm" class="modal-body stack-form"><input id="purchaseItemId" type="hidden"><div class="selected-item"><strong id="purchaseItemName">Item</strong><span id="purchaseItemMeta"></span></div><div class="form-grid"><label>Quantity bought<input id="purchaseQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Purchase date<input id="purchaseDate" type="date" required></label></div><div class="form-grid"><label>Actual store<select id="purchaseStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="purchaseUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><div class="form-grid"><label>Purchase type<select id="purchasePlanningStatus"><option>Planned</option><option>Unplanned</option></select></label><div class="total-preview"><span>Item total</span><strong id="purchaseTotal">$0.00</strong></div></div><div id="purchasePriceInsight" class="price-insight"></div><span class="field-hint" id="purchaseStoreHint">Suggested from your history—confirm or change.</span><label>Note <span class="optional">optional</span><input id="purchaseNote" autocomplete="off" placeholder="Flavor, size, substitution…"></label><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success" type="submit">Check off purchase</button></div></form></section>
 
-    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Official product name<input id="itemName" autocomplete="off" required></label><label>Nickname <span class="optional">optional</span><input id="itemNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="itemNicknameSuggestions" class="nickname-suggestions"></div><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
+    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Official product name<input id="itemName" autocomplete="off" required></label><label>Nickname <span class="optional">optional</span><input id="itemNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="itemNicknameSuggestions" class="nickname-suggestions"></div><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><label class="btn ghost compact photo-scan">Identify package with Gemini<input id="itemPhotoInput" type="file" accept="image/*" capture="environment"></label><div id="itemPhotoStatus" class="status-banner hidden">Reading package…</div><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
     <section id="scanModal" class="modal scan-modal hidden" role="dialog" aria-modal="true" aria-labelledby="scanTitle"><header><div><span class="eyebrow">Camera</span><h2 id="scanTitle">Scan something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div class="camera-frame"><video id="cameraVideo" playsinline muted autoplay></video><div class="scan-line"></div><div class="camera-message" id="cameraMessage">Point the camera at a UPC or EAN barcode to add it to Needed.</div></div><div class="scanner-alternatives"><label class="btn ghost compact photo-scan">Scan from photo<input id="barcodePhotoInput" type="file" accept="image/*" capture="environment"></label><span>Useful when iPhone Safari cannot continuously detect the barcode.</span></div><form id="manualBarcodeForm" class="manual-barcode"><input id="manualBarcodeInput" inputmode="numeric" placeholder="Or enter barcode number"><button class="btn primary" type="submit">Find</button></form></div></section>
 
@@ -610,6 +616,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     <section id="recipeDetailModal" class="modal recipe-detail-modal hidden" role="dialog" aria-modal="true" aria-labelledby="recipeDetailTitle"><header><div><span class="eyebrow">Family cookbook</span><h2 id="recipeDetailTitle">Recipe</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div id="recipeDetail"></div></div></section>
 
     <section id="recipeImportModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="recipeImportTitle"><header><div><span class="eyebrow">Printed or handwritten</span><h2 id="recipeImportTitle">Import a recipe</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Choose an image or PDF. Text is read privately in this browser so you can correct it before saving. Permanent family-Drive storage will activate after the secure upload connection is added.</p><label>Recipe image or PDF<input id="recipeImportFile" type="file" accept="image/*,application/pdf,.pdf"></label><div id="recipeImportProgress" class="status-banner hidden">Reading recipe…</div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button></div></div></section>
+
+    <section id="geminiModal" class="modal helper-modal hidden" role="dialog" aria-modal="true" aria-labelledby="geminiTitle"><header><div><span class="eyebrow">Private family helper</span><h2 id="geminiTitle">Ask Gemini</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="geminiForm" class="modal-body stack-form"><p class="modal-copy">Gemini can explain recipes, suggest meal ideas, compare the current list, or help you remember what may be missing. It never changes family data without your confirmation.</p><div class="helper-prompts"><button type="button" data-helper-prompt="What common items might be missing from our current grocery list?">What might be missing?</button><button type="button" data-helper-prompt="Suggest three meals using our current grocery list and saved recipes.">Meal ideas</button><button type="button" data-helper-prompt="Help me reduce the expected cost of this grocery trip without removing essentials.">Lower trip cost</button></div><label>Your question<textarea id="geminiQuestion" rows="4" maxlength="2000" required placeholder="Ask about the list, shopping history, leftovers, or recipes…"></textarea></label><label class="check-label"><input id="geminiIncludeContext" type="checkbox" checked><span>Include the current family list, recent purchases, leftovers, and recipe names</span></label><div id="geminiProgress" class="status-banner hidden">Thinking…</div><div id="geminiAnswer" class="helper-answer hidden" aria-live="polite"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Close</button><button class="btn primary" id="geminiAskBtn" type="submit">Ask Gemini</button></div></form></section>
 
     <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn ghost wide" id="showGuideBtn" type="button">Show quick start guide</button><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="resetPracticeBtn" type="button">Reset Practice Mode</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
   </div>
@@ -634,6 +642,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
   ];
   const SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
   const PROFILE_SCOPES = "openid email profile";
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzGs7zqZquEhbmWou7EU8e0j1HrY-4oerernkmJnNMofBnBCADQq4eaHO2zUvAjHFs_wQ/exec";
   const DEFAULT_CONFIG = Object.freeze({
     clientId: "407047281361-2u9m5q4c39ocgd6r2d7fgiia8anal3rc.apps.googleusercontent.com",
     sheetId: "1exL1itsRpbgXTplAoMelIw6kKHMo3-Xy19g4Zi86zdE",
@@ -678,6 +687,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#changeSetupBtn").addEventListener("click", () => showView("setup"));
     qs("#refreshBtn").addEventListener("click", () => loadData(true));
     qs("#profileBtn").addEventListener("click", openAccountModal);
+    qs("#geminiBtn").addEventListener("click", openGeminiHelper);
+    qs("#geminiForm").addEventListener("submit", askGeminiHelper);
+    qsa("[data-helper-prompt]").forEach((button) => button.addEventListener("click", () => { qs("#geminiQuestion").value = button.dataset.helperPrompt; qs("#geminiQuestion").focus(); }));
     qs("#scanTopBtn").addEventListener("click", openScanner);
     qs("#scanNavBtn").addEventListener("click", openScanner);
     qs("#addItemBtn").addEventListener("click", () => state.view === "leftovers" ? openLeftoverModal() : state.view === "recipes" ? openRecipeModal() : openAddNeededModal());
@@ -685,6 +697,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#needForm").addEventListener("submit", saveNeeded);
     qs("#purchaseForm").addEventListener("submit", recordPurchase);
     qs("#itemForm").addEventListener("submit", saveItem);
+    qs("#itemPhotoInput").addEventListener("change", identifyItemPhoto);
     qs("#manualBarcodeForm").addEventListener("submit", manualBarcode);
     qs("#barcodePhotoInput").addEventListener("change", scanBarcodePhoto);
     qs("#receiptFile").addEventListener("change", scanReceipt);
@@ -751,6 +764,77 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
   function populateSelects() {
     qs("#itemCategory").innerHTML = CATEGORIES.map((x) => `<option>${escapeHtml(x)}</option>`).join("");
     qs("#itemUnit").innerHTML = UNITS.map((x) => `<option>${escapeHtml(x)}</option>`).join("");
+  }
+
+  function openGeminiHelper() {
+    if (state.demo) return toast("Gemini is available after signing in with a family Google account.", "bad");
+    qs("#geminiQuestion").value = "";
+    qs("#geminiProgress").classList.add("hidden");
+    qs("#geminiAnswer").classList.add("hidden");
+    qs("#geminiAnswer").textContent = "";
+    openModal("geminiModal");
+    setTimeout(() => qs("#geminiQuestion").focus(), 50);
+  }
+
+  function geminiContext() {
+    const needed = state.items.filter((item) => item.needed).map((item) => ({ name: displayName(item), quantity: item.needed_quantity, unit: item.unit, store: item.planned_store, estimate: item.estimated_unit_price }));
+    const recentPurchases = purchaseEvents().sort((a, b) => new Date(b.purchased_at) - new Date(a.purchased_at)).slice(0, 40).map((event) => {
+      const item = state.items.find((entry) => entry.item_id === event.item_id);
+      return { name: item ? displayName(item) : "Unknown item", date: event.purchased_at, store: event.actual_store, quantity: event.quantity, total: event.total_price };
+    });
+    const leftovers = state.leftovers.filter((item) => !item.consumed).map((item) => ({ name: item.name, made: item.made_date, expires: item.expires_date }));
+    const recipes = state.recipes.slice(0, 80).map((recipe) => ({ title: recipe.title, servings: recipe.servings }));
+    return JSON.stringify({ currentView: state.view, needed, recentPurchases, leftovers, recipes });
+  }
+
+  async function askGeminiHelper(event) {
+    event.preventDefault();
+    const question = qs("#geminiQuestion").value.trim();
+    if (!question) return;
+    const button = qs("#geminiAskBtn");
+    const progress = qs("#geminiProgress");
+    const answer = qs("#geminiAnswer");
+    button.disabled = true; progress.classList.remove("hidden"); answer.classList.add("hidden");
+    progress.textContent = "Gemini is reviewing the family context…";
+    try {
+      const result = await backendRequest("askHelper", { question, context: qs("#geminiIncludeContext").checked ? geminiContext() : "" });
+      if (!result.ok) throw new Error(result.error || "Gemini could not answer right now.");
+      answer.textContent = result.answer; answer.classList.remove("hidden"); progress.classList.add("hidden");
+    } catch (error) { progress.textContent = error.message; toast(error.message, "bad"); }
+    finally { button.disabled = false; }
+  }
+
+  function backendRequest(action, fields = {}) {
+    if (!state.accessToken) return Promise.reject(new Error("Sign in with Google first."));
+    return new Promise((resolve, reject) => {
+      const requestId = crypto.randomUUID();
+      const iframe = document.createElement("iframe");
+      const form = document.createElement("form");
+      const cleanup = () => { window.removeEventListener("message", onMessage); iframe.remove(); form.remove(); clearTimeout(timer); };
+      const onMessage = (event) => {
+        if (event.source !== iframe.contentWindow || !String(event.origin).endsWith(".googleusercontent.com")) return;
+        if (event.data?.source !== "family-recipes-backend" || event.data.requestId !== requestId) return;
+        cleanup(); resolve(event.data.payload || {});
+      };
+      iframe.name = `family-backend-${requestId}`; iframe.className = "hidden"; iframe.setAttribute("aria-hidden", "true");
+      form.method = "POST"; form.action = BACKEND_URL; form.target = iframe.name; form.className = "hidden";
+      Object.entries({ requestId, action, token: state.accessToken, ...fields }).forEach(([name, value]) => {
+        const input = document.createElement("input"); input.type = "hidden"; input.name = name; input.value = String(value ?? ""); form.appendChild(input);
+      });
+      window.addEventListener("message", onMessage); document.body.append(iframe, form);
+      const timer = window.setTimeout(() => { cleanup(); reject(new Error("The family helper timed out. Please try again.")); }, 90000);
+      form.submit();
+    });
+  }
+
+  async function fileBackendFields(file) {
+    if (!file) throw new Error("Choose a file first.");
+    if (file.size > 10 * 1024 * 1024) throw new Error("Images and PDFs must be 10 MB or smaller.");
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader(); reader.onload = () => resolve(String(reader.result || "")); reader.onerror = () => reject(new Error("That file could not be read.")); reader.readAsDataURL(file);
+    });
+    const mimeType = file.type || (file.name.toLowerCase().endsWith(".pdf") ? "application/pdf" : "image/jpeg");
+    return { filename: file.name || "family-upload", mimeType, base64: dataUrl.split(",")[1] || "" };
   }
 
   function saveSetup(event) {
@@ -1404,8 +1488,27 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 
   async function importRecipeFile(event) {
     const file = event.target.files?.[0]; if (!file) return;
-    const progress = qs("#recipeImportProgress"); progress.classList.remove("hidden"); progress.textContent = "Reading recipe privately in this browser…";
+    const progress = qs("#recipeImportProgress"); progress.classList.remove("hidden"); progress.textContent = "Gemini is reading and preserving this recipe…";
     try {
+      if (!state.demo && state.accessToken) {
+        const fields = await fileBackendFields(file);
+        const [parsedResult, uploadResult] = await Promise.all([
+          backendRequest("parseRecipe", fields),
+          backendRequest("uploadRecipeSource", { ...fields, role: "source" }),
+        ]);
+        if (!parsedResult.ok) throw new Error(parsedResult.error || "Gemini could not read this recipe.");
+        const parsed = parsedResult.recipe;
+        closeModals(); openRecipeModal();
+        qs("#recipeTitle").value = parsed.title || file.name.replace(/\.[^.]+$/, "");
+        qs("#recipeServings").value = Number(parsed.servings || 4);
+        qs("#recipeBackground").value = parsed.background || "";
+        qs("#recipeIngredients").value = (parsed.ingredients || []).map((item) => `${item.quantity || ""} | ${item.unit || "each"} | ${item.name || ""}${item.optional ? " | optional" : ""}`).join("\n");
+        qs("#recipeInstructions").value = (parsed.instructions || []).join("\n");
+        qs("#recipeNotes").value = [parsed.notes || "", ...(parsed.confidenceWarnings || []).map((warning) => `Please verify: ${warning}`)].filter(Boolean).join("\n");
+        if (uploadResult.ok) qs("#recipePhotoUrl").value = uploadResult.file?.url || "";
+        toast("Gemini imported the recipe and saved the original in Family Drive. Please verify it before saving.");
+        return;
+      }
       const rawText = await readReceiptText(file, progress);
       const parsed = parseRecipeText(rawText, file.name);
       closeModals(); openRecipeModal();
@@ -1669,7 +1772,24 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#itemNeededQuantity").value = preset.quantity || 1;
     qs("#itemPlannedStore").value = preset.store || state.trip?.store || preferredStore();
     qs("#itemEstimatedPrice").value = preset.price || 0;
+    qs("#itemPhotoInput").value = ""; qs("#itemPhotoStatus").classList.add("hidden");
     openModal("itemModal"); setTimeout(() => qs("#itemName").focus(), 50);
+  }
+
+  async function identifyItemPhoto(event) {
+    const file = event.target.files?.[0]; if (!file) return;
+    const status = qs("#itemPhotoStatus"); status.classList.remove("hidden"); status.textContent = "Gemini is reading the visible package label…";
+    try {
+      const result = await backendRequest("identifyProduct", { ...(await fileBackendFields(file)), barcode: qs("#itemBarcode").value });
+      if (!result.ok) throw new Error(result.error || "Gemini could not identify this package.");
+      const product = result.product || {};
+      qs("#itemName").value = [product.brand, product.productName, product.size].filter(Boolean).join(" ");
+      if (CATEGORIES.includes(product.category)) qs("#itemCategory").value = product.category;
+      if (UNITS.includes(product.unit)) qs("#itemUnit").value = product.unit;
+      if (!qs("#itemBarcode").value && product.barcodeVisible) qs("#itemBarcode").value = product.barcodeVisible;
+      renderNicknameSuggestions("itemNicknameSuggestions", `${product.productName || ""} ${(product.nicknameSuggestions || []).join(" ")}`, "#itemNickname");
+      status.textContent = product.warnings?.length ? `Please verify: ${product.warnings.join(" ")}` : "Package identified. Confirm the details below.";
+    } catch (error) { status.textContent = error.message; toast(error.message, "bad"); }
   }
 
   async function saveItem(event) {
@@ -1878,11 +1998,33 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 
   async function scanReceipt(event) {
     const file = event.target.files?.[0]; if (!file) return;
-    const progress = qs("#receiptProgress"); progress.classList.remove("hidden"); progress.textContent = "Loading private receipt reader…";
+    const progress = qs("#receiptProgress"); progress.classList.remove("hidden"); progress.textContent = "Gemini is reading the receipt…";
     try {
-      const rawText = await readReceiptText(file, progress);
+      let rawText = "";
+      let parsed = null;
+      if (!state.demo && state.accessToken) {
+        try {
+          const result = await backendRequest("parseReceipt", await fileBackendFields(file));
+          if (!result.ok) throw new Error(result.error || "Gemini receipt reading was unavailable.");
+          const receipt = result.receipt || {};
+          const lines = (receipt.items || []).map((item) => ({
+            name: item.rawLine || item.name || "Receipt item", resolvedName: item.name || "", nickname: item.nickname || "", barcode: String(item.barcode || ""),
+            category: item.category || "Other", quantity: Number(item.quantity || 1), unit: item.unit || "each", unitPrice: Number(item.unitPrice || 0),
+            price: Number(item.totalPrice || (Number(item.unitPrice || 0) * Number(item.quantity || 1))), totalPrice: Number(item.totalPrice || (Number(item.unitPrice || 0) * Number(item.quantity || 1))),
+            store: receipt.store || preferredStore(),
+          })).filter((line) => line.resolvedName || line.barcode || line.price);
+          rawText = lines.map((line) => `${line.name} ${line.barcode} ${line.price}`).join("\n");
+          parsed = { store: STORES.includes(receipt.store) ? receipt.store : preferredStore(), date: /^\d{4}-\d{2}-\d{2}$/.test(receipt.date || "") ? receipt.date : todayInput(), total: Number(receipt.total || 0), lines };
+          progress.textContent = "Gemini read the receipt. Matching it to family history…";
+        } catch (geminiError) {
+          progress.textContent = "Gemini was unavailable; using the private browser reader…";
+        }
+      }
+      if (!parsed) {
+        rawText = await readReceiptText(file, progress);
+        parsed = parseReceipt(rawText);
+      }
       const text = normalizeText(rawText);
-      const parsed = parseReceipt(rawText);
       parsed.lines.forEach((line) => { line.store = parsed.store; });
       state.receiptTotal = parsed.total;
       await enrichReceiptNames(parsed.lines, progress);

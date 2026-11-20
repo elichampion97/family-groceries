@@ -374,6 +374,10 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .leftover-summary span { padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel-2); color: var(--muted); font-size: 12px; font-weight: 750; }
 .leftover-summary .warn { color: var(--warn); border-color: rgba(255,170,0,.35); background: var(--warn-soft); }
 .leftovers-list { display: grid; gap: 9px; }
+.leftover-group { display: grid; gap: 8px; }
+.leftover-group + .leftover-group { margin-top: 8px; }
+.leftover-group-title { display: flex; align-items: center; justify-content: space-between; margin: 2px 2px 0; color: var(--muted); font-size: 12px; }
+.leftover-group-title strong { color: var(--ink); font-size: 14px; }
 .leftover-card { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); }
 .leftover-card.consumed { opacity: .58; }
 .leftover-card.expired { border-color: rgba(255,85,114,.48); background: linear-gradient(90deg, var(--bad-soft), var(--panel) 46%); }
@@ -384,6 +388,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .leftover-status { color: var(--ok); font-weight: 800; }
 .leftover-status.warn { color: var(--warn); }
 .leftover-status.bad { color: var(--bad); }
+.leftover-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.leftover-actions .btn { min-height: 36px; padding: 7px 10px; }
 .check-label { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel-2); }
 .check-label input { width: 20px; min-height: 20px; accent-color: var(--ok); }
 .saved-need-list { display: grid; gap: 7px; max-height: 42vh; overflow: auto; }
@@ -452,6 +458,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   .leftover-toolbar .store-filter select { width: 100%; }
   .leftover-card { grid-template-columns: auto minmax(0,1fr); }
   .leftover-card .btn { grid-column: 2; justify-self: start; }
+  .leftover-actions { grid-column: 2; justify-content: flex-start; }
+  .leftover-actions .btn { grid-column: auto; }
   .trip-banner { align-items: stretch; flex-direction: column; }
   .trip-metrics { grid-template-columns: repeat(3,1fr); }
   .receipt-values { grid-template-columns: 1fr 1fr; }
@@ -521,7 +529,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         <section id="neededPanel" class="panel-view"><aside id="gettingStarted" class="getting-started hidden" aria-label="Getting started"><div><span class="eyebrow">First family trip</span><strong>Four simple steps</strong><p><b>1</b> Add what you need <b>2</b> Pick the store <b>3</b> Check items off <b>4</b> Verify the receipt</p></div><button id="dismissGuideBtn" class="btn ghost compact" type="button">Got it</button></aside><div class="trip-toolbar"><label class="store-filter">Show planned store<select id="neededStoreFilter"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><button id="tripModeBtn" class="btn ghost compact" type="button">Start trip</button></div><div id="neededStoreChips" class="store-chips" aria-label="Quick store filters"></div><div id="tripBanner" class="trip-banner hidden"></div><div id="neededBudgetSummary" class="budget-summary"></div><div id="neededList" class="items-list" aria-live="polite"></div><div id="neededEmpty" class="empty-state hidden"><div class="empty-icon">✓</div><h3>List is clear</h3><p>Add from saved items, scan a barcode, or create something new.</p></div></section>
         <section id="checkPanel" class="panel-view hidden"><div id="checkSuggestions" aria-live="polite"></div><section class="quick-ideas" aria-label="Quick item families"><div><strong>Quick ideas</strong><span>Find related saved items—full recipes come later.</span></div><button type="button" data-family-search="taco">Taco night</button><button type="button" data-family-search="steak">Steak cuts</button><button type="button" data-family-search="breakfast">Breakfast</button></section><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="searchInput" type="search" placeholder="Search all saved items" autocomplete="off"></label><div id="checkList" class="items-list" aria-live="polite"></div><div id="checkEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No matching saved items</h3><p>Scan a barcode or add something new.</p></div></section>
         <section id="historyPanel" class="panel-view hidden"><div class="history-toolbar"><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="historySearch" type="search" placeholder="Search purchase history" autocomplete="off"></label><label class="store-filter">Store<select id="historyStoreFilter"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><div id="historyAverages" class="history-averages"></div><div id="historyTrips" class="history-trips"></div><div id="historyList" class="history-list" aria-live="polite"></div><div id="historyEmpty" class="empty-state hidden"><div class="empty-icon">↺</div><h3>No matching purchases</h3><p>Try another item or store.</p></div></section>
-        <section id="leftoversPanel" class="panel-view hidden"><section class="quick-ideas leftover-ideas" aria-label="Common meal shortcuts"><div><strong>Common meals</strong><span>Tap one or add anything free-form.</span></div><button type="button" data-meal-name="Taco meat">Taco meat</button><button type="button" data-meal-name="Chicken">Chicken</button><button type="button" data-meal-name="Pasta">Pasta</button><button type="button" data-meal-name="Soup">Soup</button></section><div class="leftover-toolbar"><div id="leftoverSummary" class="leftover-summary"></div><label class="store-filter">Show<select id="leftoverFilter"><option value="available">Available only</option><option value="all">All entries</option></select></label></div><div id="leftoversList" class="leftovers-list" aria-live="polite"></div><div id="leftoversEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No leftovers here</h3><p>Add meal prep or something saved from dinner.</p></div></section>
+        <section id="leftoversPanel" class="panel-view hidden"><section class="quick-ideas leftover-ideas" aria-label="Common meal shortcuts"><div><strong>Common meals</strong><span>Tap one or add anything free-form.</span></div><button type="button" data-meal-name="Taco meat">Taco meat</button><button type="button" data-meal-name="Chicken">Chicken</button><button type="button" data-meal-name="Pasta">Pasta</button><button type="button" data-meal-name="Soup">Soup</button></section><section id="recentMealIdeas" class="quick-ideas leftover-ideas hidden" aria-label="Recent meal shortcuts"></section><div class="leftover-toolbar"><div id="leftoverSummary" class="leftover-summary"></div><label class="store-filter">Show<select id="leftoverFilter"><option value="available">Available only</option><option value="all">All entries</option></select></label></div><div id="leftoversList" class="leftovers-list" aria-live="polite"></div><div id="leftoversEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No leftovers here</h3><p>Add meal prep or something saved from dinner.</p></div></section>
       </section>
     </main>
 
@@ -642,6 +650,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#leftoverFilter").addEventListener("change", (event) => { state.leftoverFilter = event.target.value; renderLeftovers(); });
     qs("#leftoversList").addEventListener("change", handleLeftoverToggle);
     qs("#leftoversList").addEventListener("click", handleLeftoverAction);
+    qs("#recentMealIdeas").addEventListener("click", (event) => { const button = event.target.closest("[data-recent-meal]"); if (button) openLeftoverModal({ name: button.dataset.recentMeal }); });
     qsa("[data-meal-name]").forEach((button) => button.addEventListener("click", () => openLeftoverModal({ name: button.dataset.mealName })));
     qs("#searchInput").addEventListener("input", (event) => { state.query = event.target.value.trim().toLowerCase(); renderCheck(); });
     qs("#neededStoreFilter").addEventListener("change", (event) => { state.neededStore = event.target.value; if (state.trip && state.trip.store !== state.neededStore) { state.trip = null; clearTripState(); } renderNeeded(); });
@@ -1092,17 +1101,29 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#leftoverFilter").value = state.leftoverFilter;
     const available = state.leftovers.filter((entry) => entry.available);
     const expiring = available.filter((entry) => daysUntil(entry.expires_at) >= 0 && daysUntil(entry.expires_at) <= 2);
-    qs("#leftoverSummary").innerHTML = `<span>${available.length} available</span><span class="${expiring.length ? "warn" : ""}">${expiring.length} expiring soon</span>`;
+    const overdue = available.filter((entry) => daysUntil(entry.expires_at) < 0);
+    qs("#leftoverSummary").innerHTML = `<span>${available.length} available</span><span class="${expiring.length ? "warn" : ""}">${expiring.length} eat soon</span>${overdue.length ? `<span class="warn">${overdue.length} overdue</span>` : ""}`;
+    const recentNames = [...state.leftovers].sort((a, b) => String(b.made_at).localeCompare(String(a.made_at))).map((entry) => entry.name.trim()).filter(Boolean).filter((name, index, names) => names.findIndex((value) => normalizeText(value) === normalizeText(name)) === index).slice(0, 6);
+    qs("#recentMealIdeas").innerHTML = recentNames.length ? `<div><strong>Made before</strong><span>Reuse a recent meal name.</span></div>${recentNames.map((name) => `<button type="button" data-recent-meal="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join("")}` : "";
+    qs("#recentMealIdeas").classList.toggle("hidden", !recentNames.length);
     const entries = state.leftovers.filter((entry) => state.leftoverFilter === "all" || entry.available).sort((a, b) => Number(b.available) - Number(a.available) || String(a.expires_at).localeCompare(String(b.expires_at)) || a.name.localeCompare(b.name));
-    qs("#leftoversList").innerHTML = entries.map((entry) => {
-      const days = daysUntil(entry.expires_at);
-      const expired = entry.available && days < 0;
-      const status = !entry.available ? "Not available" : days < 0 ? `Expired ${Math.abs(days)} day${Math.abs(days) === 1 ? "" : "s"} ago` : days === 0 ? "Use today" : days === 1 ? "Use tomorrow" : `Use in ${days} days`;
-      const statusClass = expired ? "bad" : days <= 2 ? "warn" : "";
-      return `<article class="leftover-card ${entry.available ? "" : "consumed"} ${expired ? "expired" : ""}"><input type="checkbox" data-leftover-toggle="${escapeHtml(entry.leftover_id)}" ${entry.available ? "checked" : ""} aria-label="${entry.available ? "Mark unavailable" : "Mark available"}: ${escapeHtml(entry.name)}"><div class="leftover-info"><strong>${escapeHtml(entry.name)}</strong><span>Made ${escapeHtml(formatLocalDate(entry.made_at))} · use by ${escapeHtml(formatLocalDate(entry.expires_at))}</span>${entry.quantity || entry.note ? `<span>${[entry.quantity, entry.note].filter(Boolean).map(escapeHtml).join(" · ")}</span>` : ""}<span class="leftover-status ${statusClass}">${escapeHtml(status)}</span></div><button class="btn ghost compact" type="button" data-leftover-edit="${escapeHtml(entry.leftover_id)}">Edit</button></article>`;
-    }).join("");
+    const groups = [
+      ["Eat first", entries.filter((entry) => entry.available && daysUntil(entry.expires_at) <= 2)],
+      ["Good for later", entries.filter((entry) => entry.available && daysUntil(entry.expires_at) > 2)],
+      ["Finished", entries.filter((entry) => !entry.available)],
+    ].filter(([, values]) => values.length);
+    qs("#leftoversList").innerHTML = groups.map(([title, values]) => `<section class="leftover-group"><div class="leftover-group-title"><strong>${title}</strong><span>${values.length}</span></div>${values.map(leftoverCardHtml).join("")}</section>`).join("");
     qs("#leftoversEmpty").classList.toggle("hidden", entries.length > 0);
     updateSummaryStats();
+  }
+
+  function leftoverCardHtml(entry) {
+    const days = daysUntil(entry.expires_at);
+    const expired = entry.available && days < 0;
+    const status = !entry.available ? "Not available" : days < 0 ? `Expired ${Math.abs(days)} day${Math.abs(days) === 1 ? "" : "s"} ago` : days === 0 ? "Use today" : days === 1 ? "Use tomorrow" : `Use in ${days} days`;
+    const statusClass = expired ? "bad" : days <= 2 ? "warn" : "";
+    const actions = entry.available ? `<button class="btn ghost compact" type="button" data-leftover-extend="${escapeHtml(entry.leftover_id)}">+1 day</button>` : `<button class="btn ghost compact" type="button" data-leftover-repeat="${escapeHtml(entry.leftover_id)}">Make again</button>`;
+    return `<article class="leftover-card ${entry.available ? "" : "consumed"} ${expired ? "expired" : ""}"><input type="checkbox" data-leftover-toggle="${escapeHtml(entry.leftover_id)}" ${entry.available ? "checked" : ""} aria-label="${entry.available ? "Mark unavailable" : "Mark available"}: ${escapeHtml(entry.name)}"><div class="leftover-info"><strong>${escapeHtml(entry.name)}</strong><span>Made ${escapeHtml(formatLocalDate(entry.made_at))} · use by ${escapeHtml(formatLocalDate(entry.expires_at))}</span>${entry.quantity || entry.note ? `<span>${[entry.quantity, entry.note].filter(Boolean).map(escapeHtml).join(" · ")}</span>` : ""}<span class="leftover-status ${statusClass}">${escapeHtml(status)}</span></div><div class="leftover-actions">${actions}<button class="btn ghost compact" type="button" data-leftover-edit="${escapeHtml(entry.leftover_id)}">Edit</button></div></article>`;
   }
 
   function openLeftoverModal(preset = {}) {
@@ -1112,8 +1133,8 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#leftoverName").value = preset.name || "";
     qs("#leftoverMadeDate").value = made;
     qs("#leftoverExpiresDate").value = existing?.expires_at || datePlusDays(made, 5);
-    qs("#leftoverQuantity").value = existing?.quantity || "";
-    qs("#leftoverNote").value = existing?.note || "";
+    qs("#leftoverQuantity").value = preset.quantity || "";
+    qs("#leftoverNote").value = preset.note || "";
     qs("#leftoverAvailable").checked = existing ? existing.available : true;
     qs("#leftoverTitle").textContent = existing ? "Edit leftovers" : "Add leftovers";
     openModal("leftoverModal"); setTimeout(() => qs("#leftoverName").focus(), 50);
@@ -1146,11 +1167,19 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     catch (error) { entry.available = old; renderLeftovers(); toast(error.message, "bad"); }
   }
 
-  function handleLeftoverAction(event) {
-    const button = event.target.closest("[data-leftover-edit]");
+  async function handleLeftoverAction(event) {
+    const button = event.target.closest("[data-leftover-edit], [data-leftover-extend], [data-leftover-repeat]");
     if (!button) return;
-    const entry = state.leftovers.find((item) => item.leftover_id === button.dataset.leftoverEdit);
-    if (entry) openLeftoverModal(entry);
+    const id = button.dataset.leftoverEdit || button.dataset.leftoverExtend || button.dataset.leftoverRepeat;
+    const entry = state.leftovers.find((item) => item.leftover_id === id);
+    if (!entry) return;
+    if (button.dataset.leftoverEdit) return openLeftoverModal(entry);
+    if (button.dataset.leftoverRepeat) return openLeftoverModal({ name: entry.name, quantity: entry.quantity, note: entry.note });
+    if (!canWrite()) return;
+    const oldDate = entry.expires_at;
+    entry.expires_at = datePlusDays(entry.expires_at, 1); renderLeftovers();
+    try { if (!state.demo) await updateRange(`Leftovers!D${entry._row}`, [[entry.expires_at]]); cacheData(); toast(`${entry.name} extended to ${formatLocalDate(entry.expires_at)}.`); }
+    catch (error) { entry.expires_at = oldDate; renderLeftovers(); toast(error.message, "bad"); }
   }
 
   function leftoverRow(entry) { return [entry.leftover_id, entry.name, entry.made_at, entry.expires_at, entry.available, entry.quantity, entry.note, entry.created_by]; }

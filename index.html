@@ -48,7 +48,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
 }
-button, input, select { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button { color: inherit; }
 svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .hidden { display: none !important; }
@@ -141,7 +141,7 @@ main { width: min(1040px, 100%); margin: 0 auto; padding: 20px 18px 112px; }
 
 .stack-form { display: grid; gap: 14px; }
 label { display: grid; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 700; }
-input, select {
+input, select, textarea {
   width: 100%;
   min-height: 43px;
   padding: 10px 12px;
@@ -151,7 +151,8 @@ input, select {
   background: var(--panel-2);
   color: var(--ink);
 }
-input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+textarea { resize: vertical; line-height: 1.45; }
+input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
 
 .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .stat-card { padding: 13px 15px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); box-shadow: 0 4px 16px rgba(0,0,0,.18); }
@@ -260,6 +261,36 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 .mobile-nav .nav-primary { color: white; background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
 .mobile-nav .nav-disabled { position: relative; opacity: .46; cursor: not-allowed; }
 .mobile-nav .nav-disabled small { position: absolute; top: 2px; right: 1px; padding: 1px 4px; border-radius: 999px; background: var(--panel-2); color: var(--faint); font-size: 7px; font-weight: 850; text-transform: uppercase; }
+
+.recipe-toolbar { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: start; gap: 10px; margin-bottom: 14px; }
+.recipe-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.recipe-card { overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: var(--panel); box-shadow: 0 5px 18px rgba(0,0,0,.16); }
+.recipe-cover { display: grid; place-items: center; gap: 7px; min-height: 104px; color: var(--muted); background: linear-gradient(135deg, rgba(139,92,246,.18), rgba(0,231,139,.06)); }
+.recipe-cover.has-photo { color: var(--ok); background: linear-gradient(135deg, rgba(0,231,139,.15), rgba(139,92,246,.12)); }
+.recipe-cover svg { width: 32px; height: 32px; }
+.recipe-cover span { font-size: 11px; font-weight: 750; }
+.recipe-card-body { display: grid; gap: 10px; padding: 14px; }
+.recipe-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.recipe-card-head strong, .recipe-card-head span { display: block; }
+.recipe-card-head strong { font-size: 17px; }
+.recipe-card-head > div > span { margin-top: 2px; color: var(--muted); font-size: 11px; }
+.recipe-card-body p { display: -webkit-box; margin: 0; overflow: hidden; color: var(--muted); font-size: 12px; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.recipe-muted { color: var(--faint) !important; font-style: italic; }
+.recipe-card-actions { display: flex; gap: 8px; }
+.recipe-detail-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.recipe-detail-meta span { padding: 5px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--panel-2); font-size: 10px; font-weight: 750; }
+.recipe-story, .recipe-section { margin: 0 0 16px; padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-2); }
+.recipe-story p { margin: 6px 0 0; white-space: pre-wrap; }
+.recipe-section h3 { margin: 0 0 10px; font-size: 15px; }
+.recipe-section ol { margin: 0; padding-left: 22px; }
+.recipe-section li + li { margin-top: 8px; }
+.recipe-ingredient-list { display: grid; gap: 7px; margin-bottom: 12px; }
+.recipe-ingredient { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; gap: 10px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }
+.recipe-ingredient input { width: 20px; min-height: 20px; accent-color: var(--ok); }
+.recipe-ingredient strong, .recipe-ingredient small { display: block; }
+.recipe-ingredient small { margin-top: 2px; color: var(--muted); }
+.recipe-section > label { margin: 12px 0; }
+.recipe-edit-bottom { margin-top: 8px; }
 
 .modal-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: end center; padding: 18px; background: rgba(0,0,0,.66); backdrop-filter: blur(3px); }
 .modal { width: min(560px, 100%); max-height: min(88vh, 760px); overflow: auto; border: 1px solid var(--line); border-radius: 17px; background: var(--panel); box-shadow: var(--shadow); }
@@ -483,6 +514,9 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   .average-card > small { grid-column: auto; }
   .quick-ideas > div { min-width: 125px; }
   .store-link-grid { grid-template-columns: 1fr; }
+  .recipe-toolbar { grid-template-columns: 1fr; }
+  .recipe-grid { grid-template-columns: 1fr; }
+  .recipe-toolbar .btn { width: 100%; }
   .modal-backdrop { padding: 0; }
   .modal { max-height: 92vh; border-radius: 17px 17px 0 0; border-bottom: 0; }
 }
@@ -535,6 +569,11 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
         <section id="checkPanel" class="panel-view hidden"><div id="checkSuggestions" aria-live="polite"></div><section class="quick-ideas" aria-label="Quick item families"><div><strong>Quick ideas</strong><span>Find related saved items—full recipes come later.</span></div><button type="button" data-family-search="taco">Taco night</button><button type="button" data-family-search="steak">Steak cuts</button><button type="button" data-family-search="breakfast">Breakfast</button></section><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="searchInput" type="search" placeholder="Search all saved items" autocomplete="off"></label><div id="checkList" class="items-list" aria-live="polite"></div><div id="checkEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No matching saved items</h3><p>Scan a barcode or add something new.</p></div></section>
         <section id="historyPanel" class="panel-view hidden"><div class="history-toolbar"><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="historySearch" type="search" placeholder="Search purchase history" autocomplete="off"></label><label class="store-filter">Store<select id="historyStoreFilter"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><div id="historyAverages" class="history-averages"></div><div id="historyTrips" class="history-trips"></div><div id="historyList" class="history-list" aria-live="polite"></div><div id="historyEmpty" class="empty-state hidden"><div class="empty-icon">↺</div><h3>No matching purchases</h3><p>Try another item or store.</p></div></section>
         <section id="leftoversPanel" class="panel-view hidden"><section class="quick-ideas leftover-ideas" aria-label="Common meal shortcuts"><div><strong>Common meals</strong><span>Tap one or add anything free-form.</span></div><button type="button" data-meal-name="Taco meat">Taco meat</button><button type="button" data-meal-name="Chicken">Chicken</button><button type="button" data-meal-name="Pasta">Pasta</button><button type="button" data-meal-name="Soup">Soup</button></section><section id="recentMealIdeas" class="quick-ideas leftover-ideas hidden" aria-label="Recent meal shortcuts"></section><div class="leftover-toolbar"><div id="leftoverSummary" class="leftover-summary"></div><label class="store-filter">Show<select id="leftoverFilter"><option value="available">Available only</option><option value="all">All entries</option></select></label></div><div id="leftoversList" class="leftovers-list" aria-live="polite"></div><div id="leftoversEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No leftovers here</h3><p>Add meal prep or something saved from dinner.</p></div></section>
+        <section id="recipesPanel" class="panel-view hidden">
+          <div class="recipe-toolbar"><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="recipeSearch" type="search" placeholder="Search recipes or ingredients" autocomplete="off"></label><button id="importRecipeBtn" class="btn ghost compact" type="button">Import photo or PDF</button></div>
+          <div id="recipeList" class="recipe-grid" aria-live="polite"></div>
+          <div id="recipesEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>Save your first family recipe</h3><p>Add one manually or import a printed or handwritten original.</p></div>
+        </section>
       </section>
     </main>
 
@@ -544,7 +583,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       <button id="scanNavBtn" class="nav-primary"><svg viewBox="0 0 24 24"><path d="M4 7V4h3M17 4h3v3M20 17v3h-3M7 20H4v-3M7 9v6M10 8v8M14 8v8M17 9v6"/></svg><span>Scan</span></button>
       <button data-view="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></svg><span>History</span></button>
       <button data-view="leftovers"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8zM8 8V5h8v3M4 8h16"/></svg><span>Leftovers</span></button>
-      <button id="recipesNavBtn" class="nav-disabled" type="button" disabled aria-label="Recipes coming soon" title="Coming soon: choose recipe ingredients and send them to Needed"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zm3 0v16M11 8h5M11 12h5"/></svg><span>Recipes</span><small>Soon</small></button>
+      <button data-view="recipes" type="button"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zm3 0v16M11 8h5M11 12h5"/></svg><span>Recipes</span></button>
     </nav>
   </div>
 
@@ -565,6 +604,12 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
     <section id="leftoverModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="leftoverTitle"><header><div><span class="eyebrow">Fridge and meal prep</span><h2 id="leftoverTitle">Add leftovers</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="leftoverForm" class="modal-body stack-form"><input id="leftoverId" type="hidden"><label>Meal or food<input id="leftoverName" autocomplete="off" placeholder="Anything in the fridge" required></label><div class="form-grid"><label>Date made<input id="leftoverMadeDate" type="date" required></label><label>Use by<input id="leftoverExpiresDate" type="date" required></label></div><span class="field-hint">Use by defaults to five days after the made date. Backdate or override either date when needed.</span><label>Amount <span class="optional">optional</span><input id="leftoverQuantity" autocomplete="off" placeholder="e.g. 2 portions or half a pan"></label><label>Note <span class="optional">optional</span><input id="leftoverNote" autocomplete="off" placeholder="Container, sides, who it is for…"></label><label class="check-label"><input id="leftoverAvailable" type="checkbox" checked> Still available in the fridge</label><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success" type="submit">Save leftovers</button></div></form></section>
     <section id="moveStoreModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="moveStoreTitle"><header><div><span class="eyebrow">Keep it on the list</span><h2 id="moveStoreTitle">Try another store</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="moveStoreForm" class="modal-body stack-form"><input id="moveStoreItemId" type="hidden"><div class="selected-item"><strong id="moveStoreItemName">Item</strong><span id="moveStoreCurrent"></span></div><label>Move planned purchase to<select id="moveStoreDestination" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><span class="field-hint">The item stays Needed and leaves the current active trip. Quantity and expected price stay the same.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Move item</button></div></form></section>
+
+    <section id="recipeModal" class="modal recipe-modal hidden" role="dialog" aria-modal="true" aria-labelledby="recipeModalTitle"><header><div><span class="eyebrow">Family cookbook</span><h2 id="recipeModalTitle">Add a recipe</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="recipeForm" class="modal-body stack-form"><input id="recipeId" type="hidden"><label>Recipe name<input id="recipeTitle" autocomplete="off" required placeholder="e.g. Great Grandma's biscuits"></label><div class="form-grid"><label>Servings<input id="recipeServings" type="number" min="1" step="1" value="4"></label><label>Created or family date <span class="optional">optional</span><input id="recipeFamilyDate" type="date"></label></div><label>Background and family story <span class="optional">optional</span><textarea id="recipeBackground" rows="3" placeholder="Who it came from, when it was served, why it matters…"></textarea></label><label>Ingredients <span class="field-hint">One per line: quantity | unit | ingredient | optional</span><textarea id="recipeIngredients" rows="7" required placeholder="1 | lb | ground beef&#10;1 | pack | taco shells&#10;2 | cups | shredded cheese | optional"></textarea></label><label>Directions<textarea id="recipeInstructions" rows="7" required placeholder="Write each step on a new line."></textarea></label><label>Cooking notes <span class="optional">optional</span><textarea id="recipeNotes" rows="3" placeholder="Changes to try next time, temperature notes, substitutions…"></textarea></label><div class="form-divider"><span>Family Drive photos</span></div><label>Existing Drive photo or scan link <span class="optional">optional until secure upload is connected</span><input id="recipePhotoUrl" type="url" inputmode="url" placeholder="https://drive.google.com/..."></label><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success" type="submit">Save recipe</button></div></form></section>
+
+    <section id="recipeDetailModal" class="modal recipe-detail-modal hidden" role="dialog" aria-modal="true" aria-labelledby="recipeDetailTitle"><header><div><span class="eyebrow">Family cookbook</span><h2 id="recipeDetailTitle">Recipe</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div id="recipeDetail"></div></div></section>
+
+    <section id="recipeImportModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="recipeImportTitle"><header><div><span class="eyebrow">Printed or handwritten</span><h2 id="recipeImportTitle">Import a recipe</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Choose an image or PDF. Text is read privately in this browser so you can correct it before saving. Permanent family-Drive storage will activate after the secure upload connection is added.</p><label>Recipe image or PDF<input id="recipeImportFile" type="file" accept="image/*,application/pdf,.pdf"></label><div id="recipeImportProgress" class="status-banner hidden">Reading recipe…</div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button></div></div></section>
 
     <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn ghost wide" id="showGuideBtn" type="button">Show quick start guide</button><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="resetPracticeBtn" type="button">Reset Practice Mode</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
   </div>
@@ -596,10 +641,10 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   const state = {
     config: readConfig(), accessToken: "", profile: null, tokenClient: null,
-    items: [], events: [], locations: [], leftovers: [], settings: {}, view: "needed", query: "", neededStore: "", leftoverFilter: "available", demo: false,
+    items: [], events: [], locations: [], leftovers: [], recipes: [], recipeIngredients: [], settings: {}, view: "needed", query: "", neededStore: "", leftoverFilter: "available", recipeQuery: "", demo: false,
     loading: false, cameraStream: null, scanLoop: 0, detector: null, scannerControls: null, scannerReader: null,
     deferredInstall: null, receiptCandidates: [], receiptTotal: 0, trip: null, dataHash: "", syncTimer: 0, waitingWorker: null, updateRequested: false,
-    historyStore: "", historyQuery: "", lastUndo: null, undoTimer: 0, leftoversReady: false,
+    historyStore: "", historyQuery: "", lastUndo: null, undoTimer: 0, leftoversReady: false, recipesReady: false,
   };
 
   const qs = (selector) => document.querySelector(selector);
@@ -635,7 +680,7 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#profileBtn").addEventListener("click", openAccountModal);
     qs("#scanTopBtn").addEventListener("click", openScanner);
     qs("#scanNavBtn").addEventListener("click", openScanner);
-    qs("#addItemBtn").addEventListener("click", () => state.view === "leftovers" ? openLeftoverModal() : openAddNeededModal());
+    qs("#addItemBtn").addEventListener("click", () => state.view === "leftovers" ? openLeftoverModal() : state.view === "recipes" ? openRecipeModal() : openAddNeededModal());
     qs("#receiptBtn").addEventListener("click", openReceiptModal);
     qs("#needForm").addEventListener("submit", saveNeeded);
     qs("#purchaseForm").addEventListener("submit", recordPurchase);
@@ -652,6 +697,12 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     qs("#locationStore").addEventListener("change", applyStoreProfile);
     qs("#leftoverForm").addEventListener("submit", saveLeftover);
     qs("#moveStoreForm").addEventListener("submit", saveMoveStore);
+    qs("#recipeForm").addEventListener("submit", saveRecipe);
+    qs("#recipeSearch").addEventListener("input", (event) => { state.recipeQuery = normalizeText(event.target.value); renderRecipes(); });
+    qs("#recipeList").addEventListener("click", handleRecipeListAction);
+    qs("#recipeDetail").addEventListener("click", handleRecipeDetailAction);
+    qs("#importRecipeBtn").addEventListener("click", openRecipeImportModal);
+    qs("#recipeImportFile").addEventListener("change", importRecipeFile);
     qs("#leftoverMadeDate").addEventListener("change", () => { qs("#leftoverExpiresDate").value = datePlusDays(qs("#leftoverMadeDate").value, 5); });
     qs("#leftoverFilter").addEventListener("change", (event) => { state.leftoverFilter = event.target.value; renderLeftovers(); });
     qs("#leftoversList").addEventListener("change", handleLeftoverToggle);
@@ -777,16 +828,19 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     setSyncStatus("Syncing…");
     try {
       await ensureLeftoversSheet();
-      const path = "values:batchGet?ranges=Items!A2:N&ranges=Events!A2:N&ranges=Settings!A2:B&ranges=Locations!A2:I&ranges=Leftovers!A2:H&majorDimension=ROWS";
+      await ensureRecipesSheets();
+      const path = "values:batchGet?ranges=Items!A2:N&ranges=Events!A2:N&ranges=Settings!A2:B&ranges=Locations!A2:I&ranges=Leftovers!A2:H&ranges=Recipes!A2:N&ranges=RecipeIngredients!A2:J&majorDimension=ROWS";
       const data = await sheetsFetch(path);
-      const [itemRows = [], eventRows = [], settingRows = [], locationRows = [], leftoverRows = []] = data.valueRanges.map((range) => range.values || []);
-      const nextHash = JSON.stringify([itemRows, eventRows, locationRows, leftoverRows]);
+      const [itemRows = [], eventRows = [], settingRows = [], locationRows = [], leftoverRows = [], recipeRows = [], ingredientRows = []] = data.valueRanges.map((range) => range.values || []);
+      const nextHash = JSON.stringify([itemRows, eventRows, locationRows, leftoverRows, recipeRows, ingredientRows]);
       const changedElsewhere = Boolean(state.dataHash && state.dataHash !== nextHash && !showFeedback);
       state.items = itemRows.map(parseItem).filter((item) => item.item_id && !item.archived);
       state.events = eventRows.map(parseEvent).filter((event) => event.event_id && event.action !== "setup");
       state.settings = Object.fromEntries(settingRows.filter((row) => row[0]).map((row) => [row[0], row[1] || ""]));
       state.locations = locationRows.map(parseLocation).filter((location) => location.location_id && location.location_id !== "setup-location");
       state.leftovers = leftoverRows.map(parseLeftover).filter((leftover) => leftover.leftover_id);
+      state.recipes = recipeRows.map(parseRecipe).filter((recipe) => recipe.recipe_id && recipe.status !== "Archived");
+      state.recipeIngredients = ingredientRows.map(parseRecipeIngredient).filter((ingredient) => ingredient.ingredient_id && ingredient.active);
       state.dataHash = nextHash;
       const tripRestored = restoreTripState();
       reconcileTripFromData();
@@ -819,6 +873,26 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     state.leftoversReady = true;
   }
 
+  async function ensureRecipesSheets() {
+    if (state.demo || state.recipesReady) return;
+    const metadata = await sheetsFetch("?fields=sheets.properties(title,sheetId)");
+    const titles = new Set((metadata.sheets || []).map((sheet) => sheet.properties?.title));
+    const missing = [
+      { title: "Recipes", columns: 14 },
+      { title: "RecipeIngredients", columns: 10 },
+    ].filter((sheet) => !titles.has(sheet.title));
+    if (!missing.length) { state.recipesReady = true; return; }
+    const created = await sheetsFetch(":batchUpdate", { method: "POST", body: JSON.stringify({ requests: missing.map((sheet) => ({ addSheet: { properties: { title: sheet.title, gridProperties: { rowCount: 1000, columnCount: sheet.columns, frozenRowCount: 1 } } } })) }) });
+    if (missing.some((sheet) => sheet.title === "Recipes")) await updateRange("Recipes!A1:N1", [["recipe_id", "title", "created_on", "family_date", "servings", "background", "notes", "instructions", "cover_file_id", "cover_url", "source_file_id", "source_url", "status", "created_by"]]);
+    if (missing.some((sheet) => sheet.title === "RecipeIngredients")) await updateRange("RecipeIngredients!A1:J1", [["ingredient_id", "recipe_id", "item_id", "name", "quantity", "unit", "optional", "notes", "sort_order", "active"]]);
+    const formatRequests = (created.replies || []).map((reply) => reply.addSheet?.properties).filter(Boolean).flatMap((properties) => [
+      { repeatCell: { range: { sheetId: properties.sheetId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: properties.gridProperties.columnCount }, cell: { userEnteredFormat: { backgroundColor: { red: .545, green: .361, blue: .965 }, textFormat: { bold: true, foregroundColor: { red: 1, green: 1, blue: 1 } } } }, fields: "userEnteredFormat(backgroundColor,textFormat)" } },
+      { autoResizeDimensions: { dimensions: { sheetId: properties.sheetId, dimension: "COLUMNS", startIndex: 0, endIndex: properties.gridProperties.columnCount } } },
+    ]);
+    if (formatRequests.length) await sheetsFetch(":batchUpdate", { method: "POST", body: JSON.stringify({ requests: formatRequests }) });
+    state.recipesReady = true;
+  }
+
   function parseItem(row, index) {
     return { item_id: row[0] || "", name: row[1] || "", barcode: row[2] || "", category: row[3] || "Other", unit: row[4] || "each", archived: toBoolean(row[6]), created_at: row[7] || "", created_by: row[8] || "", needed: toBoolean(row[9]), needed_quantity: Number(row[10] || 0), planned_store: row[11] || "", estimated_unit_price: Number(row[12] || 0), nickname: row[13] || "", _row: index + 2 };
   }
@@ -835,15 +909,23 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
     return { leftover_id: row[0] || "", name: row[1] || "", made_at: row[2] || "", expires_at: row[3] || "", available: row[4] === "" ? true : toBoolean(row[4]), quantity: row[5] || "", note: row[6] || "", created_by: row[7] || "", _row: index + 2 };
   }
 
+  function parseRecipe(row, index) {
+    return { recipe_id: row[0] || "", title: row[1] || "Untitled recipe", created_on: row[2] || "", family_date: row[3] || "", servings: Number(row[4] || 0), background: row[5] || "", notes: row[6] || "", instructions: row[7] || "", cover_file_id: row[8] || "", cover_url: row[9] || "", source_file_id: row[10] || "", source_url: row[11] || "", status: row[12] || "Draft", created_by: row[13] || "", _row: index + 2 };
+  }
+
+  function parseRecipeIngredient(row, index) {
+    return { ingredient_id: row[0] || "", recipe_id: row[1] || "", item_id: row[2] || "", name: row[3] || "", quantity: Number(row[4] || 0), unit: row[5] || "each", optional: toBoolean(row[6]), notes: row[7] || "", sort_order: Number(row[8] || 0), active: row[9] === "" ? true : toBoolean(row[9]), _row: index + 2 };
+  }
+
   function cacheData() {
-    localStorage.setItem(STORAGE_CACHE_PREFIX + state.config.sheetId, JSON.stringify({ items: state.items, events: state.events, locations: state.locations, leftovers: state.leftovers, settings: state.settings }));
+    localStorage.setItem(STORAGE_CACHE_PREFIX + state.config.sheetId, JSON.stringify({ items: state.items, events: state.events, locations: state.locations, leftovers: state.leftovers, recipes: state.recipes, recipeIngredients: state.recipeIngredients, settings: state.settings }));
   }
   function readCache() { try { return JSON.parse(localStorage.getItem(STORAGE_CACHE_PREFIX + state.config.sheetId) || "null"); } catch { return null; } }
 
   function render() {
     const purchases = purchaseEvents();
     qs("#householdTitle").textContent = state.settings.household_name && state.settings.household_name !== "Home" ? `${state.settings.household_name} Groceries` : "Family Groceries";
-    renderNeeded(); renderCheck(); renderHistory(); renderLeftovers(); setView(state.view, false); updateSummaryStats();
+    renderNeeded(); renderCheck(); renderHistory(); renderLeftovers(); renderRecipes(); setView(state.view, false); updateSummaryStats();
     qs("#gettingStarted").classList.toggle("hidden", localStorage.getItem(STORAGE_GUIDE) === "true");
   }
 
@@ -854,21 +936,29 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       check: ["Smart reminders", "Suggested to check", "Suggestions based on purchase timing, with the full catalog below."],
       history: ["Purchase ledger", "History", "Checked purchases and receipt verification."],
       leftovers: ["Fridge and meal prep", "Leftovers", "See what is ready to eat before making something new."],
+      recipes: ["Family cookbook", "Recipes", "Preserve family favorites and send ingredients straight to Needed."],
     }[view];
     qs("#viewEyebrow").textContent = copy[0]; qs("#viewTitle").textContent = copy[1]; qs("#viewDescription").textContent = copy[2];
     qs("#neededPanel").classList.toggle("hidden", view !== "needed");
     qs("#checkPanel").classList.toggle("hidden", view !== "check");
     qs("#historyPanel").classList.toggle("hidden", view !== "history");
     qs("#leftoversPanel").classList.toggle("hidden", view !== "leftovers");
+    qs("#recipesPanel").classList.toggle("hidden", view !== "recipes");
     qs("#receiptBtn").classList.toggle("hidden", view !== "history");
-    qs("#scanTopBtn").classList.toggle("hidden", view === "leftovers");
-    qs("#addItemBtn").textContent = view === "leftovers" ? "+ Add meal" : "+ Add";
+    qs("#scanTopBtn").classList.toggle("hidden", view === "leftovers" || view === "recipes");
+    qs("#addItemBtn").textContent = view === "leftovers" ? "+ Add meal" : view === "recipes" ? "+ Add recipe" : "+ Add";
     qsa("[data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
     updateSummaryStats();
-    if (rerender) { if (view === "needed") renderNeeded(); if (view === "check") renderCheck(); if (view === "history") renderHistory(); if (view === "leftovers") renderLeftovers(); }
+    if (rerender) { if (view === "needed") renderNeeded(); if (view === "check") renderCheck(); if (view === "history") renderHistory(); if (view === "leftovers") renderLeftovers(); if (view === "recipes") renderRecipes(); }
   }
 
   function updateSummaryStats() {
+    if (state.view === "recipes") {
+      qs("#statOneLabel").textContent = "Recipes"; qs("#needCount").textContent = state.recipes.length;
+      qs("#statTwoLabel").textContent = "Ingredients"; qs("#itemCount").textContent = state.recipeIngredients.length;
+      qs("#statThreeLabel").textContent = "With family story"; qs("#purchaseCount").textContent = state.recipes.filter((recipe) => recipe.background).length;
+      return;
+    }
     if (state.view === "leftovers") {
       const available = state.leftovers.filter((entry) => entry.available);
       const expiring = available.filter((entry) => daysUntil(entry.expires_at) >= 0 && daysUntil(entry.expires_at) <= 2);
@@ -1192,6 +1282,151 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
   function daysUntil(value) { const target = new Date(`${value}T12:00:00`); const today = new Date(`${todayInput()}T12:00:00`); return Number.isNaN(target.getTime()) ? 0 : Math.round((target - today) / 86400000); }
   function datePlusDays(value, days) { const date = new Date(`${value || todayInput()}T12:00:00`); date.setDate(date.getDate() + days); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
   function formatLocalDate(value) { const date = new Date(`${value}T12:00:00`); return Number.isNaN(date.getTime()) ? "Unknown date" : new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date); }
+
+  function renderRecipes() {
+    const query = state.recipeQuery;
+    const recipes = state.recipes.filter((recipe) => {
+      const ingredientNames = ingredientsForRecipe(recipe.recipe_id).map((ingredient) => ingredient.name).join(" ");
+      return !query || normalizeText(`${recipe.title} ${recipe.background} ${recipe.notes} ${ingredientNames}`).includes(query);
+    }).sort((a, b) => String(b.created_on).localeCompare(String(a.created_on)) || a.title.localeCompare(b.title));
+    qs("#recipeList").innerHTML = recipes.map((recipe) => {
+      const ingredients = ingredientsForRecipe(recipe.recipe_id);
+      const story = recipe.background ? `<p>${escapeHtml(recipe.background)}</p>` : `<p class="recipe-muted">No family story added yet.</p>`;
+      return `<article class="recipe-card" data-recipe-id="${escapeHtml(recipe.recipe_id)}"><div class="recipe-cover ${recipe.cover_url || recipe.source_url ? "has-photo" : ""}"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zm3 0v16M11 8h5M11 12h5"/></svg>${recipe.cover_url || recipe.source_url ? "<span>Family Drive original</span>" : "<span>Add a family photo</span>"}</div><div class="recipe-card-body"><div class="recipe-card-head"><div><strong>${escapeHtml(recipe.title)}</strong><span>${recipe.servings ? `${formatQty(recipe.servings)} servings · ` : ""}${ingredients.length} ingredient${ingredients.length === 1 ? "" : "s"}</span></div><span class="tag ${recipe.status === "Verified" ? "ok" : ""}">${escapeHtml(recipe.status || "Draft")}</span></div>${story}<div class="recipe-card-actions"><button class="btn primary compact" type="button" data-recipe-open="${escapeHtml(recipe.recipe_id)}">Open recipe</button><button class="btn ghost compact" type="button" data-recipe-edit="${escapeHtml(recipe.recipe_id)}">Edit</button></div></div></article>`;
+    }).join("");
+    qs("#recipesEmpty").classList.toggle("hidden", recipes.length > 0);
+    updateSummaryStats();
+  }
+
+  function ingredientsForRecipe(recipeId) { return state.recipeIngredients.filter((ingredient) => ingredient.recipe_id === recipeId && ingredient.active).sort((a, b) => a.sort_order - b.sort_order); }
+
+  function openRecipeModal(recipe = null) {
+    const ingredients = recipe ? ingredientsForRecipe(recipe.recipe_id) : [];
+    qs("#recipeId").value = recipe?.recipe_id || "";
+    qs("#recipeTitle").value = recipe?.title || "";
+    qs("#recipeServings").value = recipe?.servings || 4;
+    qs("#recipeFamilyDate").value = recipe?.family_date || "";
+    qs("#recipeBackground").value = recipe?.background || "";
+    qs("#recipeNotes").value = recipe?.notes || "";
+    qs("#recipeInstructions").value = recipe?.instructions || "";
+    qs("#recipePhotoUrl").value = recipe?.cover_url || recipe?.source_url || "";
+    qs("#recipeIngredients").value = ingredients.map((ingredient) => `${ingredient.quantity || ""} | ${ingredient.unit || "each"} | ${ingredient.name}${ingredient.optional ? " | optional" : ""}`).join("\n");
+    qs("#recipeModalTitle").textContent = recipe ? "Edit recipe" : "Add a recipe";
+    openModal("recipeModal"); setTimeout(() => qs("#recipeTitle").focus(), 50);
+  }
+
+  function parseIngredientLines(text) {
+    return String(text || "").split(/\r?\n/).map((line, index) => {
+      const parts = line.split("|").map((part) => part.trim());
+      if (!parts.some(Boolean)) return null;
+      if (parts.length >= 3) return { ingredient_id: crypto.randomUUID(), name: parts[2], quantity: Number(parts[0]) || 0, unit: parts[1] || "each", optional: normalizeText(parts[3]).includes("optional"), notes: "", sort_order: index, active: true };
+      const match = line.trim().match(/^(\d+(?:[./]\d+)?)?\s*([a-zA-Z]+)?\s*(.+)$/);
+      const quantity = match?.[1]?.includes("/") ? match[1].split("/").reduce((a, b) => Number(a) / Number(b)) : Number(match?.[1] || 0);
+      return { ingredient_id: crypto.randomUUID(), name: match?.[3]?.trim() || line.trim(), quantity: Number(quantity) || 0, unit: match?.[2] || "each", optional: /\boptional\b/i.test(line), notes: "", sort_order: index, active: true };
+    }).filter((ingredient) => ingredient?.name);
+  }
+
+  async function saveRecipe(event) {
+    event.preventDefault();
+    if (!canWrite()) return;
+    const id = qs("#recipeId").value || crypto.randomUUID();
+    const existing = state.recipes.find((recipe) => recipe.recipe_id === id);
+    const recipe = { recipe_id: id, title: qs("#recipeTitle").value.trim(), created_on: existing?.created_on || new Date().toISOString(), family_date: qs("#recipeFamilyDate").value, servings: Number(qs("#recipeServings").value || 0), background: qs("#recipeBackground").value.trim(), notes: qs("#recipeNotes").value.trim(), instructions: qs("#recipeInstructions").value.trim(), cover_file_id: existing?.cover_file_id || "", cover_url: qs("#recipePhotoUrl").value.trim(), source_file_id: existing?.source_file_id || "", source_url: existing?.source_url || "", status: existing?.status || "Draft", created_by: existing?.created_by || currentUser(), _row: existing?._row || state.recipes.length + 2 };
+    const ingredients = parseIngredientLines(qs("#recipeIngredients").value).map((ingredient) => ({ ...ingredient, recipe_id: id, item_id: findItemByName(ingredient.name)?.item_id || "", _row: 0 }));
+    if (!recipe.title || !recipe.instructions || !ingredients.length) return toast("Add a title, at least one ingredient, and directions.", "bad");
+    try {
+      if (!state.demo) {
+        if (existing) await updateRange(`Recipes!A${existing._row}:N${existing._row}`, [recipeRow(recipe)]);
+        else { const result = await appendRow("Recipes!A:N", recipeRow(recipe)); recipe._row = rowFromAppend(result) || recipe._row; }
+        const oldIngredients = ingredientsForRecipe(id);
+        if (oldIngredients.length) await batchUpdateValues(oldIngredients.map((ingredient) => ({ range: `RecipeIngredients!J${ingredient._row}`, majorDimension: "ROWS", values: [[false]] })));
+        const result = await appendRows("RecipeIngredients!A:J", ingredients.map(recipeIngredientRow));
+        const start = firstRowFromAppend(result) || state.recipeIngredients.length + 2;
+        ingredients.forEach((ingredient, index) => { ingredient._row = start + index; });
+      }
+      state.recipeIngredients.forEach((ingredient) => { if (ingredient.recipe_id === id) ingredient.active = false; });
+      state.recipeIngredients.push(...ingredients);
+      if (existing) Object.assign(existing, recipe); else state.recipes.push(recipe);
+      cacheData(); closeModals(); setView("recipes"); renderRecipes(); toast(`${recipe.title} saved to the family cookbook.`);
+    } catch (error) { toast(error.message, "bad"); }
+  }
+
+  function recipeRow(recipe) { return [recipe.recipe_id, recipe.title, recipe.created_on, recipe.family_date, recipe.servings, recipe.background, recipe.notes, recipe.instructions, recipe.cover_file_id, recipe.cover_url, recipe.source_file_id, recipe.source_url, recipe.status, recipe.created_by]; }
+  function recipeIngredientRow(ingredient) { return [ingredient.ingredient_id, ingredient.recipe_id, ingredient.item_id, ingredient.name, ingredient.quantity, ingredient.unit, ingredient.optional, ingredient.notes, ingredient.sort_order, ingredient.active]; }
+  function findItemByName(name) { const key = normalizeText(name).replace(/\boptional\b/g, "").trim(); if (!key) return null; return state.items.find((item) => normalizeText(item.name) === key || (normalizeText(item.nickname) && normalizeText(item.nickname) === key)) || state.items.find((item) => { const official = normalizeText(item.name); return official && (key.includes(official) || official.includes(key)); }); }
+
+  function handleRecipeListAction(event) {
+    const button = event.target.closest("[data-recipe-open], [data-recipe-edit]");
+    if (!button) return;
+    const id = button.dataset.recipeOpen || button.dataset.recipeEdit;
+    const recipe = state.recipes.find((entry) => entry.recipe_id === id);
+    if (!recipe) return;
+    if (button.dataset.recipeEdit) return openRecipeModal(recipe);
+    openRecipeDetail(recipe);
+  }
+
+  function openRecipeDetail(recipe) {
+    const ingredients = ingredientsForRecipe(recipe.recipe_id);
+    qs("#recipeDetailTitle").textContent = recipe.title;
+    qs("#recipeDetail").innerHTML = `<div class="recipe-detail-meta"><span>${recipe.servings ? `${formatQty(recipe.servings)} servings` : "Serving size not set"}</span><span>Saved ${formatDate(recipe.created_on)}</span>${recipe.family_date ? `<span>Family date ${escapeHtml(formatLocalDate(recipe.family_date))}</span>` : ""}</div>${recipe.background ? `<section class="recipe-story"><span class="eyebrow">The story</span><p>${escapeHtml(recipe.background)}</p></section>` : ""}<section class="recipe-section"><h3>Choose ingredients for Needed</h3><div class="recipe-ingredient-list">${ingredients.map((ingredient) => `<label class="recipe-ingredient"><input type="checkbox" data-recipe-ingredient="${escapeHtml(ingredient.ingredient_id)}" ${ingredient.optional ? "" : "checked"}><span><strong>${escapeHtml(ingredient.name)}</strong><small>${ingredient.quantity ? `${formatQty(ingredient.quantity)} ` : ""}${escapeHtml(ingredient.unit)}${ingredient.optional ? " · optional" : ""}</small></span></label>`).join("")}</div><label>Planned store<select id="recipeNeededStore">${STORES.map((store) => `<option>${escapeHtml(store)}</option>`).join("")}</select></label><button class="btn success wide" type="button" data-recipe-add-needed="${escapeHtml(recipe.recipe_id)}">Add selected to Needed</button></section><section class="recipe-section"><h3>Directions</h3><ol>${recipe.instructions.split(/\r?\n/).filter(Boolean).map((step) => `<li>${escapeHtml(step.replace(/^\d+[.)]\s*/, ""))}</li>`).join("")}</ol></section>${recipe.notes ? `<section class="recipe-story"><span class="eyebrow">Cooking notes</span><p>${escapeHtml(recipe.notes)}</p></section>` : ""}${recipe.cover_url || recipe.source_url ? `<a class="btn ghost wide" href="${escapeHtml(recipe.cover_url || recipe.source_url)}" target="_blank" rel="noopener">Open original in Family Drive</a>` : ""}<button class="btn ghost wide recipe-edit-bottom" type="button" data-recipe-edit-detail="${escapeHtml(recipe.recipe_id)}">Edit recipe</button>`;
+    qs("#recipeNeededStore").value = preferredStore();
+    openModal("recipeDetailModal");
+  }
+
+  async function handleRecipeDetailAction(event) {
+    const edit = event.target.closest("[data-recipe-edit-detail]");
+    if (edit) { const recipe = state.recipes.find((entry) => entry.recipe_id === edit.dataset.recipeEditDetail); closeModals(); if (recipe) openRecipeModal(recipe); return; }
+    const button = event.target.closest("[data-recipe-add-needed]");
+    if (!button || !canWrite()) return;
+    const selectedIds = new Set(qsa("#recipeDetail [data-recipe-ingredient]:checked").map((input) => input.dataset.recipeIngredient));
+    const selected = ingredientsForRecipe(button.dataset.recipeAddNeeded).filter((ingredient) => selectedIds.has(ingredient.ingredient_id));
+    if (!selected.length) return toast("Choose at least one ingredient.", "bad");
+    const store = qs("#recipeNeededStore").value;
+    let added = 0;
+    try {
+      for (const ingredient of selected) {
+        let item = state.items.find((entry) => entry.item_id === ingredient.item_id) || findItemByName(ingredient.name);
+        if (!item) {
+          item = { item_id: crypto.randomUUID(), name: ingredient.name, nickname: "", barcode: "", category: "Other", unit: ingredient.unit || "each", archived: false, created_at: new Date().toISOString(), created_by: currentUser(), needed: true, needed_quantity: ingredient.quantity || 1, planned_store: store, estimated_unit_price: 0, _row: state.items.length + 2 };
+          if (!state.demo) { const result = await appendRow("Items!A:N", [item.item_id, item.name, item.barcode, item.category, item.unit, 0, false, item.created_at, item.created_by, true, item.needed_quantity, item.planned_store, item.estimated_unit_price, item.nickname]); item._row = rowFromAppend(result) || item._row; }
+          state.items.push(item); ingredient.item_id = item.item_id; added += 1;
+        } else {
+          item.needed = true; item.needed_quantity = Math.max(Number(item.needed_quantity || 0), ingredient.quantity || 1); item.planned_store = store;
+          if (!state.demo) await updateRange(`Items!J${item._row}:N${item._row}`, [[true, item.needed_quantity, store, item.estimated_unit_price || 0, item.nickname || ""]]);
+          added += 1;
+        }
+      }
+      cacheData(); closeModals(); setView("needed"); render(); toast(`${added} recipe ingredient${added === 1 ? "" : "s"} added to Needed.`);
+    } catch (error) { toast(error.message, "bad"); }
+  }
+
+  function openRecipeImportModal() { qs("#recipeImportFile").value = ""; qs("#recipeImportProgress").classList.add("hidden"); openModal("recipeImportModal"); }
+
+  async function importRecipeFile(event) {
+    const file = event.target.files?.[0]; if (!file) return;
+    const progress = qs("#recipeImportProgress"); progress.classList.remove("hidden"); progress.textContent = "Reading recipe privately in this browser…";
+    try {
+      const rawText = await readReceiptText(file, progress);
+      const parsed = parseRecipeText(rawText, file.name);
+      closeModals(); openRecipeModal();
+      qs("#recipeTitle").value = parsed.title;
+      qs("#recipeIngredients").value = parsed.ingredients;
+      qs("#recipeInstructions").value = parsed.instructions;
+      toast("Recipe text imported. Please verify it before saving.");
+    } catch (error) { progress.textContent = "Could not read this file. You can still add the recipe manually."; toast(error.message, "bad"); }
+  }
+
+  function parseRecipeText(rawText, filename = "") {
+    const lines = String(rawText || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    const ingredientHeading = lines.findIndex((line) => /^ingredients?\s*:?$/i.test(line));
+    const directionHeading = lines.findIndex((line) => /^(directions?|instructions?|method|preparation)\s*:?$/i.test(line));
+    const title = (ingredientHeading > 0 ? lines.slice(0, ingredientHeading).find((line) => line.length > 2 && line.length < 90) : lines[0]) || filename.replace(/\.[^.]+$/, "") || "Imported recipe";
+    let ingredientLines = ingredientHeading >= 0 ? lines.slice(ingredientHeading + 1, directionHeading > ingredientHeading ? directionHeading : undefined) : lines.filter((line) => /^(?:\d|¼|½|¾|one|two)\s/i.test(line));
+    let directionLines = directionHeading >= 0 ? lines.slice(directionHeading + 1) : lines.filter((line) => !ingredientLines.includes(line) && line !== title);
+    if (!ingredientLines.length) ingredientLines = [" | each | Review imported ingredient"];
+    if (!directionLines.length) directionLines = lines;
+    return { title, ingredients: ingredientLines.map((line) => line.includes("|") ? line : ` | each | ${line}`).join("\n"), instructions: directionLines.join("\n") };
+  }
 
   function handleListAction(event) {
     const button = event.target.closest("[data-action]");
@@ -2004,9 +2239,9 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
 
   function signOut() {
     closeModals();
-    if (state.demo) { state.demo = false; state.items = []; state.events = []; state.locations = []; state.leftovers = []; showView("signin"); return; }
+    if (state.demo) { state.demo = false; state.items = []; state.events = []; state.locations = []; state.leftovers = []; state.recipes = []; state.recipeIngredients = []; showView("signin"); return; }
     if (state.accessToken && window.google?.accounts?.oauth2) google.accounts.oauth2.revoke(state.accessToken);
-    state.accessToken = ""; state.profile = null; state.items = []; state.events = []; state.locations = []; state.leftovers = []; showView("signin");
+    state.accessToken = ""; state.profile = null; state.items = []; state.events = []; state.locations = []; state.leftovers = []; state.recipes = []; state.recipeIngredients = []; showView("signin");
   }
 
   function enterDemo() {
@@ -2034,11 +2269,18 @@ input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px va
       demoLeftover("demo-leftover-1", "Chicken and rice", todayInput(), datePlusDays(todayInput(), 5), true, "2 portions", "Top shelf"),
       demoLeftover("demo-leftover-2", "Taco meat", datePlusDays(todayInput(), -2), datePlusDays(todayInput(), 3), true, "1 container", ""),
     ];
+    state.recipes = [{ recipe_id: "demo-recipe-tacos", title: "Family taco night", created_on: new Date().toISOString(), family_date: "", servings: 4, background: "Our easy weeknight version—everyone builds their own.", notes: "Warm the shells right before serving.", instructions: "Brown the ground beef.\nAdd seasoning and simmer.\nWarm shells and set out toppings.", cover_file_id: "", cover_url: "", source_file_id: "", source_url: "", status: "Verified", created_by: "demo@family", _row: 0 }];
+    state.recipeIngredients = [
+      demoRecipeIngredient("demo-ri-1", "demo-recipe-tacos", "demo-ground-beef", "Ground beef", 1, "lb", false, 0),
+      demoRecipeIngredient("demo-ri-2", "demo-recipe-tacos", "", "Taco shells", 1, "pack", false, 1),
+      demoRecipeIngredient("demo-ri-3", "demo-recipe-tacos", "", "Shredded cheese", 2, "cups", true, 2),
+    ];
     qs("#profileInitial").textContent = "P"; setSyncStatus("Practice Mode · nothing is saved"); showView("app"); render(); toast("Practice Mode reset. Changes stay on this device only.");
   }
   function demoItem(item_id, name, category, unit, needed, needed_quantity, planned_store, estimated_unit_price) { return { item_id, name, category, unit, barcode: "", archived: false, needed, needed_quantity, planned_store, estimated_unit_price, _row: 0 }; }
   function demoPurchase(event_id, item_id, quantity, daysAgo, store, unit_price, planning_status, verification_status) { return { event_id, item_id, quantity, action: "purchase", note: "", purchased_at: new Date(Date.now() - daysAgo * 86400000).toISOString(), created_by: "demo@family", planned_store: store, actual_store: store, unit_price, total_price: quantity * unit_price, planning_status, verification_status, receipt_id: verification_status === "Receipt verified" ? "demo-receipt" : "", _row: 0 }; }
   function demoLeftover(leftover_id, name, made_at, expires_at, available, quantity, note) { return { leftover_id, name, made_at, expires_at, available, quantity, note, created_by: "demo@family", _row: 0 }; }
+  function demoRecipeIngredient(ingredient_id, recipe_id, item_id, name, quantity, unit, optional, sort_order) { return { ingredient_id, recipe_id, item_id, name, quantity, unit, optional, notes: "", sort_order, active: true, _row: 0 }; }
 
   async function installApp() { if (state.deferredInstall) { state.deferredInstall.prompt(); await state.deferredInstall.userChoice; state.deferredInstall = null; qs("#installBtn").classList.add("hidden"); } else toast("Use your browser’s Add to Home Screen option."); }
   async function registerServiceWorker() {

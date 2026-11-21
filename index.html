@@ -482,6 +482,18 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 .inbox-item strong, .inbox-item span { display: block; }
 .inbox-item strong { font-size: 14px; }
 .inbox-item span { margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.activity-search { margin-bottom: 12px; }
+.activity-list { display: grid; gap: 9px; max-height: 54vh; overflow: auto; }
+.activity-card { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel-2); }
+.activity-card.unusual { border-color: rgba(255,170,0,.5); background: linear-gradient(90deg, var(--warn-soft), var(--panel-2) 42%); }
+.activity-main > strong, .activity-main > span { display: block; }
+.activity-main > strong { font-size: 15px; }
+.activity-main > span { margin-top: 3px; color: var(--muted); font-size: 13px; }
+.activity-value { min-width: 108px; text-align: right; }
+.activity-value strong, .activity-value small { display: block; }
+.activity-value strong { color: var(--ok); font-size: 17px; }
+.activity-value small { margin: 2px 0 7px; color: var(--muted); font-size: 12px; }
+.correction-total { min-height: 64px; }
 .empty-state.compact { min-height: 170px; padding: 20px; }
 .health-list { display: grid; gap: 1px; overflow: hidden; margin-bottom: 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--line); }
 .health-row { display: grid; grid-template-columns: 11px minmax(0,1fr); gap: 11px; padding: 13px; background: var(--panel-2); }
@@ -556,8 +568,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
   .brand-mark { width: 34px; height: 34px; }
   .header-actions { gap: 5px; }
   .header-actions .icon-btn, .header-actions .profile-btn { width: 35px; height: 35px; }
-  .inbox-item, .duplicate-warning { grid-template-columns: 1fr; }
-  .inbox-item .btn, .duplicate-warning .btn { width: 100%; }
+  .inbox-item, .duplicate-warning, .activity-card { grid-template-columns: 1fr; }
+  .inbox-item .btn, .duplicate-warning .btn, .activity-card .btn { width: 100%; }
+  .activity-value { text-align: left; }
   .stats-grid { gap: 7px; }
   .stat-card { padding: 11px; }
   .stat-card strong { font-size: 20px; }
@@ -714,7 +727,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 
     <section id="healthModal" class="modal health-modal hidden" role="dialog" aria-modal="true" aria-labelledby="healthTitle"><header><div><span class="eyebrow">Connection and storage</span><h2 id="healthTitle">System health</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div id="healthList" class="health-list"></div><div class="health-note"><strong>Private by design</strong><span>Lists and history remain in the private Google Sheet. Recipe originals remain in Family Drive. The Gemini key remains in Apps Script.</span></div><button id="healthRefreshBtn" class="btn primary wide" type="button">Refresh connections</button></div></section>
 
-    <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn primary wide" id="automationBtn" type="button">Automation &amp; AI</button><button class="btn ghost wide" id="systemHealthBtn" type="button">System health</button><button class="btn ghost wide" id="howItWorksBtn" type="button">How everything works</button><button class="btn ghost wide" id="showGuideBtn" type="button">Show quick start guide</button><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="resetPracticeBtn" type="button">Reset Practice Mode</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
+    <section id="activityModal" class="modal activity-modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><header><div><span class="eyebrow">Review and correct</span><h2 id="activityTitle">Recent activity</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><p class="modal-copy">Correct a recent purchase without editing the Google Sheet. Receipt links and verification status stay attached.</p><label class="search-box activity-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="activitySearch" type="search" placeholder="Search recent purchases" autocomplete="off"></label><div id="activityList" class="activity-list"></div><div id="activityEmpty" class="empty-state compact hidden"><div class="empty-icon">↺</div><h3>No matching purchases</h3><p>Try another item or store.</p></div></div></section>
+
+    <section id="correctionModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="correctionTitle"><header><div><span class="eyebrow">Purchase correction</span><h2 id="correctionTitle">Fix activity details</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="correctionForm" class="modal-body stack-form"><input id="correctionEventId" type="hidden"><div class="selected-item"><strong id="correctionItemName">Item</strong><span id="correctionVerification"></span></div><div class="form-grid"><label>Quantity<input id="correctionQuantity" type="number" min="0.01" step="0.01" required></label><label>Purchase date<input id="correctionDate" type="date" required></label></div><div class="form-grid"><label>Actual store<select id="correctionStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="correctionUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" required></label></div><label>Purchase type<select id="correctionPlanningStatus"><option>Planned</option><option>Unplanned</option></select></label><label>Note <span class="optional">optional</span><input id="correctionNote" autocomplete="off" placeholder="Flavor, size, substitution, correction reason…"></label><div class="total-preview correction-total"><span>Corrected item total</span><strong id="correctionTotal">$0.00</strong></div><div class="modal-actions"><button class="btn ghost" id="backToActivityBtn" type="button">Back</button><button class="btn success" type="submit">Save correction</button></div></form></section>
+
+    <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn primary wide" id="activityBtn" type="button">Recent activity &amp; corrections</button><button class="btn ghost wide" id="automationBtn" type="button">Automation &amp; AI</button><button class="btn ghost wide" id="systemHealthBtn" type="button">System health</button><button class="btn ghost wide" id="howItWorksBtn" type="button">How everything works</button><button class="btn ghost wide" id="showGuideBtn" type="button">Show quick start guide</button><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="resetPracticeBtn" type="button">Reset Practice Mode</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
   </div>
 
   <div id="toastRegion" class="toast-region" aria-live="polite"></div>
@@ -749,7 +766,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     loading: false, cameraStream: null, scanLoop: 0, detector: null, scannerControls: null, scannerReader: null,
     deferredInstall: null, receiptCandidates: [], receiptTotal: 0, trip: null, dataHash: "", syncTimer: 0, waitingWorker: null, updateRequested: false,
     historyStore: "", historyQuery: "", lastUndo: null, undoTimer: 0, leftoversReady: false, recipesReady: false,
-    weeklyGeminiRunning: false, mealPlan: null, lastSyncAt: "", lastSyncError: "", backendStatus: "unknown", backendLastSuccess: "",
+    weeklyGeminiRunning: false, mealPlan: null, activityQuery: "", lastSyncAt: "", lastSyncError: "", backendStatus: "unknown", backendLastSuccess: "",
   };
 
   const qs = (selector) => document.querySelector(selector);
@@ -788,6 +805,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#inboxHealthBtn").addEventListener("click", openSystemHealth);
     qs("#systemHealthBtn").addEventListener("click", openSystemHealth);
     qs("#healthRefreshBtn").addEventListener("click", refreshSystemHealth);
+    qs("#activityBtn").addEventListener("click", openRecentActivity);
+    qs("#activitySearch").addEventListener("input", (event) => { state.activityQuery = normalizeText(event.target.value); renderRecentActivity(); });
+    qs("#activityList").addEventListener("click", handleActivityAction);
+    qs("#correctionForm").addEventListener("submit", saveActivityCorrection);
+    qs("#correctionQuantity").addEventListener("input", updateCorrectionTotal);
+    qs("#correctionUnitPrice").addEventListener("input", updateCorrectionTotal);
+    qs("#backToActivityBtn").addEventListener("click", openRecentActivity);
     qs("#geminiBtn").addEventListener("click", openGeminiHelper);
     qs("#geminiForm").addEventListener("submit", askGeminiHelper);
     qsa("[data-helper-prompt]").forEach((button) => button.addEventListener("click", () => { qs("#geminiQuestion").value = button.dataset.helperPrompt; qs("#geminiQuestion").focus(); }));
@@ -1481,6 +1505,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     if (receiptReview.length) entries.push({ tone: "warn", title: `${receiptReview.length} receipt line${receiptReview.length === 1 ? " needs" : "s need"} confirmation`, detail: "The current receipt has unfamiliar products or shorthand.", action: "receipt", label: "Review receipt" });
     const incompleteRecipes = state.recipes.filter((recipe) => !recipe.instructions || !ingredientsForRecipe(recipe.recipe_id).length);
     if (incompleteRecipes.length) entries.push({ tone: "neutral", title: `${incompleteRecipes.length} recipe${incompleteRecipes.length === 1 ? " is" : "s are"} incomplete`, detail: "Add directions or ingredients before using them for meal planning.", view: "recipes", label: "Review recipes" });
+    const unusualPrices = priceAnomalyEvents();
+    if (unusualPrices.length) entries.push({ tone: "warn", title: `${unusualPrices.length} unusual price change${unusualPrices.length === 1 ? "" : "s"} to review`, detail: "Confirm the quantity and unit price were recorded correctly.", action: "activity", label: "Review activity" });
     if (state.lastSyncError) entries.unshift({ tone: "bad", title: "Google Sheet needs attention", detail: state.lastSyncError, action: "health", label: "View health" });
     return entries;
   }
@@ -1508,6 +1534,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     const action = event.target.closest("[data-inbox-action]")?.dataset.inboxAction;
     if (action === "health") return openSystemHealth();
     if (action === "receipt") return openModal("receiptModal");
+    if (action === "activity") return openRecentActivity();
   }
 
   function healthRow(label, value, detail, tone = "neutral") {
@@ -1530,7 +1557,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
       healthRow("Gemini backend", backendValue, "The API key remains in Apps Script and is never sent to the public webpage.", backendTone),
       healthRow("Family Drive", driveFiles ? `${driveFiles} recipe${driveFiles === 1 ? "" : "s"} with stored files` : "Secure backend configured", "Recipe originals and photos are stored outside the public webpage.", driveFiles ? "ok" : "neutral"),
       healthRow("Offline backup", cached ? "Available on this device" : "Not created yet", cached ? "A read-only last sync is available if the connection drops." : "It is created after the first successful sync.", cached ? "ok" : "warn"),
-      healthRow("App version", "Version 28", "Family Inbox, duplicate warnings, and system health are installed.", "ok"),
+      healthRow("App version", "Version 29", "Recent corrections, price review, Family Inbox, and system health are installed.", "ok"),
     ].join("");
   }
 
@@ -1689,6 +1716,80 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
       return `<article class="history-card"><div class="history-date"><small>${d.toLocaleString(undefined, { month: "short" })}</small>${d.getDate()}</div><div class="history-info"><strong>${escapeHtml(item ? displayName(item) : "Unknown item")}</strong>${item?.nickname ? `<span class="official-name">${escapeHtml(item.name)}</span>` : ""}<span>${escapeHtml(event.actual_store || "Other")} · ${escapeHtml(event.created_by || "Family")}</span><div class="tag-row"><span class="tag ${event.planning_status === "Unplanned" ? "warn" : ""}">${escapeHtml(event.planning_status || "Unplanned")}</span><span class="tag ${event.verification_status === "Receipt verified" ? "ok" : ""}">${escapeHtml(event.verification_status || "Checked")}</span>${item?.category ? `<span class="tag">${escapeHtml(item.category)}</span>` : ""}${priceChange ? `<span class="tag ${priceChange.direction === "up" ? "warn" : "ok"}">${priceChange.direction === "up" ? "↑" : "↓"} ${priceChange.percent}% vs prior</span>` : ""}</div></div><div class="history-qty">${formatMoney(event.total_price)}<small>${formatQty(event.quantity)} ${escapeHtml(item?.unit || "")}</small></div></article>`;
     }).join("");
     qs("#historyEmpty").classList.toggle("hidden", events.length > 0);
+  }
+
+  function priceAnomalyEvents() {
+    const cutoff = Date.now() - 45 * 86400000;
+    return purchaseEvents().filter((event) => new Date(event.purchased_at).getTime() >= cutoff).map((event) => ({ event, change: priorPriceChange(event) })).filter(({ change }) => change && change.percent >= 30).sort((a, b) => b.change.percent - a.change.percent);
+  }
+
+  function renderRecentActivity() {
+    qs("#activitySearch").value = state.activityQuery;
+    const events = purchaseEvents().filter((event) => {
+      if (!state.activityQuery) return true;
+      const item = state.items.find((entry) => entry.item_id === event.item_id);
+      return normalizeText(`${item?.name || ""} ${item?.nickname || ""} ${event.actual_store || ""} ${event.note || ""} ${event.planning_status || ""}`).includes(state.activityQuery);
+    }).sort((a, b) => new Date(b.purchased_at) - new Date(a.purchased_at)).slice(0, 60);
+    qs("#activityList").innerHTML = events.map((event) => {
+      const item = state.items.find((entry) => entry.item_id === event.item_id);
+      const change = priorPriceChange(event);
+      const unusual = change?.percent >= 30;
+      return `<article class="activity-card ${unusual ? "unusual" : ""}"><div class="activity-main"><strong>${escapeHtml(item ? displayName(item) : "Unknown item")}</strong><span>${escapeHtml(formatDate(event.purchased_at))} · ${escapeHtml(event.actual_store || "Other")} · ${formatQty(event.quantity)} ${escapeHtml(item?.unit || "each")}</span><div class="tag-row"><span class="tag ${event.planning_status === "Unplanned" ? "warn" : ""}">${escapeHtml(event.planning_status || "Unplanned")}</span><span class="tag ${event.verification_status === "Receipt verified" ? "ok" : ""}">${escapeHtml(event.verification_status || "Checked")}</span>${unusual ? `<span class="tag warn">${change.direction === "up" ? "Higher" : "Lower"} by ${change.percent}%</span>` : ""}</div></div><div class="activity-value"><strong>${formatMoney(event.total_price)}</strong><small>${formatMoney(event.unit_price)} / ${escapeHtml(item?.unit || "item")}</small><button class="btn ghost compact" type="button" data-correct-event="${escapeHtml(event.event_id)}">Correct</button></div></article>`;
+    }).join("");
+    qs("#activityEmpty").classList.toggle("hidden", Boolean(events.length));
+  }
+
+  function openRecentActivity() { renderRecentActivity(); openModal("activityModal"); }
+
+  function handleActivityAction(event) {
+    const button = event.target.closest("[data-correct-event]"); if (!button) return;
+    const purchase = state.events.find((entry) => entry.event_id === button.dataset.correctEvent && entry.action === "purchase");
+    if (purchase) openActivityCorrection(purchase);
+  }
+
+  function openActivityCorrection(event) {
+    const item = state.items.find((entry) => entry.item_id === event.item_id);
+    qs("#correctionEventId").value = event.event_id;
+    qs("#correctionItemName").textContent = item ? displayName(item) : "Unknown item";
+    qs("#correctionVerification").textContent = `${event.verification_status || "Checked"}${event.receipt_id ? " · receipt remains linked" : ""}`;
+    qs("#correctionQuantity").value = event.quantity || 1;
+    qs("#correctionDate").value = String(event.purchased_at || "").slice(0, 10) || todayInput();
+    qs("#correctionStore").value = STORES.includes(event.actual_store) ? event.actual_store : "Other";
+    qs("#correctionUnitPrice").value = Number(event.unit_price || 0).toFixed(2);
+    qs("#correctionPlanningStatus").value = event.planning_status === "Planned" ? "Planned" : "Unplanned";
+    qs("#correctionNote").value = event.note || "";
+    updateCorrectionTotal(); openModal("correctionModal");
+  }
+
+  function updateCorrectionTotal() {
+    qs("#correctionTotal").textContent = formatMoney(Number(qs("#correctionQuantity").value || 0) * Number(qs("#correctionUnitPrice").value || 0));
+  }
+
+  async function saveActivityCorrection(event) {
+    event.preventDefault(); if (!canWrite()) return;
+    const purchase = state.events.find((entry) => entry.event_id === qs("#correctionEventId").value && entry.action === "purchase");
+    if (!purchase) return toast("That purchase could not be found.", "bad");
+    const old = { ...purchase };
+    const quantity = Number(qs("#correctionQuantity").value || 0);
+    const unitPrice = Number(qs("#correctionUnitPrice").value || 0);
+    Object.assign(purchase, {
+      quantity, note: qs("#correctionNote").value.trim(), purchased_at: new Date(`${qs("#correctionDate").value}T12:00:00`).toISOString(),
+      actual_store: qs("#correctionStore").value, unit_price: unitPrice, total_price: Number((quantity * unitPrice).toFixed(2)), planning_status: qs("#correctionPlanningStatus").value,
+    });
+    const item = state.items.find((entry) => entry.item_id === purchase.item_id);
+    const latest = latestPurchase(purchase.item_id);
+    const oldItem = item ? { planned_store: item.planned_store, estimated_unit_price: item.estimated_unit_price } : null;
+    if (latest && item) Object.assign(item, { planned_store: latest.actual_store || item.planned_store, estimated_unit_price: latest.unit_price });
+    try {
+      if (!state.demo) {
+        const updates = [{ range: `Events!C${purchase._row}:N${purchase._row}`, majorDimension: "ROWS", values: [[purchase.quantity, purchase.action, purchase.note, purchase.purchased_at, purchase.created_by, purchase.planned_store, purchase.actual_store, purchase.unit_price, purchase.total_price, purchase.planning_status, purchase.verification_status, purchase.receipt_id]] }];
+        if (latest && item) updates.push({ range: `Items!L${item._row}:M${item._row}`, majorDimension: "ROWS", values: [[item.planned_store, item.estimated_unit_price]] });
+        await batchUpdateValues(updates);
+      }
+      cacheData(); render(); renderRecentActivity(); openModal("activityModal"); toast(`${item ? displayName(item) : "Purchase"} corrected.`);
+    } catch (error) {
+      Object.assign(purchase, old); if (item && oldItem) Object.assign(item, oldItem); render(); toast(error.message, "bad");
+    }
   }
 
   function renderTripHistory(events) {

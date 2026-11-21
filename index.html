@@ -435,6 +435,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 .leftover-actions .btn { min-height: 36px; padding: 7px 10px; }
 .check-label { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel-2); }
 .check-label input { width: 20px; min-height: 20px; accent-color: var(--ok); }
+.recurring-control { display: grid; grid-template-columns: 1.2fr 1fr; align-items: end; gap: 10px; }
+.recurring-control label.disabled { opacity: .45; }
 .saved-need-list { display: grid; gap: 7px; max-height: 42vh; overflow: auto; }
 .saved-need-list > button { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); color: var(--ink); text-align: left; cursor: pointer; }
 .saved-need-list > button:hover { border-color: var(--brand); background: var(--brand-soft); }
@@ -499,6 +501,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
   .needed-qty { text-align: left; }
   .history-card { grid-template-columns: 42px minmax(0,1fr) auto; }
   .form-grid { grid-template-columns: 1fr; }
+  .recurring-control { grid-template-columns: 1fr; }
   .trip-toolbar { align-items: stretch; }
   .trip-toolbar .store-filter { flex: 1; display: grid; justify-content: stretch; }
   .trip-toolbar .store-filter select { width: 100%; }
@@ -608,11 +611,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
   <div id="modalBackdrop" class="modal-backdrop hidden" role="presentation">
     <section id="addNeededModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="addNeededTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="addNeededTitle">Add to Needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body stack-form"><p class="modal-copy">Choose any saved item that is not already planned.</p><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="savedNeedSearch" type="search" placeholder="Search saved items" autocomplete="off"></label><label>Usual store<select id="savedNeedStore"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><div id="savedNeedList" class="saved-need-list"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" id="createNewNeededBtn" type="button">Create new item</button></div></div></section>
 
-    <section id="needModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="needModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="needModalTitle">Confirm the plan</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="needForm" class="modal-body stack-form"><input id="needItemId" type="hidden"><div class="selected-item"><strong id="needItemName">Item</strong><span id="needItemMeta"></span></div><label>Nickname <span class="optional">optional</span><input id="needNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="needNicknameSuggestions" class="nickname-suggestions"></div><label>Quantity needed<input id="needQuantity" type="number" min="0.1" step="0.1" value="1" required></label><div class="quantity-chips" aria-label="Quick quantity"><button type="button" data-qty="1">1</button><button type="button" data-qty="2">2</button><button type="button" data-qty="3">3</button><button type="button" data-qty="4">4</button></div><div class="form-grid"><label>Planned store<select id="needPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Estimated unit price<input id="needEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><span class="field-hint">The nickname is shown first; the official product name and barcode still handle receipt matching.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
+    <section id="needModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="needModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="needModalTitle">Confirm the plan</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="needForm" class="modal-body stack-form"><input id="needItemId" type="hidden"><div class="selected-item"><strong id="needItemName">Item</strong><span id="needItemMeta"></span></div><label>Nickname <span class="optional">optional</span><input id="needNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="needNicknameSuggestions" class="nickname-suggestions"></div><label>Quantity needed<input id="needQuantity" type="number" min="0.1" step="0.1" value="1" required></label><div class="quantity-chips" aria-label="Quick quantity"><button type="button" data-qty="1">1</button><button type="button" data-qty="2">2</button><button type="button" data-qty="3">3</button><button type="button" data-qty="4">4</button></div><div class="form-grid"><label>Planned store<select id="needPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Estimated unit price<input id="needEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><div class="recurring-control"><label class="check-label"><input id="needStaple" type="checkbox"><span>Recurring household staple</span></label><label>Remind about it<select id="needStapleDays"><option value="7">Every week</option><option value="14">Every 2 weeks</option><option value="30">Every month</option><option value="60">Every 2 months</option></select></label></div><span class="field-hint">The nickname is shown first; the official product name and barcode still handle receipt matching.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
     <section id="purchaseModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="purchaseModalTitle"><header><div><span class="eyebrow">Purchase</span><h2 id="purchaseModalTitle">Confirm what you bought</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="purchaseForm" class="modal-body stack-form"><input id="purchaseItemId" type="hidden"><div class="selected-item"><strong id="purchaseItemName">Item</strong><span id="purchaseItemMeta"></span></div><div class="form-grid"><label>Quantity bought<input id="purchaseQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Purchase date<input id="purchaseDate" type="date" required></label></div><div class="form-grid"><label>Actual store<select id="purchaseStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="purchaseUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label></div><div class="form-grid"><label>Purchase type<select id="purchasePlanningStatus"><option>Planned</option><option>Unplanned</option></select></label><div class="total-preview"><span>Item total</span><strong id="purchaseTotal">$0.00</strong></div></div><div id="purchasePriceInsight" class="price-insight"></div><span class="field-hint" id="purchaseStoreHint">Suggested from your history—confirm or change.</span><label>Note <span class="optional">optional</span><input id="purchaseNote" autocomplete="off" placeholder="Flavor, size, substitution…"></label><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn success" type="submit">Check off purchase</button></div></form></section>
 
-    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Official product name<input id="itemName" autocomplete="off" required></label><label>Nickname <span class="optional">optional</span><input id="itemNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="itemNicknameSuggestions" class="nickname-suggestions"></div><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><label class="btn ghost compact photo-scan">Identify package with Gemini<input id="itemPhotoInput" type="file" accept="image/*" capture="environment"></label><div id="itemPhotoStatus" class="status-banner hidden">Reading package…</div><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
+    <section id="itemModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle"><header><div><span class="eyebrow">Shopping list</span><h2 id="itemModalTitle">Add something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="itemForm" class="modal-body stack-form"><label>Official product name<input id="itemName" autocomplete="off" required></label><label>Nickname <span class="optional">optional</span><input id="itemNickname" autocomplete="off" placeholder="What your family calls it"></label><div id="itemNicknameSuggestions" class="nickname-suggestions"></div><div class="form-grid"><label>Category<select id="itemCategory"></select></label><label>Unit<select id="itemUnit"></select></label></div><label>Barcode <span class="optional">optional</span><input id="itemBarcode" inputmode="numeric" autocomplete="off"></label><label class="btn ghost compact photo-scan">Identify package with Gemini<input id="itemPhotoInput" type="file" accept="image/*" capture="environment"></label><div id="itemPhotoStatus" class="status-banner hidden">Reading package…</div><div class="form-divider"><span>List details</span></div><div class="form-grid"><label>Quantity needed<input id="itemNeededQuantity" type="number" min="0.1" step="0.1" value="1" required></label><label>Planned store<select id="itemPlannedStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Estimated unit price<input id="itemEstimatedPrice" type="number" min="0" step="0.01" inputmode="decimal" value="0"></label><div class="recurring-control"><label class="check-label"><input id="itemStaple" type="checkbox"><span>Recurring household staple</span></label><label>Remind about it<select id="itemStapleDays"><option value="7">Every week</option><option value="14">Every 2 weeks</option><option value="30">Every month</option><option value="60">Every 2 months</option></select></label></div><span class="field-hint">This adds the item to Needed. Nothing is recorded as purchased until you check it off.</span><div class="modal-actions"><button class="btn ghost close-modal" type="button">Cancel</button><button class="btn primary" type="submit">Add to Needed</button></div></form></section>
 
     <section id="scanModal" class="modal scan-modal hidden" role="dialog" aria-modal="true" aria-labelledby="scanTitle"><header><div><span class="eyebrow">Camera</span><h2 id="scanTitle">Scan something needed</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body"><div class="camera-frame"><video id="cameraVideo" playsinline muted autoplay></video><div class="scan-line"></div><div class="camera-message" id="cameraMessage">Point the camera at a UPC or EAN barcode to add it to Needed.</div></div><div class="scanner-alternatives"><label class="btn ghost compact photo-scan">Scan from photo<input id="barcodePhotoInput" type="file" accept="image/*" capture="environment"></label><span>Useful when iPhone Safari cannot continuously detect the barcode.</span></div><form id="manualBarcodeForm" class="manual-barcode"><input id="manualBarcodeInput" inputmode="numeric" placeholder="Or enter barcode number"><button class="btn primary" type="submit">Find</button></form></div></section>
 
@@ -708,8 +711,10 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#addItemBtn").addEventListener("click", () => state.view === "leftovers" ? openLeftoverModal() : state.view === "recipes" ? openRecipeModal() : openAddNeededModal());
     qs("#receiptBtn").addEventListener("click", openReceiptModal);
     qs("#needForm").addEventListener("submit", saveNeeded);
+    qs("#needStaple").addEventListener("change", () => updateRecurringControl("need"));
     qs("#purchaseForm").addEventListener("submit", recordPurchase);
     qs("#itemForm").addEventListener("submit", saveItem);
+    qs("#itemStaple").addEventListener("change", () => updateRecurringControl("item"));
     qs("#itemPhotoInput").addEventListener("change", identifyItemPhoto);
     qs("#manualBarcodeForm").addEventListener("submit", manualBarcode);
     qs("#barcodePhotoInput").addEventListener("change", scanBarcodePhoto);
@@ -1235,11 +1240,12 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
   }
 
   function weeklyGeminiContext() {
+    const staples = recurringStaples();
     const catalog = state.items.map((item) => {
       const purchases = purchasesFor(item.item_id).sort((a, b) => new Date(a.purchased_at) - new Date(b.purchased_at));
       const last = purchases.at(-1);
       const gaps = purchases.slice(1).map((purchase, index) => (new Date(purchase.purchased_at) - new Date(purchases[index].purchased_at)) / 86400000).filter((days) => days > 0 && days < 365);
-      return { name: displayName(item), officialName: item.name, category: item.category, unit: item.unit, currentlyNeeded: item.needed, purchaseCount: purchases.length, lastPurchased: last?.purchased_at || "", typicalDaysBetween: gaps.length ? Math.round(gaps.reduce((sum, days) => sum + days, 0) / gaps.length) : 0, usualQuantity: last?.quantity || 1, usualStore: preferredStore(item.item_id, item.planned_store) };
+      return { name: displayName(item), officialName: item.name, category: item.category, unit: item.unit, currentlyNeeded: item.needed, recurringStapleDays: Number(staples[item.item_id]?.days || 0), purchaseCount: purchases.length, lastPurchased: last?.purchased_at || "", typicalDaysBetween: gaps.length ? Math.round(gaps.reduce((sum, days) => sum + days, 0) / gaps.length) : 0, usualQuantity: last?.quantity || 1, usualStore: preferredStore(item.item_id, item.planned_store) };
     }).filter((item) => item.purchaseCount || item.currentlyNeeded).slice(0, 180);
     const leftovers = state.leftovers.filter((item) => item.available).map((item) => ({ name: item.name, expiresAt: item.expires_at }));
     const recipes = state.recipes.slice(0, 80).map((recipe) => recipe.title);
@@ -1312,7 +1318,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#checkList").innerHTML = items.map((item) => {
       const last = latestPurchase(item.item_id);
       const planned = item.needed ? `<span class="tag warn">Needed × ${formatQty(item.needed_quantity)}</span>` : "";
-      return `<article class="item-card ${item.needed ? "needed" : ""}"><div class="item-main"><div class="item-name-row"><span><span class="item-name">${escapeHtml(displayName(item))}</span>${officialNameHtml(item)}</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(item.unit)}</span></div><div class="last-bought">${last ? `Last bought ${formatDate(last.purchased_at)} at ${escapeHtml(last.actual_store || "Other")}` : "No purchase history yet"}</div><div class="tag-row">${planned}${last?.unit_price ? `<span class="tag">Last ${formatMoney(last.unit_price)}</span>` : ""}</div></div><div class="card-actions"><button class="btn primary" data-action="need" data-id="${escapeHtml(item.item_id)}">${item.needed ? "Change need" : "Need this"}</button><button class="btn ghost" data-action="bought" data-id="${escapeHtml(item.item_id)}">Bought</button></div></article>`;
+      const staple = recurringStaples()[item.item_id];
+      return `<article class="item-card ${item.needed ? "needed" : ""}"><div class="item-main"><div class="item-name-row"><span><span class="item-name">${escapeHtml(displayName(item))}</span>${officialNameHtml(item)}</span></div><div class="item-meta"><span>${escapeHtml(item.category)}</span><span>${escapeHtml(item.unit)}</span></div><div class="last-bought">${last ? `Last bought ${formatDate(last.purchased_at)} at ${escapeHtml(last.actual_store || "Other")}` : "No purchase history yet"}</div><div class="tag-row">${planned}${staple ? `<span class="tag ok">Staple · ${recurrenceLabel(staple.days)}</span>` : ""}${last?.unit_price ? `<span class="tag">Last ${formatMoney(last.unit_price)}</span>` : ""}</div></div><div class="card-actions"><button class="btn primary" data-action="need" data-id="${escapeHtml(item.item_id)}">${item.needed ? "Change need" : "Need this"}</button><button class="btn ghost" data-action="bought" data-id="${escapeHtml(item.item_id)}">Bought</button></div></article>`;
     }).join("");
     qs("#checkEmpty").classList.toggle("hidden", items.length > 0);
   }
@@ -1793,6 +1800,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#needQuantity").value = item.needed_quantity || predictedQuantity(item.item_id);
     qs("#needPlannedStore").value = state.trip?.store || item.planned_store || preferredStore(item.item_id);
     qs("#needEstimatedPrice").value = item.estimated_unit_price || predictedPrice(item.item_id);
+    const staple = recurringStaples()[item.item_id];
+    qs("#needStaple").checked = Boolean(staple); qs("#needStapleDays").value = String(staple?.days || 14); updateRecurringControl("need");
     openModal("needModal");
   }
 
@@ -1801,6 +1810,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     const item = state.items.find((x) => x.item_id === qs("#needItemId").value);
     if (!item) return;
     await setNeeded(item, true, Number(qs("#needQuantity").value), qs("#needPlannedStore").value, Number(qs("#needEstimatedPrice").value || 0), qs("#needNickname").value.trim());
+    await saveRecurringStaple(item.item_id, qs("#needStaple").checked, Number(qs("#needStapleDays").value));
     closeModals(); setView("needed"); toast(`${displayName(item)} added to Needed.`);
   }
 
@@ -1905,6 +1915,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#itemNeededQuantity").value = preset.quantity || 1;
     qs("#itemPlannedStore").value = preset.store || state.trip?.store || preferredStore();
     qs("#itemEstimatedPrice").value = preset.price || 0;
+    qs("#itemStaple").checked = Boolean(preset.staple); qs("#itemStapleDays").value = String(preset.stapleDays || 14); updateRecurringControl("item");
     qs("#itemPhotoInput").value = ""; qs("#itemPhotoStatus").classList.add("hidden");
     openModal("itemModal"); setTimeout(() => qs("#itemName").focus(), 50);
   }
@@ -1939,6 +1950,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
         item._row = rowFromAppend(result) || item._row;
       }
       state.items.push(item);
+      await saveRecurringStaple(item.item_id, qs("#itemStaple").checked, Number(qs("#itemStapleDays").value));
       syncItemWithTrip(item); cacheData(); closeModals(); setView("needed"); render(); toast(`${displayName(item)} added to Needed${state.trip && item.planned_store === state.trip.store ? ` and the ${state.trip.store} trip` : ""}.`);
     } catch (error) { toast(error.message, "bad"); }
   }
@@ -2469,10 +2481,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 
   function getSuggestions() {
     const now = Date.now();
+    const staples = recurringStaples();
     return state.items.filter((item) => !item.needed).map((item) => {
       const purchases = purchasesFor(item.item_id).sort((a, b) => new Date(a.purchased_at) - new Date(b.purchased_at));
+      const last = purchases.length ? new Date(purchases.at(-1).purchased_at).getTime() : new Date(item.created_at || 0).getTime();
+      const stapleDays = Number(staples[item.item_id]?.days || 0);
+      if (stapleDays && last && now - last >= stapleDays * .85 * 86400000) return { item, score: 10 + (now - last) / (stapleDays * 86400000) };
       if (!purchases.length) return null;
-      const last = new Date(purchases.at(-1).purchased_at).getTime();
       if (purchases.length === 1) return now - last > 30 * 86400000 ? { item, score: now - last } : null;
       const intervals = purchases.slice(1).map((purchase, index) => new Date(purchase.purchased_at) - new Date(purchases[index].purchased_at));
       const average = intervals.reduce((a, b) => a + b, 0) / intervals.length;
@@ -2498,6 +2513,26 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
   }
   function predictedQuantity(itemId) { const last = latestPurchase(itemId); return last?.quantity || 1; }
   function predictedPrice(itemId) { const last = latestPurchase(itemId); return last?.unit_price || 0; }
+
+  function recurringStaples() {
+    try { return JSON.parse(state.settings.recurring_staples || "{}"); }
+    catch { return {}; }
+  }
+
+  function recurrenceLabel(days) { return Number(days) === 7 ? "weekly" : Number(days) === 14 ? "every 2 weeks" : Number(days) === 30 ? "monthly" : "every 2 months"; }
+
+  function updateRecurringControl(prefix) {
+    const checked = qs(`#${prefix}Staple`).checked;
+    qs(`#${prefix}StapleDays`).disabled = !checked;
+    qs(`#${prefix}StapleDays`).closest("label").classList.toggle("disabled", !checked);
+  }
+
+  async function saveRecurringStaple(itemId, enabled, days) {
+    const staples = recurringStaples();
+    if (enabled) staples[itemId] = { days: [7, 14, 30, 60].includes(Number(days)) ? Number(days) : 14, updatedAt: new Date().toISOString(), updatedBy: currentUser() };
+    else delete staples[itemId];
+    await saveSettings({ recurring_staples: JSON.stringify(staples) });
+  }
 
   function openModal(id) { qs("#modalBackdrop").classList.remove("hidden"); qsa(".modal").forEach((modal) => modal.classList.toggle("hidden", modal.id !== id)); }
   function closeModals() { stopCamera(); qs("#modalBackdrop").classList.add("hidden"); qsa(".modal").forEach((modal) => modal.classList.add("hidden")); }

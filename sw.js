@@ -1,4 +1,4 @@
-const CACHE = "family-groceries-v22";
+const CACHE = "family-groceries-v23";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (event) => {

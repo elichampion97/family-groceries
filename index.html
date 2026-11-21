@@ -380,6 +380,17 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 .suggestion-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid rgba(45,53,72,.7); }
 .suggestion-row:first-of-type { border-top: 0; }
 .suggestion-row span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 750; }
+.suggestion-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.suggestion-heading h3, .suggestion-heading p { margin: 0; }
+.suggestion-heading p { margin-top: 3px; color: var(--muted); font-size: 11px; }
+.suggestion-controls { display: flex; gap: 6px; }
+.ai-review { border-style: solid; background: linear-gradient(135deg, rgba(139,92,246,.12), rgba(0,231,139,.05)); }
+.ai-review.quiet { border-style: dashed; }
+.ai-suggestion > div { min-width: 0; }
+.ai-suggestion strong, .ai-suggestion span, .ai-suggestion small { display: block; }
+.ai-suggestion strong { font-size: 12px; }
+.ai-suggestion span { margin-top: 2px; color: var(--muted); font-size: 10.5px; font-weight: 500; white-space: normal; }
+.ai-suggestion small { margin-top: 4px; color: var(--brand-2); font-size: 9.5px; }
 .store-filter { display: flex; align-items: center; justify-content: flex-end; gap: 9px; margin-bottom: 12px; color: var(--muted); font-size: 11px; }
 .store-filter select { width: auto; min-width: 145px; }
 .trip-toolbar { display: flex; align-items: flex-end; justify-content: flex-end; gap: 9px; margin-bottom: 12px; }
@@ -654,6 +665,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     loading: false, cameraStream: null, scanLoop: 0, detector: null, scannerControls: null, scannerReader: null,
     deferredInstall: null, receiptCandidates: [], receiptTotal: 0, trip: null, dataHash: "", syncTimer: 0, waitingWorker: null, updateRequested: false,
     historyStore: "", historyQuery: "", lastUndo: null, undoTimer: 0, leftoversReady: false, recipesReady: false,
+    weeklyGeminiRunning: false,
   };
 
   const qs = (selector) => document.querySelector(selector);
@@ -748,7 +760,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qsa("[data-qty]").forEach((button) => button.addEventListener("click", () => { qs("#needQuantity").value = button.dataset.qty; }));
     qs("#neededList").addEventListener("click", handleListAction);
     qs("#checkList").addEventListener("click", handleListAction);
-    qs("#checkSuggestions").addEventListener("click", handleListAction);
+    qs("#checkSuggestions").addEventListener("click", handleCheckSuggestionAction);
     qsa("[data-family-search]").forEach((button) => button.addEventListener("click", () => searchFamily(button.dataset.familySearch)));
     qs("#signoutBtn").addEventListener("click", signOut);
     qs("#resetPracticeBtn").addEventListener("click", enterDemo);
@@ -933,6 +945,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
       if (tripRestored) toast(`${state.trip.store} trip resumed.`);
       else if (showFeedback) toast("Groceries refreshed.");
       else if (changedElsewhere) toast("The family list was updated from Google Sheets.");
+      void maybeRunWeeklyGeminiReview(false);
       if (!state.syncTimer) state.syncTimer = window.setInterval(() => { if (!document.hidden && state.accessToken && !state.demo) loadData(false); }, 45000);
     } catch (error) {
       const cached = readCache();
@@ -1185,10 +1198,93 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     return `<section class="suggestions-block"><h3>Worth checking</h3><p>Based on purchase timing. Confirm before adding.</p>${items.map((item) => `<div class="suggestion-row"><span>${escapeHtml(displayName(item))}</span><button class="btn ghost compact" data-action="need" data-id="${escapeHtml(item.item_id)}">Confirm</button></div>`).join("")}</section>`;
   }
 
+  function weeklyGeminiReview() {
+    try { return JSON.parse(state.settings.ai_weekly_suggestions || "null"); }
+    catch { return null; }
+  }
+
+  function weeklyReviewDismissed(review) {
+    const dismissed = new Date(state.settings.ai_weekly_dismissed_at || 0).getTime();
+    const generated = new Date(review?.generatedAt || state.settings.ai_weekly_generated_at || 0).getTime();
+    return Boolean(dismissed && generated && dismissed >= generated);
+  }
+
+  function renderWeeklyGeminiReview() {
+    const review = weeklyGeminiReview();
+    if (state.weeklyGeminiRunning) return `<section class="suggestions-block ai-review"><div class="suggestion-heading"><div><h3>✦ Weekly Gemini check</h3><p>Reviewing purchase timing, the current list, leftovers, and saved recipes…</p></div></div></section>`;
+    if (!review?.suggestions?.length || weeklyReviewDismissed(review)) {
+      const copy = weeklyReviewDismissed(review) ? "This week’s review was dismissed." : "Gemini checks the family patterns once every seven days.";
+      return `<section class="suggestions-block ai-review quiet"><div class="suggestion-heading"><div><h3>✦ Weekly Gemini check</h3><p>${copy}</p></div><button class="btn ghost compact" type="button" data-ai-refresh>Check now</button></div></section>`;
+    }
+    const generated = new Date(review.generatedAt || state.settings.ai_weekly_generated_at || 0);
+    const dateLabel = Number.isNaN(generated.getTime()) ? "this week" : generated.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    return `<section class="suggestions-block ai-review"><div class="suggestion-heading"><div><h3>✦ Weekly Gemini check</h3><p>Prepared ${escapeHtml(dateLabel)}. Confirm anything that is actually needed.</p></div><div class="suggestion-controls"><button class="btn ghost compact" type="button" data-ai-refresh>Refresh</button><button class="btn ghost compact" type="button" data-ai-dismiss>Dismiss</button></div></div>${review.suggestions.map((suggestion, index) => `<div class="suggestion-row ai-suggestion"><div><strong>${escapeHtml(suggestion.name)}</strong><span>${escapeHtml(suggestion.reason || "Suggested from recent family patterns.")}</span><small>${formatQty(suggestion.quantity || 1)} ${escapeHtml(suggestion.unit || "each")} · ${escapeHtml(suggestion.plannedStore || "Other")} · ${Math.round(Number(suggestion.confidence || 0) * 100)}% confidence</small></div><button class="btn primary compact" type="button" data-ai-confirm="${index}">Confirm</button></div>`).join("")}</section>`;
+  }
+
+  async function saveSettings(entries) {
+    const rows = Object.entries(entries);
+    rows.forEach(([key, value]) => { state.settings[key] = String(value ?? ""); });
+    if (!state.demo) await appendRows("Settings!A:B", rows.map(([key, value]) => [key, String(value ?? "")]));
+    cacheData();
+  }
+
+  function weeklyGeminiContext() {
+    const catalog = state.items.map((item) => {
+      const purchases = purchasesFor(item.item_id).sort((a, b) => new Date(a.purchased_at) - new Date(b.purchased_at));
+      const last = purchases.at(-1);
+      const gaps = purchases.slice(1).map((purchase, index) => (new Date(purchase.purchased_at) - new Date(purchases[index].purchased_at)) / 86400000).filter((days) => days > 0 && days < 365);
+      return { name: displayName(item), officialName: item.name, category: item.category, unit: item.unit, currentlyNeeded: item.needed, purchaseCount: purchases.length, lastPurchased: last?.purchased_at || "", typicalDaysBetween: gaps.length ? Math.round(gaps.reduce((sum, days) => sum + days, 0) / gaps.length) : 0, usualQuantity: last?.quantity || 1, usualStore: preferredStore(item.item_id, item.planned_store) };
+    }).filter((item) => item.purchaseCount || item.currentlyNeeded).slice(0, 180);
+    const leftovers = state.leftovers.filter((item) => item.available).map((item) => ({ name: item.name, expiresAt: item.expires_at }));
+    const recipes = state.recipes.slice(0, 80).map((recipe) => recipe.title);
+    return JSON.stringify({ reviewedAt: new Date().toISOString(), catalog, leftovers, savedRecipeNames: recipes });
+  }
+
+  async function maybeRunWeeklyGeminiReview(force = false) {
+    if (state.demo || !state.accessToken || state.weeklyGeminiRunning || !navigator.onLine) return;
+    const now = Date.now();
+    const generated = new Date(state.settings.ai_weekly_generated_at || 0).getTime();
+    const attempted = new Date(state.settings.ai_weekly_attempted_at || 0).getTime();
+    if (!force && generated && now - generated < 7 * 86400000) return;
+    if (!force && attempted && now - attempted < 86400000) return;
+    state.weeklyGeminiRunning = true; renderCheck();
+    try {
+      const attemptedAt = new Date().toISOString();
+      await saveSettings({ ai_weekly_attempted_at: attemptedAt });
+      const result = await backendRequest("suggestGroceries", { context: weeklyGeminiContext() });
+      if (!result.ok) throw new Error(result.error || "Gemini could not prepare the weekly review.");
+      const suggestions = (result.suggestions || []).filter((suggestion) => suggestion.name && Number(suggestion.confidence || 0) >= .3).slice(0, 8).map((suggestion) => ({
+        name: String(suggestion.name).slice(0, 120), reason: String(suggestion.reason || "").slice(0, 220), confidence: Math.min(1, Math.max(0, Number(suggestion.confidence || 0))), quantity: Math.max(.1, Number(suggestion.quantity || 1)), unit: UNITS.includes(suggestion.unit) ? suggestion.unit : "each", plannedStore: STORES.includes(suggestion.plannedStore) ? suggestion.plannedStore : preferredStore(),
+      }));
+      const review = { generatedAt: new Date().toISOString(), suggestions, model: result.parsedBy || "Gemini" };
+      await saveSettings({ ai_weekly_suggestions: JSON.stringify(review), ai_weekly_generated_at: review.generatedAt, ai_weekly_dismissed_at: "" });
+      toast(suggestions.length ? `Gemini found ${suggestions.length} item${suggestions.length === 1 ? "" : "s"} worth checking.` : "Gemini found nothing clearly due this week.");
+    } catch (error) { toast(error.message, "bad"); }
+    finally { state.weeklyGeminiRunning = false; renderCheck(); }
+  }
+
+  async function handleCheckSuggestionAction(event) {
+    const refresh = event.target.closest("[data-ai-refresh]");
+    if (refresh) return void maybeRunWeeklyGeminiReview(true);
+    const dismiss = event.target.closest("[data-ai-dismiss]");
+    if (dismiss) { await saveSettings({ ai_weekly_dismissed_at: new Date().toISOString() }); renderCheck(); return; }
+    const confirm = event.target.closest("[data-ai-confirm]");
+    if (confirm) {
+      const suggestion = weeklyGeminiReview()?.suggestions?.[Number(confirm.dataset.aiConfirm)];
+      if (!suggestion) return;
+      const existing = state.items.find((item) => [item.name, item.nickname].some((name) => name && normalizeText(name) === normalizeText(suggestion.name)));
+      if (existing) { openNeedModal(existing); qs("#needQuantity").value = suggestion.quantity || predictedQuantity(existing.item_id); qs("#needPlannedStore").value = suggestion.plannedStore || preferredStore(existing.item_id); }
+      else openItemModal({ name: suggestion.name, quantity: suggestion.quantity, unit: suggestion.unit, store: suggestion.plannedStore });
+      return;
+    }
+    handleListAction(event);
+  }
+
   function renderCheck() {
     const items = state.items.filter((item) => !state.query || itemSearchText(item).includes(normalizeText(state.query))).sort((a, b) => displayName(a).localeCompare(displayName(b)));
     const suggestions = getSuggestions();
-    qs("#checkSuggestions").innerHTML = suggestions.length ? renderSuggestions(suggestions) : `<section class="suggestions-block"><h3>Nothing is due yet</h3><p>Suggestions will appear here as purchase timing builds up.</p></section>`;
+    const timingSuggestions = suggestions.length ? renderSuggestions(suggestions) : `<section class="suggestions-block"><h3>Nothing else is due yet</h3><p>Purchase-timing reminders will improve as history builds up.</p></section>`;
+    qs("#checkSuggestions").innerHTML = `${renderWeeklyGeminiReview()}${timingSuggestions}`;
     qs("#checkList").innerHTML = items.map((item) => {
       const last = latestPurchase(item.item_id);
       const planned = item.needed ? `<span class="tag warn">Needed × ${formatQty(item.needed_quantity)}</span>` : "";

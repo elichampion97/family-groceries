@@ -262,7 +262,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 .mobile-nav .nav-disabled { position: relative; opacity: .46; cursor: not-allowed; }
 .mobile-nav .nav-disabled small { position: absolute; top: 2px; right: 1px; padding: 1px 4px; border-radius: 999px; background: var(--panel-2); color: var(--faint); font-size: 7px; font-weight: 850; text-transform: uppercase; }
 
-.recipe-toolbar { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: start; gap: 10px; margin-bottom: 14px; }
+.recipe-toolbar { display: grid; grid-template-columns: minmax(0,1fr) auto auto; align-items: start; gap: 10px; margin-bottom: 14px; }
 .recipe-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
 .recipe-card { overflow: hidden; border: 1px solid var(--line); border-radius: 15px; background: var(--panel); box-shadow: 0 5px 18px rgba(0,0,0,.16); }
 .recipe-cover { display: grid; place-items: center; gap: 7px; min-height: 104px; color: var(--muted); background: linear-gradient(135deg, rgba(139,92,246,.18), rgba(0,231,139,.06)); }
@@ -467,6 +467,24 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 .helper-prompts::-webkit-scrollbar { display: none; }
 .helper-prompts button { flex: 0 0 auto; min-height: 34px; padding: 6px 10px; border: 1px solid rgba(139,92,246,.45); border-radius: 999px; background: var(--brand-soft); color: var(--brand-2); font-size: 10px; font-weight: 800; cursor: pointer; }
 .helper-answer { max-height: 34vh; overflow: auto; padding: 14px; border: 1px solid rgba(139,92,246,.4); border-radius: 11px; background: linear-gradient(135deg, rgba(139,92,246,.11), rgba(0,231,139,.04)); color: var(--ink); line-height: 1.55; white-space: pre-wrap; }
+.help-sections { display: grid; gap: 10px; }
+.help-sections section { padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel-2); }
+.help-sections h3, .help-sections p { margin: 0; }
+.help-sections h3 { color: var(--brand-2); font-size: 13px; }
+.help-sections p { margin-top: 5px; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+.meal-plan-results { display: grid; gap: 10px; max-height: 46vh; overflow: auto; }
+.meal-plan-summary { margin: 0; padding: 11px; border-left: 3px solid var(--brand); color: var(--muted); background: var(--brand-soft); }
+.meal-plan-card { padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-2); }
+.meal-plan-card h3, .meal-plan-card p { margin: 0; }
+.meal-plan-head span { display: block; margin-top: 3px; color: var(--brand-2); font-size: 10px; }
+.meal-plan-card > p { margin-top: 7px; color: var(--muted); font-size: 11px; }
+.meal-ingredients { display: grid; gap: 6px; margin-top: 10px; }
+.meal-ingredients label { display: flex; align-items: center; gap: 9px; padding: 8px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }
+.meal-ingredients input { width: 18px; min-height: 18px; accent-color: var(--ok); }
+.meal-ingredients strong, .meal-ingredients small { display: block; }
+.meal-ingredients small { margin-top: 2px; color: var(--muted); font-size: 9.5px; }
+.meal-plan-notes { padding: 11px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); font-size: 11px; }
+.meal-plan-notes ul { margin: 7px 0 0; padding-left: 18px; }
 
 .undo-toast { position: fixed; z-index: 80; left: 50%; bottom: calc(78px + var(--safe-bottom)); display: flex; align-items: center; gap: 24px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px; transform: translateX(-50%); background: #242a37; color: var(--ink); box-shadow: var(--shadow); cursor: pointer; }
 .undo-toast strong { color: var(--brand-2); }
@@ -591,7 +609,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
         <section id="historyPanel" class="panel-view hidden"><div class="history-toolbar"><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="historySearch" type="search" placeholder="Search purchase history" autocomplete="off"></label><label class="store-filter">Store<select id="historyStoreFilter"><option value="">All stores</option><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><div id="historyAverages" class="history-averages"></div><div id="historyTrips" class="history-trips"></div><div id="historyList" class="history-list" aria-live="polite"></div><div id="historyEmpty" class="empty-state hidden"><div class="empty-icon">↺</div><h3>No matching purchases</h3><p>Try another item or store.</p></div></section>
         <section id="leftoversPanel" class="panel-view hidden"><section class="quick-ideas leftover-ideas" aria-label="Common meal shortcuts"><div><strong>Common meals</strong><span>Tap one or add anything free-form.</span></div><button type="button" data-meal-name="Taco meat">Taco meat</button><button type="button" data-meal-name="Chicken">Chicken</button><button type="button" data-meal-name="Pasta">Pasta</button><button type="button" data-meal-name="Soup">Soup</button></section><section id="recentMealIdeas" class="quick-ideas leftover-ideas hidden" aria-label="Recent meal shortcuts"></section><div class="leftover-toolbar"><div id="leftoverSummary" class="leftover-summary"></div><label class="store-filter">Show<select id="leftoverFilter"><option value="available">Available only</option><option value="all">All entries</option></select></label></div><div id="leftoversList" class="leftovers-list" aria-live="polite"></div><div id="leftoversEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>No leftovers here</h3><p>Add meal prep or something saved from dinner.</p></div></section>
         <section id="recipesPanel" class="panel-view hidden">
-          <div class="recipe-toolbar"><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="recipeSearch" type="search" placeholder="Search recipes or ingredients" autocomplete="off"></label><button id="importRecipeBtn" class="btn ghost compact" type="button">Import photo or PDF</button></div>
+          <div class="recipe-toolbar"><label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="recipeSearch" type="search" placeholder="Search recipes or ingredients" autocomplete="off"></label><button id="planMealsBtn" class="btn primary compact" type="button">✦ Plan meals</button><button id="importRecipeBtn" class="btn ghost compact" type="button">Import photo or PDF</button></div>
           <div id="recipeList" class="recipe-grid" aria-live="polite"></div>
           <div id="recipesEmpty" class="empty-state hidden"><div class="empty-icon">＋</div><h3>Save your first family recipe</h3><p>Add one manually or import a printed or handwritten original.</p></div>
         </section>
@@ -634,7 +652,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 
     <section id="geminiModal" class="modal helper-modal hidden" role="dialog" aria-modal="true" aria-labelledby="geminiTitle"><header><div><span class="eyebrow">Private family helper</span><h2 id="geminiTitle">Ask Gemini</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="geminiForm" class="modal-body stack-form"><p class="modal-copy">Gemini can explain recipes, suggest meal ideas, compare the current list, or help you remember what may be missing. It never changes family data without your confirmation.</p><div class="helper-prompts"><button type="button" data-helper-prompt="What common items might be missing from our current grocery list?">What might be missing?</button><button type="button" data-helper-prompt="Suggest three meals using our current grocery list and saved recipes.">Meal ideas</button><button type="button" data-helper-prompt="Help me reduce the expected cost of this grocery trip without removing essentials.">Lower trip cost</button></div><label>Your question<textarea id="geminiQuestion" rows="4" maxlength="2000" required placeholder="Ask about the list, shopping history, leftovers, or recipes…"></textarea></label><label class="check-label"><input id="geminiIncludeContext" type="checkbox" checked><span>Include the current family list, recent purchases, leftovers, and recipe names</span></label><div id="geminiProgress" class="status-banner hidden">Thinking…</div><div id="geminiAnswer" class="helper-answer hidden" aria-live="polite"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Close</button><button class="btn primary" id="geminiAskBtn" type="submit">Ask Gemini</button></div></form></section>
 
-    <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn ghost wide" id="showGuideBtn" type="button">Show quick start guide</button><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="resetPracticeBtn" type="button">Reset Practice Mode</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
+    <section id="mealPlanModal" class="modal meal-plan-modal hidden" role="dialog" aria-modal="true" aria-labelledby="mealPlanTitle"><header><div><span class="eyebrow">Recipes + groceries + leftovers</span><h2 id="mealPlanTitle">Plan family meals</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="mealPlanForm" class="modal-body stack-form"><p class="modal-copy">Gemini will prioritize saved recipes and food already listed or available. Review every suggestion before adding missing ingredients.</p><div class="form-grid"><label>Number of meals<select id="mealPlanCount"><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option></select></label><label>Default store<select id="mealPlanStore"><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label></div><label>Preferences or plans <span class="optional">optional</span><textarea id="mealPlanPreferences" rows="3" maxlength="1500" placeholder="Quick weeknights, taco night Friday, use chicken first, avoid repeating pasta…"></textarea></label><div id="mealPlanProgress" class="status-banner hidden">Planning meals…</div><div id="mealPlanResults" class="meal-plan-results hidden" aria-live="polite"></div><div class="modal-actions"><button class="btn ghost close-modal" type="button">Close</button><button class="btn primary" id="generateMealPlanBtn" type="submit">Generate plan</button><button class="btn success hidden" id="addMealPlanBtn" type="button">Add selected ingredients</button></div></form></section>
+
+    <section id="helpModal" class="modal help-modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><header><div><span class="eyebrow">Family guide</span><h2 id="helpTitle">How everything works</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body help-sections"><section><h3>Build the list</h3><p>Add saved items, create something new, scan a barcode, or choose recipe ingredients. Confirm quantity, store, and estimate before it reaches Needed.</p></section><section><h3>Shop and verify</h3><p>Filter Needed by store, start Trip mode, check off purchases, then scan the receipt to verify prices and add unplanned purchases to History.</p></section><section><h3>Gemini assistance</h3><p>Gemini reads receipts and recipes, identifies package photos, prepares the shared weekly review, plans meals, and answers questions. It never changes family data without confirmation.</p></section><section><h3>Recipes and leftovers</h3><p>Recipe originals are stored in Family Drive. Meal planning can reuse saved recipes and available leftovers, then send only selected missing ingredients to Needed.</p></section><section><h3>Privacy</h3><p>The webpage contains no Gemini key or private family data. The key stays in Apps Script, lists and history stay in the private Sheet, and recipe originals stay in Family Drive.</p></section><a class="btn ghost wide" href="https://docs.google.com/spreadsheets/d/1exL1itsRpbgXTplAoMelIw6kKHMo3-Xy19g4Zi86zdE/edit#gid=1482500123" target="_blank" rel="noopener">Open complete Instructions sheet</a></div></section>
+
+    <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn primary wide" id="howItWorksBtn" type="button">How everything works</button><button class="btn ghost wide" id="showGuideBtn" type="button">Show quick start guide</button><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="resetPracticeBtn" type="button">Reset Practice Mode</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
   </div>
 
   <div id="toastRegion" class="toast-region" aria-live="polite"></div>
@@ -669,7 +691,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     loading: false, cameraStream: null, scanLoop: 0, detector: null, scannerControls: null, scannerReader: null,
     deferredInstall: null, receiptCandidates: [], receiptTotal: 0, trip: null, dataHash: "", syncTimer: 0, waitingWorker: null, updateRequested: false,
     historyStore: "", historyQuery: "", lastUndo: null, undoTimer: 0, leftoversReady: false, recipesReady: false,
-    weeklyGeminiRunning: false,
+    weeklyGeminiRunning: false, mealPlan: null,
   };
 
   const qs = (selector) => document.querySelector(selector);
@@ -733,6 +755,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#recipeList").addEventListener("click", handleRecipeListAction);
     qs("#recipeDetail").addEventListener("click", handleRecipeDetailAction);
     qs("#importRecipeBtn").addEventListener("click", openRecipeImportModal);
+    qs("#planMealsBtn").addEventListener("click", openMealPlanModal);
+    qs("#mealPlanForm").addEventListener("submit", generateMealPlan);
+    qs("#addMealPlanBtn").addEventListener("click", addMealPlanIngredients);
     qs("#recipeImportFile").addEventListener("change", importRecipeFile);
     qs("#leftoverMadeDate").addEventListener("change", () => { qs("#leftoverExpiresDate").value = datePlusDays(qs("#leftoverMadeDate").value, 5); });
     qs("#leftoverFilter").addEventListener("change", (event) => { state.leftoverFilter = event.target.value; renderLeftovers(); });
@@ -749,6 +774,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#historyStoreFilter").addEventListener("change", (event) => { state.historyStore = event.target.value; renderHistory(); });
     qs("#dismissGuideBtn").addEventListener("click", dismissGuide);
     qs("#showGuideBtn").addEventListener("click", showGuide);
+    qs("#howItWorksBtn").addEventListener("click", () => openModal("helpModal"));
     qs("#undoPurchaseBtn").addEventListener("click", undoLastPurchase);
     qs("#savedNeedSearch").addEventListener("input", renderSavedNeedList);
     qs("#savedNeedStore").addEventListener("change", renderSavedNeedList);
@@ -843,6 +869,85 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
       const timer = window.setTimeout(() => { cleanup(); reject(new Error("The family helper timed out. Please try again.")); }, 90000);
       form.submit();
     });
+  }
+
+  function mealPlanningContext() {
+    const currentNeeded = state.items.filter((item) => item.needed).map((item) => ({ name: displayName(item), quantity: item.needed_quantity, unit: item.unit, store: item.planned_store }));
+    const availableLeftovers = state.leftovers.filter((item) => item.available).map((item) => ({ name: item.name, quantity: item.quantity, expiresAt: item.expires_at, note: item.note }));
+    const recipes = state.recipes.slice(0, 60).map((recipe) => ({
+      title: recipe.title, servings: recipe.servings, notes: recipe.notes,
+      ingredients: ingredientsForRecipe(recipe.recipe_id).map((ingredient) => ({ name: ingredient.name, quantity: ingredient.quantity, unit: ingredient.unit, optional: ingredient.optional })),
+    }));
+    const savedItems = state.items.slice(0, 250).map((item) => ({ name: displayName(item), officialName: item.name, category: item.category, unit: item.unit, usualStore: preferredStore(item.item_id, item.planned_store) }));
+    const recentPurchases = purchaseEvents().sort((a, b) => new Date(b.purchased_at) - new Date(a.purchased_at)).slice(0, 80).map((event) => {
+      const item = state.items.find((entry) => entry.item_id === event.item_id);
+      return { name: item ? displayName(item) : "Unknown", date: event.purchased_at, store: event.actual_store };
+    });
+    return JSON.stringify({ currentNeeded, availableLeftovers, recipes, savedItems, recentPurchases });
+  }
+
+  function openMealPlanModal() {
+    if (state.demo) return toast("Gemini meal planning is available after family sign-in.", "bad");
+    qs("#mealPlanStore").value = preferredStore();
+    qs("#mealPlanProgress").classList.add("hidden");
+    qs("#mealPlanResults").classList.add("hidden");
+    qs("#addMealPlanBtn").classList.add("hidden");
+    try { state.mealPlan = JSON.parse(state.settings.weekly_meal_plan || "null"); } catch { state.mealPlan = null; }
+    if (state.mealPlan?.meals?.length) renderMealPlan(state.mealPlan);
+    openModal("mealPlanModal");
+  }
+
+  async function generateMealPlan(event) {
+    event.preventDefault();
+    const button = qs("#generateMealPlanBtn"); const progress = qs("#mealPlanProgress");
+    button.disabled = true; progress.classList.remove("hidden"); progress.textContent = "Gemini is comparing recipes, leftovers, the current list, and family patterns…";
+    try {
+      const result = await backendRequest("planMeals", { context: mealPlanningContext(), preferences: qs("#mealPlanPreferences").value.trim(), mealCount: qs("#mealPlanCount").value });
+      if (!result.ok) throw new Error(result.error || "Gemini could not prepare a meal plan.");
+      const currentNames = new Set(state.items.filter((item) => item.needed).flatMap((item) => [normalizeText(item.name), normalizeText(item.nickname)]).filter(Boolean));
+      const plan = result.plan || {};
+      plan.generatedAt = new Date().toISOString(); plan.model = result.parsedBy || "Gemini";
+      plan.meals = (plan.meals || []).slice(0, Number(qs("#mealPlanCount").value || 4)).map((meal) => ({
+        name: String(meal.name || "Meal").slice(0, 120), recipeTitle: String(meal.recipeTitle || "").slice(0, 120), reason: String(meal.reason || "").slice(0, 240), usesLeftovers: Boolean(meal.usesLeftovers),
+        missingIngredients: (meal.missingIngredients || []).filter((ingredient) => ingredient.name && !currentNames.has(normalizeText(ingredient.name))).slice(0, 20).map((ingredient) => ({ name: String(ingredient.name).slice(0, 120), quantity: Math.max(.1, Number(ingredient.quantity || 1)), unit: UNITS.includes(ingredient.unit) ? ingredient.unit : "each", plannedStore: STORES.includes(ingredient.plannedStore) ? ingredient.plannedStore : qs("#mealPlanStore").value, reason: String(ingredient.reason || "").slice(0, 180) })),
+      }));
+      state.mealPlan = plan; await saveSettings({ weekly_meal_plan: JSON.stringify(plan) }); renderMealPlan(plan); progress.classList.add("hidden");
+      toast(`Gemini prepared ${plan.meals.length} meal${plan.meals.length === 1 ? "" : "s"}. Review missing ingredients.`);
+    } catch (error) { progress.textContent = error.message; toast(error.message, "bad"); }
+    finally { button.disabled = false; }
+  }
+
+  function renderMealPlan(plan) {
+    const results = qs("#mealPlanResults");
+    results.innerHTML = `${plan.summary ? `<p class="meal-plan-summary">${escapeHtml(plan.summary)}</p>` : ""}${(plan.meals || []).map((meal, mealIndex) => `<article class="meal-plan-card"><div class="meal-plan-head"><div><h3>${escapeHtml(meal.name)}</h3><span>${meal.recipeTitle ? `Saved recipe: ${escapeHtml(meal.recipeTitle)}` : "Gemini meal idea"}${meal.usesLeftovers ? " · Uses leftovers" : ""}</span></div></div><p>${escapeHtml(meal.reason || "")}</p><div class="meal-ingredients">${meal.missingIngredients?.length ? meal.missingIngredients.map((ingredient, ingredientIndex) => `<label><input type="checkbox" data-meal-ingredient="${mealIndex}:${ingredientIndex}" checked><span><strong>${escapeHtml(ingredient.name)}</strong><small>${formatQty(ingredient.quantity)} ${escapeHtml(ingredient.unit)} · ${escapeHtml(ingredient.plannedStore)}</small></span></label>`).join("") : `<span class="status-banner">No additional ingredients suggested.</span>`}</div></article>`).join("")}${plan.notes?.length ? `<section class="meal-plan-notes"><strong>Plan notes</strong><ul>${plan.notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}</ul></section>` : ""}`;
+    results.classList.remove("hidden");
+    qs("#addMealPlanBtn").classList.toggle("hidden", !(plan.meals || []).some((meal) => meal.missingIngredients?.length));
+  }
+
+  async function addMealPlanIngredients() {
+    if (!state.mealPlan || !canWrite()) return;
+    const selected = qsa("[data-meal-ingredient]:checked").map((input) => {
+      const [mealIndex, ingredientIndex] = input.dataset.mealIngredient.split(":").map(Number);
+      return state.mealPlan.meals?.[mealIndex]?.missingIngredients?.[ingredientIndex];
+    }).filter(Boolean);
+    if (!selected.length) return toast("Choose at least one missing ingredient.", "bad");
+    const store = qs("#mealPlanStore").value; let added = 0;
+    try {
+      for (const ingredient of selected) {
+        let item = findItemByName(ingredient.name);
+        if (!item) {
+          item = { item_id: crypto.randomUUID(), name: ingredient.name, nickname: "", barcode: "", category: inferReceiptCategory(ingredient.name), unit: ingredient.unit || "each", archived: false, created_at: new Date().toISOString(), created_by: currentUser(), needed: true, needed_quantity: ingredient.quantity || 1, planned_store: store, estimated_unit_price: 0, _row: state.items.length + 2 };
+          if (!state.demo) { const result = await appendRow("Items!A:N", [item.item_id, item.name, item.barcode, item.category, item.unit, 0, false, item.created_at, item.created_by, true, item.needed_quantity, item.planned_store, item.estimated_unit_price, item.nickname]); item._row = rowFromAppend(result) || item._row; }
+          state.items.push(item); added += 1;
+        } else if (!item.needed) {
+          item.needed = true; item.needed_quantity = ingredient.quantity || predictedQuantity(item.item_id); item.planned_store = store;
+          if (!state.demo) await updateRange(`Items!J${item._row}:N${item._row}`, [[true, item.needed_quantity, store, item.estimated_unit_price || predictedPrice(item.item_id), item.nickname || ""]]);
+          added += 1;
+        }
+        syncItemWithTrip(item);
+      }
+      cacheData(); closeModals(); setView("needed"); render(); toast(`${added} missing ingredient${added === 1 ? "" : "s"} added to Needed.`);
+    } catch (error) { toast(error.message, "bad"); }
   }
 
   async function fileBackendFields(file) {

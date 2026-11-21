@@ -494,6 +494,13 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 .activity-value strong { color: var(--ok); font-size: 17px; }
 .activity-value small { margin: 2px 0 7px; color: var(--muted); font-size: 12px; }
 .correction-total { min-height: 64px; }
+.export-list { display: grid; gap: 11px; }
+.export-card { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-2); }
+.export-card h3, .export-card p { margin: 0; }
+.export-card h3 { font-size: 16px; }
+.export-card p { margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.finance-buckets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.finance-buckets span { padding: 4px 8px; border: 1px solid rgba(0,231,139,.32); border-radius: 999px; background: var(--ok-soft); color: var(--ok); font-size: 11px; font-weight: 800; }
 .empty-state.compact { min-height: 170px; padding: 20px; }
 .health-list { display: grid; gap: 1px; overflow: hidden; margin-bottom: 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--line); }
 .health-row { display: grid; grid-template-columns: 11px minmax(0,1fr); gap: 11px; padding: 13px; background: var(--panel-2); }
@@ -731,7 +738,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 
     <section id="correctionModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="correctionTitle"><header><div><span class="eyebrow">Purchase correction</span><h2 id="correctionTitle">Fix activity details</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><form id="correctionForm" class="modal-body stack-form"><input id="correctionEventId" type="hidden"><div class="selected-item"><strong id="correctionItemName">Item</strong><span id="correctionVerification"></span></div><div class="form-grid"><label>Quantity<input id="correctionQuantity" type="number" min="0.01" step="0.01" required></label><label>Purchase date<input id="correctionDate" type="date" required></label></div><div class="form-grid"><label>Actual store<select id="correctionStore" required><option>Food City</option><option>Walmart</option><option>Kroger</option><option>Sam's Club</option><option>Aldi</option><option>Other</option></select></label><label>Unit price<input id="correctionUnitPrice" type="number" min="0" step="0.01" inputmode="decimal" required></label></div><label>Purchase type<select id="correctionPlanningStatus"><option>Planned</option><option>Unplanned</option></select></label><label>Note <span class="optional">optional</span><input id="correctionNote" autocomplete="off" placeholder="Flavor, size, substitution, correction reason…"></label><div class="total-preview correction-total"><span>Corrected item total</span><strong id="correctionTotal">$0.00</strong></div><div class="modal-actions"><button class="btn ghost" id="backToActivityBtn" type="button">Back</button><button class="btn success" type="submit">Save correction</button></div></form></section>
 
-    <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn primary wide" id="activityBtn" type="button">Recent activity &amp; corrections</button><button class="btn ghost wide" id="automationBtn" type="button">Automation &amp; AI</button><button class="btn ghost wide" id="systemHealthBtn" type="button">System health</button><button class="btn ghost wide" id="howItWorksBtn" type="button">How everything works</button><button class="btn ghost wide" id="showGuideBtn" type="button">Show quick start guide</button><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="resetPracticeBtn" type="button">Reset Practice Mode</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
+    <section id="exportModal" class="modal export-modal hidden" role="dialog" aria-modal="true" aria-labelledby="exportTitle"><header><div><span class="eyebrow">Portable and finance-ready</span><h2 id="exportTitle">Data &amp; Finance Export</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body export-list"><p class="modal-copy">Files are created privately in this browser. They contain no Gemini key, Google token, recipe photos, or receipt images.</p><section class="export-card"><div><h3>Purchase ledger CSV</h3><p id="exportLedgerSummary">Preparing summary…</p><div class="finance-buckets"><span>Groceries</span><span>Household</span><span>Personal Care</span><span>Non-Grocery</span><span>Other</span></div></div><button class="btn primary wide" id="exportLedgerBtn" type="button">Download finance-ready ledger</button></section><section class="export-card"><div><h3>Portable family backup</h3><p>Items, purchases, settings, locations, leftovers, recipes, and ingredients in one JSON file.</p></div><button class="btn ghost wide" id="exportBackupBtn" type="button">Download complete backup</button></section><div class="health-note"><strong id="exportLastStatus">No export recorded on this device</strong><span>The private Google Sheet remains the live source. These downloads are portable snapshots for safekeeping and the future finance app.</span></div></div></section>
+
+    <section id="accountModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><header><div><span class="eyebrow">Account</span><h2 id="accountTitle">Settings</h2></div><button class="icon-btn close-modal" aria-label="Close">×</button></header><div class="modal-body account-body"><div class="account-card"><div class="profile-large" id="profileLarge">?</div><div><strong id="profileName">Not signed in</strong><span id="profileEmail"></span></div></div><button class="btn primary wide" id="activityBtn" type="button">Recent activity &amp; corrections</button><button class="btn ghost wide" id="exportBtn" type="button">Data &amp; Finance Export</button><button class="btn ghost wide" id="automationBtn" type="button">Automation &amp; AI</button><button class="btn ghost wide" id="systemHealthBtn" type="button">System health</button><button class="btn ghost wide" id="howItWorksBtn" type="button">How everything works</button><button class="btn ghost wide" id="showGuideBtn" type="button">Show quick start guide</button><button class="btn ghost wide" id="openSheetBtn" type="button">Open Google Sheet</button><button class="btn ghost wide hidden" id="resetPracticeBtn" type="button">Reset Practice Mode</button><button class="btn ghost wide hidden" id="installBtn" type="button">Add to Home Screen</button><button class="btn danger wide" id="signoutBtn" type="button">Sign out</button></div></section>
   </div>
 
   <div id="toastRegion" class="toast-region" aria-live="polite"></div>
@@ -744,6 +753,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
   const STORAGE_CACHE_PREFIX = "family-groceries.cache.v2.";
   const STORAGE_GUIDE = "family-groceries.guide-dismissed.v1";
   const STORAGE_TRIP_PREFIX = "family-groceries.active-trip.v1.";
+  const STORAGE_EXPORT = "family-groceries.last-export.v1";
   const CATEGORIES = ["Produce", "Dairy", "Meat", "Frozen", "Pantry", "Snacks", "Beverages", "Household", "Personal care", "Non-grocery", "Other"];
   const UNITS = ["each", "pack", "lb", "oz", "gal", "box", "bag", "bottle", "can", "dozen"];
   const STORES = ["Food City", "Walmart", "Kroger", "Sam's Club", "Aldi", "Other"];
@@ -812,6 +822,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     qs("#correctionQuantity").addEventListener("input", updateCorrectionTotal);
     qs("#correctionUnitPrice").addEventListener("input", updateCorrectionTotal);
     qs("#backToActivityBtn").addEventListener("click", openRecentActivity);
+    qs("#exportBtn").addEventListener("click", openExportCenter);
+    qs("#exportLedgerBtn").addEventListener("click", exportFinanceLedger);
+    qs("#exportBackupBtn").addEventListener("click", exportFamilyBackup);
     qs("#geminiBtn").addEventListener("click", openGeminiHelper);
     qs("#geminiForm").addEventListener("submit", askGeminiHelper);
     qsa("[data-helper-prompt]").forEach((button) => button.addEventListener("click", () => { qs("#geminiQuestion").value = button.dataset.helperPrompt; qs("#geminiQuestion").focus(); }));
@@ -1543,6 +1556,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 
   function renderSystemHealth() {
     const cached = Boolean(readCache());
+    const lastExport = readLastExport();
     const driveFiles = state.recipes.filter((recipe) => recipe.source_url || recipe.cover_url).length;
     const online = navigator.onLine;
     const signedIn = Boolean(state.accessToken || state.demo);
@@ -1557,7 +1571,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
       healthRow("Gemini backend", backendValue, "The API key remains in Apps Script and is never sent to the public webpage.", backendTone),
       healthRow("Family Drive", driveFiles ? `${driveFiles} recipe${driveFiles === 1 ? "" : "s"} with stored files` : "Secure backend configured", "Recipe originals and photos are stored outside the public webpage.", driveFiles ? "ok" : "neutral"),
       healthRow("Offline backup", cached ? "Available on this device" : "Not created yet", cached ? "A read-only last sync is available if the connection drops." : "It is created after the first successful sync.", cached ? "ok" : "warn"),
-      healthRow("App version", "Version 29", "Recent corrections, price review, Family Inbox, and system health are installed.", "ok"),
+      healthRow("Portable export", lastExport?.at ? `Last ${lastExport.type} ${formatAutomationTime(lastExport.at)}` : "Not downloaded on this device", "Finance CSV and complete JSON backups are created locally on request.", lastExport?.at ? "ok" : "neutral"),
+      healthRow("App version", "Version 30", "Finance-ready exports, recent corrections, price review, Family Inbox, and system health are installed.", "ok"),
     ].join("");
   }
 
@@ -1790,6 +1805,67 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     } catch (error) {
       Object.assign(purchase, old); if (item && oldItem) Object.assign(item, oldItem); render(); toast(error.message, "bad");
     }
+  }
+
+  function financeBucket(category) {
+    if (["Produce", "Dairy", "Meat", "Frozen", "Pantry", "Snacks", "Beverages"].includes(category)) return "Groceries";
+    if (category === "Household") return "Household";
+    if (category === "Personal care") return "Personal Care";
+    if (category === "Non-grocery") return "Non-Grocery";
+    return "Other";
+  }
+
+  function csvCell(value) {
+    let text = String(value ?? "");
+    if (/^[=+\-@]/.test(text)) text = `'${text}`;
+    return `"${text.replace(/"/g, '""')}"`;
+  }
+
+  function downloadPrivateFile(filename, contents, mimeType) {
+    const url = URL.createObjectURL(new Blob([contents], { type: mimeType }));
+    const link = document.createElement("a"); link.href = url; link.download = filename; link.rel = "noopener";
+    document.body.appendChild(link); link.click(); link.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function readLastExport() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_EXPORT) || "null"); }
+    catch { return null; }
+  }
+
+  function recordExport(type) {
+    localStorage.setItem(STORAGE_EXPORT, JSON.stringify({ type, at: new Date().toISOString() }));
+    renderExportCenter(); renderHealthIfOpen();
+  }
+
+  function renderExportCenter() {
+    const events = purchaseEvents();
+    const total = events.reduce((sum, event) => sum + Number(event.total_price || 0), 0);
+    qs("#exportLedgerSummary").textContent = `${events.length} purchase ${events.length === 1 ? "entry" : "entries"} · ${formatMoney(total)} recorded · standardized categories for finance import.`;
+    const last = readLastExport();
+    qs("#exportLastStatus").textContent = last?.at ? `Last ${last.type} export ${formatAutomationTime(last.at)}` : "No export recorded on this device";
+  }
+
+  function openExportCenter() { renderExportCenter(); openModal("exportModal"); }
+
+  function exportFinanceLedger() {
+    const headers = ["purchase_id", "purchase_date", "item_name", "official_name", "category", "finance_bucket", "quantity", "unit", "unit_price", "total_price", "planned_store", "actual_store", "planning_status", "verification_status", "receipt_id", "recorded_by", "note"];
+    const rows = purchaseEvents().sort((a, b) => new Date(a.purchased_at) - new Date(b.purchased_at)).map((event) => {
+      const item = state.items.find((entry) => entry.item_id === event.item_id);
+      return [event.event_id, String(event.purchased_at || "").slice(0, 10), item ? displayName(item) : "Unknown item", item?.name || "", item?.category || "Other", financeBucket(item?.category || "Other"), event.quantity, item?.unit || "each", event.unit_price, event.total_price, event.planned_store, event.actual_store, event.planning_status, event.verification_status, event.receipt_id, event.created_by, event.note];
+    });
+    const csv = [headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
+    downloadPrivateFile(`family-grocery-ledger-${todayInput()}.csv`, `\ufeff${csv}`, "text/csv;charset=utf-8");
+    recordExport("ledger"); toast("Finance-ready grocery ledger downloaded.");
+  }
+
+  function exportFamilyBackup() {
+    const backup = {
+      schema: "champion-family-groceries-backup", schemaVersion: 1, appVersion: 30, exportedAt: new Date().toISOString(), household: state.settings.household_name || "Family",
+      data: { items: state.items, events: state.events, settings: state.settings, locations: state.locations, leftovers: state.leftovers, recipes: state.recipes, recipeIngredients: state.recipeIngredients },
+      excludes: ["Google access token", "Gemini API key", "recipe and receipt image bytes"],
+    };
+    downloadPrivateFile(`family-groceries-backup-${todayInput()}.json`, JSON.stringify(backup, null, 2), "application/json;charset=utf-8");
+    recordExport("backup"); toast("Portable family backup downloaded.");
   }
 
   function renderTripHistory(events) {

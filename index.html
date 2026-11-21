@@ -963,7 +963,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
       const form = document.createElement("form");
       const cleanup = () => { window.removeEventListener("message", onMessage); iframe.remove(); form.remove(); clearTimeout(timer); };
       const onMessage = (event) => {
-        if (event.source !== iframe.contentWindow || !String(event.origin).endsWith(".googleusercontent.com")) return;
+        const responseOrigin = String(event.origin || "");
+        const trustedBackendOrigin = responseOrigin === "null" || responseOrigin === "https://script.google.com" || responseOrigin.endsWith(".googleusercontent.com");
+        if (!trustedBackendOrigin) return;
         if (event.data?.source !== "family-recipes-backend" || event.data.requestId !== requestId) return;
         cleanup(); state.backendStatus = "ready"; state.backendLastSuccess = new Date().toISOString(); renderHealthIfOpen(); resolve(event.data.payload || {});
       };
@@ -1572,7 +1574,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
       healthRow("Family Drive", driveFiles ? `${driveFiles} recipe${driveFiles === 1 ? "" : "s"} with stored files` : "Secure backend configured", "Recipe originals and photos are stored outside the public webpage.", driveFiles ? "ok" : "neutral"),
       healthRow("Offline backup", cached ? "Available on this device" : "Not created yet", cached ? "A read-only last sync is available if the connection drops." : "It is created after the first successful sync.", cached ? "ok" : "warn"),
       healthRow("Portable export", lastExport?.at ? `Last ${lastExport.type} ${formatAutomationTime(lastExport.at)}` : "Not downloaded on this device", "Finance CSV and complete JSON backups are created locally on request.", lastExport?.at ? "ok" : "neutral"),
-      healthRow("App version", "Version 30", "Finance-ready exports, recent corrections, price review, Family Inbox, and system health are installed.", "ok"),
+      healthRow("App version", "Version 31", "Gemini response delivery, finance-ready exports, recent corrections, price review, Family Inbox, and system health are installed.", "ok"),
     ].join("");
   }
 

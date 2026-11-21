@@ -391,6 +391,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 .ai-suggestion strong { font-size: 12px; }
 .ai-suggestion span { margin-top: 2px; color: var(--muted); font-size: 10.5px; font-weight: 500; white-space: normal; }
 .ai-suggestion small { margin-top: 4px; color: var(--brand-2); font-size: 9.5px; }
+.ai-suggestion-actions { display: grid; flex: 0 0 auto; gap: 5px; }
 .store-filter { display: flex; align-items: center; justify-content: flex-end; gap: 9px; margin-bottom: 12px; color: var(--muted); font-size: 11px; }
 .store-filter select { width: auto; min-width: 145px; }
 .trip-toolbar { display: flex; align-items: flex-end; justify-content: flex-end; gap: 9px; margin-bottom: 12px; }
@@ -1203,6 +1204,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     catch { return null; }
   }
 
+  function weeklySuggestionFeedback() {
+    try { return JSON.parse(state.settings.ai_weekly_feedback || "{}"); }
+    catch { return {}; }
+  }
+
   function weeklyReviewDismissed(review) {
     const dismissed = new Date(state.settings.ai_weekly_dismissed_at || 0).getTime();
     const generated = new Date(review?.generatedAt || state.settings.ai_weekly_generated_at || 0).getTime();
@@ -1218,7 +1224,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     }
     const generated = new Date(review.generatedAt || state.settings.ai_weekly_generated_at || 0);
     const dateLabel = Number.isNaN(generated.getTime()) ? "this week" : generated.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-    return `<section class="suggestions-block ai-review"><div class="suggestion-heading"><div><h3>✦ Weekly Gemini check</h3><p>Prepared ${escapeHtml(dateLabel)}. Confirm anything that is actually needed.</p></div><div class="suggestion-controls"><button class="btn ghost compact" type="button" data-ai-refresh>Refresh</button><button class="btn ghost compact" type="button" data-ai-dismiss>Dismiss</button></div></div>${review.suggestions.map((suggestion, index) => `<div class="suggestion-row ai-suggestion"><div><strong>${escapeHtml(suggestion.name)}</strong><span>${escapeHtml(suggestion.reason || "Suggested from recent family patterns.")}</span><small>${formatQty(suggestion.quantity || 1)} ${escapeHtml(suggestion.unit || "each")} · ${escapeHtml(suggestion.plannedStore || "Other")} · ${Math.round(Number(suggestion.confidence || 0) * 100)}% confidence</small></div><button class="btn primary compact" type="button" data-ai-confirm="${index}">Confirm</button></div>`).join("")}</section>`;
+    return `<section class="suggestions-block ai-review"><div class="suggestion-heading"><div><h3>✦ Weekly Gemini check</h3><p>Prepared ${escapeHtml(dateLabel)}. Confirm anything that is actually needed.</p></div><div class="suggestion-controls"><button class="btn ghost compact" type="button" data-ai-refresh>Refresh</button><button class="btn ghost compact" type="button" data-ai-dismiss>Dismiss</button></div></div>${review.suggestions.map((suggestion, index) => `<div class="suggestion-row ai-suggestion"><div><strong>${escapeHtml(suggestion.name)}</strong><span>${escapeHtml(suggestion.reason || "Suggested from recent family patterns.")}</span><small>${formatQty(suggestion.quantity || 1)} ${escapeHtml(suggestion.unit || "each")} · ${escapeHtml(suggestion.plannedStore || "Other")} · ${Math.round(Number(suggestion.confidence || 0) * 100)}% confidence</small></div><div class="ai-suggestion-actions"><button class="btn primary compact" type="button" data-ai-confirm="${index}">Confirm</button><button class="btn ghost compact" type="button" data-ai-snooze="${index}">Not this week</button></div></div>`).join("")}</section>`;
   }
 
   async function saveSettings(entries) {
@@ -1237,7 +1243,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     }).filter((item) => item.purchaseCount || item.currentlyNeeded).slice(0, 180);
     const leftovers = state.leftovers.filter((item) => item.available).map((item) => ({ name: item.name, expiresAt: item.expires_at }));
     const recipes = state.recipes.slice(0, 80).map((recipe) => recipe.title);
-    return JSON.stringify({ reviewedAt: new Date().toISOString(), catalog, leftovers, savedRecipeNames: recipes });
+    const feedback = Object.entries(weeklySuggestionFeedback()).filter(([, entry]) => Date.now() - new Date(entry?.at || 0).getTime() < 90 * 86400000).map(([name, entry]) => ({ name, decision: entry.decision, at: entry.at }));
+    return JSON.stringify({ reviewedAt: new Date().toISOString(), catalog, leftovers, savedRecipeNames: recipes, recentSuggestionFeedback: feedback });
   }
 
   async function maybeRunWeeklyGeminiReview(force = false) {
@@ -1253,7 +1260,12 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
       await saveSettings({ ai_weekly_attempted_at: attemptedAt });
       const result = await backendRequest("suggestGroceries", { context: weeklyGeminiContext() });
       if (!result.ok) throw new Error(result.error || "Gemini could not prepare the weekly review.");
-      const suggestions = (result.suggestions || []).filter((suggestion) => suggestion.name && Number(suggestion.confidence || 0) >= .3).slice(0, 8).map((suggestion) => ({
+      const feedback = weeklySuggestionFeedback();
+      const suggestions = (result.suggestions || []).filter((suggestion) => {
+        if (!suggestion.name || Number(suggestion.confidence || 0) < .3) return false;
+        const prior = feedback[normalizeText(suggestion.name)];
+        return !prior || prior.decision !== "not_this_week" || Date.now() - new Date(prior.at || 0).getTime() >= 8 * 86400000;
+      }).slice(0, 8).map((suggestion) => ({
         name: String(suggestion.name).slice(0, 120), reason: String(suggestion.reason || "").slice(0, 220), confidence: Math.min(1, Math.max(0, Number(suggestion.confidence || 0))), quantity: Math.max(.1, Number(suggestion.quantity || 1)), unit: UNITS.includes(suggestion.unit) ? suggestion.unit : "each", plannedStore: STORES.includes(suggestion.plannedStore) ? suggestion.plannedStore : preferredStore(),
       }));
       const review = { generatedAt: new Date().toISOString(), suggestions, model: result.parsedBy || "Gemini" };
@@ -1268,11 +1280,23 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
     if (refresh) return void maybeRunWeeklyGeminiReview(true);
     const dismiss = event.target.closest("[data-ai-dismiss]");
     if (dismiss) { await saveSettings({ ai_weekly_dismissed_at: new Date().toISOString() }); renderCheck(); return; }
+    const snooze = event.target.closest("[data-ai-snooze]");
+    if (snooze) {
+      const review = weeklyGeminiReview();
+      const index = Number(snooze.dataset.aiSnooze);
+      const suggestion = review?.suggestions?.[index];
+      if (!suggestion) return;
+      const feedback = weeklySuggestionFeedback();
+      feedback[normalizeText(suggestion.name)] = { decision: "not_this_week", at: new Date().toISOString(), by: currentUser() };
+      review.suggestions.splice(index, 1);
+      await saveSettings({ ai_weekly_feedback: JSON.stringify(feedback), ai_weekly_suggestions: JSON.stringify(review) });
+      renderCheck(); toast(`${suggestion.name} will stay out of this week’s suggestions.`); return;
+    }
     const confirm = event.target.closest("[data-ai-confirm]");
     if (confirm) {
       const suggestion = weeklyGeminiReview()?.suggestions?.[Number(confirm.dataset.aiConfirm)];
       if (!suggestion) return;
-      const existing = state.items.find((item) => [item.name, item.nickname].some((name) => name && normalizeText(name) === normalizeText(suggestion.name)));
+      const existing = findItemByName(suggestion.name);
       if (existing) { openNeedModal(existing); qs("#needQuantity").value = suggestion.quantity || predictedQuantity(existing.item_id); qs("#needPlannedStore").value = suggestion.plannedStore || preferredStore(existing.item_id); }
       else openItemModal({ name: suggestion.name, quantity: suggestion.quantity, unit: suggestion.unit, store: suggestion.plannedStore });
       return;
@@ -1533,7 +1557,20 @@ input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shad
 
   function recipeRow(recipe) { return [recipe.recipe_id, recipe.title, recipe.created_on, recipe.family_date, recipe.servings, recipe.background, recipe.notes, recipe.instructions, recipe.cover_file_id, recipe.cover_url, recipe.source_file_id, recipe.source_url, recipe.status, recipe.created_by]; }
   function recipeIngredientRow(ingredient) { return [ingredient.ingredient_id, ingredient.recipe_id, ingredient.item_id, ingredient.name, ingredient.quantity, ingredient.unit, ingredient.optional, ingredient.notes, ingredient.sort_order, ingredient.active]; }
-  function findItemByName(name) { const key = normalizeText(name).replace(/\boptional\b/g, "").trim(); if (!key) return null; return state.items.find((item) => normalizeText(item.name) === key || (normalizeText(item.nickname) && normalizeText(item.nickname) === key)) || state.items.find((item) => { const official = normalizeText(item.name); return official && (key.includes(official) || official.includes(key)); }); }
+  function findItemByName(name) {
+    const key = normalizeText(name).replace(/\boptional\b/g, "").trim();
+    if (!key) return null;
+    const aliases = new Set([key, ...commonNicknames(name).map(normalizeText)]);
+    const exact = state.items.find((item) => {
+      const itemAliases = [normalizeText(item.name), normalizeText(item.nickname), ...commonNicknames(item.name).map(normalizeText)].filter(Boolean);
+      return itemAliases.some((alias) => aliases.has(alias));
+    });
+    if (exact) return exact;
+    return state.items.find((item) => {
+      const official = normalizeText(item.name); const nickname = normalizeText(item.nickname);
+      return (official && (key.includes(official) || official.includes(key))) || (nickname && (key.includes(nickname) || nickname.includes(key)));
+    });
+  }
 
   function handleRecipeListAction(event) {
     const button = event.target.closest("[data-recipe-open], [data-recipe-edit]");
